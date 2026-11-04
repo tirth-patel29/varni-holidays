@@ -204,18 +204,10 @@ export async function getLeadByIdAction(id: string) {
 
     // 2. If not found and ID is a synthetic timestamp ID like "lead-1793812222776-705"
     if (!dbLead && id.startsWith('lead-')) {
-      const parts = id.split('-');
-      if (parts.length >= 2 && !isNaN(Number(parts[1]))) {
-        const ts = Number(parts[1]);
-        const minTime = new Date(ts - 300000); // 5 mins before
-        const maxTime = new Date(ts + 300000); // 5 mins after
+      const fallbackLead = crmRepo.getLeadById(id);
+      if (fallbackLead?.referenceId) {
         dbLead = await prisma.lead.findFirst({
-          where: {
-            createdAt: {
-              gte: minTime,
-              lte: maxTime,
-            },
-          },
+          where: { referenceId: fallbackLead.referenceId },
           include: {
             customer: true,
             assignedTo: true,
@@ -223,8 +215,32 @@ export async function getLeadByIdAction(id: string) {
             flightDetail: true,
             visaDetail: true,
           },
-          orderBy: { createdAt: 'desc' },
         });
+      }
+
+      if (!dbLead) {
+        const parts = id.split('-');
+        if (parts.length >= 2 && !isNaN(Number(parts[1]))) {
+          const ts = Number(parts[1]);
+          const minTime = new Date(ts - 3600000); // 1 hour before
+          const maxTime = new Date(ts + 3600000); // 1 hour after
+          dbLead = await prisma.lead.findFirst({
+            where: {
+              createdAt: {
+                gte: minTime,
+                lte: maxTime,
+              },
+            },
+            include: {
+              customer: true,
+              assignedTo: true,
+              packageDetail: { include: { package: true } },
+              flightDetail: true,
+              visaDetail: true,
+            },
+            orderBy: { createdAt: 'desc' },
+          });
+        }
       }
     }
 

@@ -218,14 +218,29 @@ export async function sendCustomerUpdateAction(payload: {
   recipientContact: string; // Email or Phone number
 }) {
   try {
-    const customer = crmRepo.getCustomerById(payload.customerId);
-    const customerName = customer ? customer.fullName : 'Valued Traveler';
+    let customerName = 'Valued Traveler';
+    const crmCustomer = crmRepo.getCustomerById(payload.customerId);
+    if (crmCustomer?.fullName) {
+      customerName = crmCustomer.fullName;
+    } else {
+      try {
+        const dbCust = await prisma.customer.findUnique({ where: { id: payload.customerId } });
+        if (dbCust?.fullName) customerName = dbCust.fullName;
+      } catch (e) {}
+    }
 
     let deliveryStatus: CommunicationLogRecord['deliveryStatus'] = 'RECORD_CREATED';
     let providerRef: string | undefined = undefined;
     let clickToChatUrl: string | undefined = undefined;
 
     if (payload.channel === 'EMAIL') {
+      if (!payload.recipientContact || !payload.recipientContact.includes('@')) {
+        return {
+          success: false,
+          error: 'Recipient email address is missing or invalid. Please check customer contact details.',
+        };
+      }
+
       const emailResult = await sendCustomerEmail({
         to: payload.recipientContact,
         toName: customerName,
@@ -239,6 +254,14 @@ export async function sendCustomerUpdateAction(payload: {
         ? emailResult.providerStatus === 'PROVIDER_ACCEPTED' ? 'PROVIDER_ACCEPTED' : 'SENT'
         : 'FAILED';
       providerRef = emailResult.messageId;
+
+      if (!emailResult.success) {
+        return {
+          success: false,
+          deliveryStatus: 'FAILED',
+          error: emailResult.error || 'Failed to dispatch email via Resend',
+        };
+      }
     } else {
       // WHATSAPP
       const waResult = await sendCustomerWhatsApp({

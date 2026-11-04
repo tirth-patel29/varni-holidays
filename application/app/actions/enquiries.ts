@@ -9,6 +9,7 @@ import {
   VisaEnquirySchema,
 } from "@/lib/validation/schemas";
 import { calculateKeralaPrice } from "@/lib/pricing/kerala";
+import { sendEnquiryConfirmationEmail } from "@/lib/integrations/email-service";
 
 function generateReference(prefix: "FLT" | "PKG" | "VIS"): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -174,6 +175,32 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
       });
     } catch (crmErr) {
       console.warn("CRM store sync failed:", crmErr);
+    }
+
+    // Automated instant customer acknowledgement email via Resend
+    if (data.email) {
+      try {
+        await sendEnquiryConfirmationEmail({
+          to: data.email,
+          customerName: data.fullName,
+          referenceId,
+          serviceType: 'FLIGHT',
+          details: {
+            originAirport: data.originAirport,
+            destinationAirport: data.destinationAirport,
+            tripType: data.tripType,
+            departureDate: data.departureDate,
+            returnDate: data.returnDate,
+            adultsCount: data.adultsCount,
+            childrenCount: data.childrenCount,
+            infantsCount: data.infantsCount,
+            cabinClass: data.cabinClass,
+            specialRequirements: data.specialRequirements,
+          },
+        });
+      } catch (emailErr) {
+        console.warn('[Enquiry Confirmation Email Warning]:', emailErr);
+      }
     }
 
     return {
@@ -372,6 +399,32 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
       console.warn("CRM store sync failed:", crmErr);
     }
 
+    // Automated instant customer acknowledgement email via Resend
+    if (data.email) {
+      try {
+        await sendEnquiryConfirmationEmail({
+          to: data.email,
+          customerName: data.fullName,
+          referenceId,
+          serviceType: 'PACKAGE',
+          details: {
+            packageName: 'Kerala 6N/7D Winter CPAI',
+            hotelTier: data.hotelTier,
+            travelDates: data.preferredTravelDate || undefined,
+            adultsCount: data.adultsCount,
+            childrenCount: (data.childrenWithBedCount || 0) + (data.childrenNoBedCount || 0),
+            infantsCount: data.infantsCount,
+            roomsCount: pricingResult.roomCount,
+            vehicleType: pricingResult.matchedVehicleType || undefined,
+            totalEstimate: pricingResult.totalEstimate || undefined,
+            specialRequirements: data.specialRequests,
+          },
+        });
+      } catch (emailErr) {
+        console.warn('[Enquiry Confirmation Email Warning]:', emailErr);
+      }
+    }
+
     return {
       success: true,
       referenceId,
@@ -517,6 +570,28 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
       });
     } catch (crmErr) {
       console.warn("CRM store sync failed:", crmErr);
+    }
+
+    // Automated instant customer acknowledgement email via Resend
+    if (data.email) {
+      try {
+        await sendEnquiryConfirmationEmail({
+          to: data.email,
+          customerName: data.fullName,
+          referenceId,
+          serviceType: 'VISA',
+          details: {
+            destinationCountry: data.destinationCountry,
+            visaCategory: data.visaCategory,
+            applicantCount: data.applicantCount,
+            departureDate: data.plannedTravelDate || undefined,
+            stayDurationDays: data.stayDurationDays,
+            specialRequirements: data.specialCircumstances,
+          },
+        });
+      } catch (emailErr) {
+        console.warn('[Enquiry Confirmation Email Warning]:', emailErr);
+      }
     }
 
     return {
