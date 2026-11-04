@@ -1,0 +1,101 @@
+﻿source_rate_type,duration,hotel_tier,rate_description,minimum_pax,rooms,amount_inr,basis,source_cell
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With AC Sedan,2,1,23800,INR per person,Rs.23800/- Nett Minimum 2 Pax (1 Room)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Sedan,2,1,25600,INR per person,Rs.25600/- Nett Minimum2 Pax (1 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Sedan,2,1,28200,INR per person,Rs.28200/- Nett Minimum 2 Pax (1 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With AC Sedan,2,1,30200,INR per person,Rs.30200/- Nett Minimum 2 Pax (1 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With AC Sedan,2,1,35500,INR per person,Rs.35500/- Nett Minimum 2 Pax (1 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With Innova Crysta,4,2,21300,INR per person,Rs.21300/- Nett Minimum 4 Pax (2 Rooms)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With Innova Crysta,4,2,23100,INR per person,Rs.23100/- Nett Minimum 4 Pax (2 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With Innova Crysta,4,2,25700,INR per person,Rs.25700/- Nett Minimum 4 Pax (2 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With Innova Crysta,4,2,27700,INR per person,Rs.27700/- Nett Minimum 4 Pax (2 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With Innova Crysta,4,2,33000,INR per person,Rs.33000/- Nett Minimum 4 Pax (2 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With Innova Crysta,6,3,18100,INR per person,Rs.18100/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With Innova Crysta,6,3,19800,INR per person,Rs.19800/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With Innova Crysta,6,3,22500,INR per person,Rs.22500/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With Innova Crysta,6,3,24400,INR per person,Rs.24400/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With Innova Crysta,6,3,29700,INR per person,Rs.29700/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,6,3,18600,INR per person,Rs.18600/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,6,3,20400,INR per person,Rs.20400/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,6,3,23000,INR per person,Rs.23000/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,6,3,25000,INR per person,Rs.25000/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,6,3,30300,INR per person,Rs.30300/- Nett Minimum 6 Pax (3 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,8,4,16900,INR per person,Rs.16900/- Nett Minimum 8 Pax (4 Rooms)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,8,4,18600,INR per person,Rs.18600/- Nett Minimum 8 Pax (4 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,8,4,21200,INR per person,Rs.21200/- Nett Minimum 8 Pax (4 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,8,4,23200,INR per person,Rs.23200/- Nett Minimum 8 Pax (4 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,8,4,28500,INR per person,Rs.28500/- Nett Minimum 8 Pax (4 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,10,5,15800,INR per person,Rs.15800/- Nett Minimum 10 Pax (5 Rooms)
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,10,5,17500,INR per person,Rs.17500/- Nett Minimum 10 Pax (5 Rooms)
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,10,5,20200,INR per person,Rs.20200/- Nett Minimum 10 Pax (5 Rooms)
+ready_rate,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,10,5,22200,INR per person,Rs.22200/- Nett Minimum 10 Pax (5 Rooms)
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,10,5,27500,INR per person,Rs.27500/- Nett Minimum 10 Pax (5 Rooms)
+ready_rate,6N/7D,Package - 1 Standard,Ex. Adult With Bed,,,6500,INR per person supplement,Rs.6500/- Nett
+ready_rate,6N/7D,Package - 2 Deluxe,Ex. Adult With Bed,,,8600,INR per person supplement,Rs.8600/- Nett
+ready_rate,6N/7D,Package - 3 Super Deluxe,Ex. Adult With Bed,,,9000,INR per person supplement,Rs.9000/- Nett
+ready_rate,6N/7D,Package - 4 Premium,Ex. Adult With Bed,,,10700,INR per person supplement,Rs.10700/- Nett
+ready_rate,6N/7D,Package - 5 Luxury,Ex. Adult With Bed,,,14500,INR per person supplement,Rs.14500/- Nett
+ready_rate,6N/7D,Package - 1 Standard,Ex. Child With Bed,,,5400,INR per person supplement,Rs.5400/- Nett
+ready_rate,6N/7D,Package - 2 Deluxe,Ex. Child With Bed,,,6500,INR per person supplement,Rs.6500/- Nett
+ready_rate,6N/7D,Package - 3 Super Deluxe,Ex. Child With Bed,,,6500,INR per person supplement,Rs.6500/- Nett
+ready_rate,6N/7D,Package - 4 Premium,Ex. Child With Bed,,,7300,INR per person supplement,Rs.7300/- Nett
+ready_rate,6N/7D,Package - 5 Luxury,Ex. Child With Bed,,,10000,INR per person supplement,Rs.10000/- Nett
+ready_rate,6N/7D,Package - 1 Standard,Ex. Child W/O Bed,,,3400,INR per person supplement,Rs.3400/- Nett
+ready_rate,6N/7D,Package - 2 Deluxe,Ex. Child W/O Bed,,,4800,INR per person supplement,Rs.4800/- Nett
+ready_rate,6N/7D,Package - 3 Super Deluxe,Ex. Child W/O Bed,,,4700,INR per person supplement,Rs.4700/- Nett
+ready_rate,6N/7D,Package - 4 Premium,Ex. Child W/O Bed,,,6700,INR per person supplement,Rs.6700/- Nett
+ready_rate,6N/7D,Package - 5 Luxury,Ex. Child W/O Bed,,,7000,INR per person supplement,Rs.7000/- Nett
+ready_rate,6N/7D,Package - 1 Standard,Per Person Meal Rate,,,3800,INR per person supplement,Rs.3800/- Nett
+ready_rate,6N/7D,Package - 2 Deluxe,Per Person Meal Rate,,,4500,INR per person supplement,Rs.4500/- Nett
+ready_rate,6N/7D,Package - 3 Super Deluxe,Per Person Meal Rate,,,5000,INR per person supplement,Rs.5000/- Nett
+ready_rate,6N/7D,Package - 4 Premium,Per Person Meal Rate,,,5400,INR per person supplement,Rs.5400/- Nett
+ready_rate,6N/7D,Package - 5 Luxury,Per Person Meal Rate,,,8500,INR per person supplement,Rs.8500/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With AC Sedan,2,1,27400,INR per person,Rs.27400/- Nett Minimum 2 Pax (1 Room)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Sedan,2,1,29400,INR per person,Rs.29400/- Nett Minimum2 Pax (1 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Sedan,2,1,32400,INR per person,Rs.32400/- Nett Minimum 2 Pax (1 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With AC Sedan,2,1,34700,INR per person,Rs.34700/- Nett Minimum 2 Pax (1 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With AC Sedan,2,1,40800,INR per person,Rs.40800/- Nett Minimum 2 Pax (1 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With Innova Crysta,4,2,24500,INR per person,Rs.24500/- Nett Minimum 4 Pax (2 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With Innova Crysta,4,2,26500,INR per person,Rs.26500/- Nett Minimum 4 Pax (2 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With Innova Crysta,4,2,29600,INR per person,Rs.29600/- Nett Minimum 4 Pax (2 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With Innova Crysta,4,2,31800,INR per person,Rs.31800/- Nett Minimum 4 Pax (2 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With Innova Crysta,4,2,37900,INR per person,Rs.37900/- Nett Minimum 4 Pax (2 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With Innova Crysta,6,3,20700,INR per person,Rs.20700/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With Innova Crysta,6,3,22800,INR per person,Rs.22800/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With Innova Crysta,6,3,25800,INR per person,Rs.25800/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With Innova Crysta,6,3,28100,INR per person,Rs.28100/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With Innova Crysta,6,3,34200,INR per person,Rs.34200/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,6,3,21400,INR per person,Rs.21400/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,6,3,23400,INR per person,Rs.23400/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,6,3,26500,INR per person,Rs.26500/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,6,3,28700,INR per person,Rs.28700/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,6,3,34800,INR per person,Rs.34800/- Nett Minimum 6 Pax (3 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,8,4,19400,INR per person,Rs.19400/- Nett Minimum 8 Pax (4 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,8,4,21400,INR per person,Rs.21400/- Nett Minimum 8 Pax (4 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,8,4,24400,INR per person,Rs.24400/- Nett Minimum 8 Pax (4 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,8,4,26700,INR per person,Rs.26700/- Nett Minimum 8 Pax (4 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,8,4,32800,INR per person,Rs.32800/- Nett Minimum 8 Pax (4 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Rate With AC Traveller,10,5,18200,INR per person,Rs.18200/- Nett Minimum 10 Pax (5 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Rate With AC Traveller,10,5,20200,INR per person,Rs.20200/- Nett Minimum 10 Pax (5 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Rate With AC Traveller,10,5,23200,INR per person,Rs.23200/- Nett Minimum 10 Pax (5 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Rate With AC Traveller,10,5,25500,INR per person,Rs.25500/- Nett Minimum 10 Pax (5 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Rate With AC Traveller,10,5,31600,INR per person,Rs.31600/- Nett Minimum 10 Pax (5 Rooms)
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Ex. Adult With Bed,,,7500,INR per person supplement,Rs.7500/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Ex. Adult With Bed,,,9800,INR per person supplement,Rs.9800/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Ex. Adult With Bed,,,9700,INR per person supplement,Rs.9700/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Ex. Adult With Bed,,,12300,INR per person supplement,Rs.12300/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Ex. Adult With Bed,,,16700,INR per person supplement,Rs.16700/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Ex. Child With Bed,,,5400,INR per person supplement,Rs.5400/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Ex. Child With Bed,,,7500,INR per person supplement,Rs.7500/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Ex. Child With Bed,,,7500,INR per person supplement,Rs.7500/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Ex. Child With Bed,,,8400,INR per person supplement,Rs.8400/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Ex. Child With Bed,,,11600,INR per person supplement,Rs.11600/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Ex. Child W/O Bed,,,3400,INR per person supplement,Rs.3400/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Ex. Child W/O Bed,,,5600,INR per person supplement,Rs.5600/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Ex. Child W/O Bed,,,4900,INR per person supplement,Rs.4900/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Ex. Child W/O Bed,,,7700,INR per person supplement,Rs.7700/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Ex. Child W/O Bed,,,7700,INR per person supplement,Rs.7700/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 1 Standard,Per Person Meal Rate,,,3800,INR per person supplement,Rs.3800/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 2 Deluxe,Per Person Meal Rate,,,5200,INR per person supplement,Rs.5200/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 3 Super Deluxe,Per Person Meal Rate,,,5700,INR per person supplement,Rs.5700/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 4 Premium,Per Person Meal Rate,,,6200,INR per person supplement,Rs.6200/- Nett
+rack_rate_labelled_15_percent,6N/7D,Package - 5 Luxury,Per Person Meal Rate,,,9700,INR per person supplement,Rs.9700/- Nett

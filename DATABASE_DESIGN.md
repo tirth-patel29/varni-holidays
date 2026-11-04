@@ -1,0 +1,1060 @@
+# DATABASE DESIGN & ENTITY ARCHITECTURE
+**Project:** VARNI HOLIDAYS Travel Management Platform  
+**Document Code:** DBD-VH-02 (Revision 2 — Post Architecture Review)  
+**Target RDBMS:** PostgreSQL 16+ via Prisma ORM  
+**Version:** 2.0 (Phase 0 Corrected Baseline)  
+**Date:** 04 November 2026
+
+---
+
+## 1. Architectural Changes & Data Integrity Enforcements
+
+This revision addresses all 11 critical items from the Phase 0 Architecture Review:
+
+### 1.1 Non-Unique Customer Phone Numbers & Merge Audit Trail
+- **Removal of Global Unique Constraint:** Removed `@unique` on `Customer.normalizedPhone`. Customers frequently share telephone numbers across Indian families, joint households, and group bookings.
+- **Indexed Deduplication Search:** Maintained `@@index([normalizedPhone])` and `@@index([normalizedEmail])` for high-performance duplicate detection.
+- **Potential Duplicate Warnings:** Added `duplicateWarning` (Boolean) and `duplicateNotes` on `Customer`.
+- **Admin-Controlled Merging:** Added self-relation on `Customer` (`mergedIntoCustomerId`, `mergedAt`, `mergedByUserId`). Merging is strictly manual, auditable, and non-destructive. Subordinate leads, bookings, and activities remain attributable.
+
+### 1.2 Historical Data Preservation & Restricted Deletions
+- **Elimination of Destructive Cascades:** Replaced `onDelete: Cascade` with `onDelete: Restrict` or `onDelete: SetNull` across core business entities (`LeadActivity`, `CustomerUpdate`, `Quotation`, `Booking`, `PaymentRecord`).
+- **Comprehensive Soft Deletion:** Added `isDeleted` and `deletedAt` flags across `Customer`, `Lead`, `Quotation`, `Booking`, `Package`, and `User`. Historical audit and reporting data are never purged destructively.
+
+### 1.3 Multi-Layer Pricing Engine Architecture
+- **Exact Configuration Matching:** Separated and preserved both 6-passenger configurations for Kerala 6N/7D (`6PAX_INNOVA` with Innova Crysta vs. `6PAX_TRAVELLER` with AC Tempo Traveller).
+- **Explicit Financial Layer Separation:** Distinct fields for:
+  - `supplierCostInr` (Confidential supplier net rate)
+  - `sourceRackRateInr` (Exact B2B printed rack rate from source catalogue; no universal 15% recalculation)
+  - `varniSellingPriceInr` (Approved public selling price)
+  - `markupAmountInr` and `markupPercent`
+  - `customerQuotationInr` (Quoted amount in quotations)
+- **Source Document Traceability:** Captured `sourceDocumentName`, `sourceDocumentVersion`, `sourceTableIndex`, `sourceRowIndex`, `sourceRateLayer`, and `approvalStatus` (`APPROVED`, `PENDING_APPROVAL`, `SUPERSEDED`, `REJECTED`).
+- **Non-Interpolation Rule:** Enforces exact matrix lookup; unsupported passenger sizes gracefully return quotation-required statuses.
+
+### 1.4 Package Enquiry Price Snapshot & Nullable Estimates
+- **Pricing Status Enum:** Added `PricingStatus` (`EXACT_MATCH`, `CUSTOM_QUOTATION_REQUIRED`, `PRICE_UNAVAILABLE`).
+- **Nullable Quoted Estimates:** `quotedUnitPriceInr` and `quotedTotalPriceInr` are nullable to allow enquiry submissions when no exact matrix price exists.
+- **Immutable Snapshot:** `priceSnapshotJson` stores the exact configuration and active matrix data at submission time.
+
+### 1.5 Proper Multi-City & Segmented Flight Enquiries
+- **FlightSegment Entity:** Introduced a dedicated `FlightSegment` table linked 1-to-many to `FlightEnquiryDetail`.
+- **Clean Topology:** Outbound (segment 1), Return (segment 2), or Multi-City (segments 1..N) are modeled symmetrically without schema workarounds.
+
+### 1.6 Quotations Module
+- **Comprehensive Quotation Entity:** Added `Quotation` and `QuotationLineItem` with unique references (`VH-QUO-YYYYMM-XXXX`), lifecycle statuses (`DRAFT`, `SENT`, `ACCEPTED`, `REJECTED`, `EXPIRED`, `SUPERSEDED`), subtotal, taxes, discounts, line-item supplier vs. selling amounts, and customer acceptance audit timestamps.
+
+### 1.7 Non-Default Booking Confirmation & Payment Records
+- **Booking Status Correction:** Default status set to `DRAFT`. State machine: `DRAFT` → `PENDING` → `CONFIRMED` → `IN_PROGRESS` → `COMPLETED` / `CANCELLED`.
+- **PaymentRecord Entity:** Structured financial tracking supporting payment methods (`BANK_TRANSFER`, `UPI`, `CARD`, `CASH`, `CHEQUE`), statuses (`PENDING`, `COMPLETED`, `FAILED`, `REFUNDED`), bank transaction references, and refund tracking.
+
+### 1.8 Structured Booking Service Components
+- **Categorized Services:** Enum `BookingServiceCategory` (`FLIGHTS`, `HOTELS`, `TRANSFERS`, `INSURANCE`, `CRUISES`, `VISA`, `HOUSEBOAT`, `OTHER`).
+- **Structured Statuses:** Enum `BookingServiceStatus` (`REQUESTED`, `PENDING_CONFIRMATION`, `CONFIRMED`, `VOUCHER_ISSUED`, `CANCELLED`, `AMENDED`).
+- **Dual Confirmation References:** Independent fields for internal `supplierConfirmationReference` and customer-visible `customerConfirmationReference`.
+
+### 1.9 Discrete Communication Lifecycle & Click-to-Chat Disclaimers
+- **Discrete Communication States:** Enum `CommunicationStatus` (`RECORD_CREATED`, `SEND_INITIATED`, `PROVIDER_ACCEPTED`, `SENT`, `DELIVERED`, `FAILED`, `CLICK_TO_CHAT_TRIGGERED`).
+- **Click-to-Chat Integrity:** A WhatsApp web launch is recorded as `CLICK_TO_CHAT_TRIGGERED`, strictly prohibited from being marked as `DELIVERED`.
+
+### 1.10 Granular Security & Secret Exclusion
+- **Secret Isolation:** `SystemSetting` model explicitly restricted to non-confidential operational text. All API keys and secrets reside in server environment variables.
+- **Granular Permissions:** Introduced `Permission` and `RolePermission` models with discrete capabilities (`VIEW_SUPPLIER_COSTS`, `APPROVE_PRICING`, `EXPORT_FINANCIAL_REPORTS`, `MERGE_CUSTOMERS`).
+
+---
+
+## 2. Updated Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    User ||--o{ UserRole : has
+    Role ||--o{ UserRole : assigned_to
+    Role ||--o{ RolePermission : contains
+    Permission ||--o{ RolePermission : granted_by
+
+    User ||--o{ Lead : manages
+    User ||--o{ LeadActivity : logs
+    User ||--o{ CustomerUpdate : sends
+    User ||--o{ Quotation : creates
+    User ||--o{ Booking : manages
+    User ||--o{ PaymentRecord : records
+    User ||--o{ AuditLog : triggers
+
+    Customer ||--o{ Customer : merges_into
+    Customer ||--o{ Lead : submits
+    Customer ||--o{ Quotation : receives
+    Customer ||--o{ CustomerUpdate : receives
+    Customer ||--o{ Booking : holds
+
+    Lead ||--o| FlightEnquiryDetail : contains
+    FlightEnquiryDetail ||--o{ FlightSegment : routes
+    Lead ||--o| PackageEnquiryDetail : contains
+    Lead ||--o| VisaEnquiryDetail : contains
+    Lead ||--o{ LeadActivity : tracks
+    Lead ||--o{ FollowUp : schedules
+    Lead ||--o{ CustomerUpdate : prompts
+    Lead ||--o{ Quotation : requests
+    Lead ||--o| Booking : converts_to
+
+    Package ||--o{ PackageItineraryDay : features
+    Package ||--o{ PackagePricingMatrix : prices
+    Package ||--o{ PackageSupplement : offers
+    Package ||--o{ PackageEnquiryDetail : referenced_by
+
+    HotelTier ||--o{ PackagePricingMatrix : applies_to
+    HotelTier ||--o{ PackageSupplement : applies_to
+
+    Quotation ||--o{ QuotationLineItem : details
+    Quotation ||--o| Booking : confirms_into
+
+    Booking ||--o{ BookingServiceComponent : comprises
+    Booking ||--o{ PaymentRecord : collects
+```
+
+---
+
+## 3. Corrected & Production-Ready Prisma Schema Definition
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ====================================================
+// 1. IDENTITY, RBAC & GRANULAR PERMISSIONS
+// ====================================================
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  DISABLED
+}
+
+model User {
+  id               String          @id @default(uuid())
+  email            String          @unique
+  fullName         String
+  phone            String?
+  passwordHash     String
+  status           UserStatus      @default(ACTIVE)
+  avatarUrl        String?
+  lastLoginAt      DateTime?
+  
+  // Soft Delete
+  isDeleted        Boolean         @default(false)
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  userRoles        UserRole[]
+  assignedLeads    Lead[]          @relation("LeadAssignee")
+  leadActivities   LeadActivity[]
+  customerUpdates  CustomerUpdate[]
+  followUps        FollowUp[]
+  createdQuotes    Quotation[]     @relation("QuotationCreator")
+  managedBookings  Booking[]       @relation("BookingManager")
+  recordedPayments PaymentRecord[] @relation("PaymentRecorder")
+  customerMerges   Customer[]      @relation("CustomerMerger")
+  auditLogs        AuditLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  code            String           @unique // "SUPER_ADMIN", "FLIGHTS_AGENT", "PACKAGES_AGENT", "VISA_AGENT"
+  name            String
+  description     String?
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  code            String           @unique // e.g. "VIEW_SUPPLIER_COSTS", "APPROVE_PRICING", "EXPORT_FINANCIALS"
+  category        String           // "FINANCE", "LEADS", "PACKAGES", "SYSTEM", "SECURITY"
+  description     String?
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id         String   @id @default(uuid())
+  userId     String
+  roleId     String
+  assignedAt DateTime @default(now())
+  assignedBy String?
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// ====================================================
+// 2. CUSTOMER IDENTITY & AUDITABLE DEDUPLICATION
+// ====================================================
+
+model Customer {
+  id                   String           @id @default(uuid())
+  fullName             String
+  email                String?
+  phoneCountryCode     String           @default("+91")
+  phoneNumber          String
+  normalizedPhone      String           // Non-unique: families may share phones
+  normalizedEmail      String?
+  city                 String?
+  state                String?
+  country              String           @default("India")
+  dateOfBirth          DateTime?
+  notes                String?
+  marketingConsent     Boolean          @default(false)
+
+  // Deduplication & Merge Audit
+  duplicateWarning     Boolean          @default(false)
+  duplicateNotes       String?
+  mergedIntoCustomerId String?
+  mergedAt             DateTime?
+  mergedByUserId       String?
+  mergedBy             User?            @relation("CustomerMerger", fields: [mergedByUserId], references: [id], onDelete: SetNull)
+  mergedInto           Customer?        @relation("CustomerMerges", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
+  mergedSubordinates   Customer[]       @relation("CustomerMerges")
+
+  // Soft Deletion
+  isDeleted            Boolean          @default(false)
+  deletedAt            DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  leads                Lead[]
+  quotations           Quotation[]
+  updates              CustomerUpdate[]
+  bookings             Booking[]
+
+  @@index([normalizedPhone])
+  @@index([normalizedEmail])
+  @@map("customers")
+}
+
+// ====================================================
+// 3. LEAD LIFECYCLE & ENQUIRIES
+// ====================================================
+
+enum ServiceType {
+  FLIGHT
+  PACKAGE
+  VISA
+  GENERAL
+}
+
+enum PipelineStage {
+  REQUESTS       // Fresh website submission
+  GENERAL        // Contacted / enquiry qualified
+  PRIORITY       // High purchase intent / bespoke requirements
+  CONVERTED      // Explicitly converted to Booking
+  CLOSED         // Lost / Unresponsive / Cancelled
+}
+
+enum PriorityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Lead {
+  id                   String                 @id @default(uuid())
+  referenceId          String                 @unique // e.g. "FLT-20261104-0012", "PKG-20261104-0045"
+  serviceType          ServiceType
+  stage                PipelineStage          @default(REQUESTS)
+  priorityLevel        PriorityLevel          @default(MEDIUM)
+  source               String                 @default("WEBSITE")
+  
+  customerId           String
+  customer             Customer               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  assignedUserId       String?
+  assignedTo           User?                  @relation("LeadAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  // Service-Specific Joined Details
+  flightDetail         FlightEnquiryDetail?
+  packageDetail        PackageEnquiryDetail?
+  visaDetail           VisaEnquiryDetail?
+
+  // Activities & Lifecycle
+  activities           LeadActivity[]
+  followUps            FollowUp[]
+  customerUpdates      CustomerUpdate[]
+  quotations           Quotation[]
+  booking              Booking?
+
+  closeReason          String?
+  closedAt             DateTime?
+
+  // Soft Deletion
+  isDeleted            Boolean                @default(false)
+  deletedAt            DateTime?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@index([stage])
+  @@index([serviceType])
+  @@index([assignedUserId])
+  @@index([customerId])
+  @@map("leads")
+}
+
+// ====================================================
+// 4. SERVICE-SPECIFIC ENQUIRY MODELS
+// ====================================================
+
+enum TripType {
+  ONE_WAY
+  ROUND_TRIP
+  MULTI_CITY
+}
+
+enum CabinClass {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST
+}
+
+model FlightEnquiryDetail {
+  id                  String          @id @default(uuid())
+  leadId              String          @unique
+  lead                Lead            @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  tripType            TripType        @default(ROUND_TRIP)
+  adultsCount         Int             @default(1)
+  childrenCount       Int             @default(0)
+  infantsCount        Int             @default(0)
+  cabinClass          CabinClass      @default(ECONOMY)
+  specialRequirements String?
+
+  segments            FlightSegment[]
+
+  @@map("flight_enquiry_details")
+}
+
+model FlightSegment {
+  id                  String              @id @default(uuid())
+  flightEnquiryId     String
+  flightEnquiry       FlightEnquiryDetail @relation(fields: [flightEnquiryId], references: [id], onDelete: Cascade)
+
+  segmentOrder        Int                 // 1 for outbound, 2 for return, 1..N for multi-city
+  originAirport       String              // e.g. "Ahmedabad (AMD)"
+  destinationAirport  String              // e.g. "London Heathrow (LHR)"
+  departureDate       DateTime
+  preferredTimeWindow String?             // e.g. "Morning", "Evening", "Anytime"
+
+  @@index([flightEnquiryId, segmentOrder])
+  @@map("flight_segments")
+}
+
+enum PricingStatus {
+  EXACT_MATCH
+  CUSTOM_QUOTATION_REQUIRED
+  PRICE_UNAVAILABLE
+}
+
+model PackageEnquiryDetail {
+  id                    String                @id @default(uuid())
+  leadId                String                @unique
+  lead                  Lead                  @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  packageId             String
+  package               Package               @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  hotelTierId           String?
+  hotelTier             HotelTier?            @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
+
+  pricingStatus         PricingStatus         @default(EXACT_MATCH)
+  sourcePricingMatrixId String?
+  pricingMatrix         PackagePricingMatrix? @relation(fields: [sourcePricingMatrixId], references: [id], onDelete: SetNull)
+
+  preferredTravelDate   DateTime?
+  adultsCount           Int                   @default(2)
+  childrenWithBedCount  Int                   @default(0)
+  childrenNoBedCount    Int                   @default(0)
+  infantsCount          Int                   @default(0)
+  childAges             Int[]                 @default([])
+  roomsCount            Int                   @default(1)
+  vehicleType           String?
+  vehicleConfigCode     String?
+
+  // Financial Price Snapshot (Nullable if pricing status is not EXACT_MATCH)
+  quotedUnitPriceInr    Decimal?              @db.Decimal(10, 2)
+  quotedTotalPriceInr   Decimal?              @db.Decimal(10, 2)
+  currency              String                @default("INR")
+  rateBasis             String?
+  priceSnapshotJson     Json?                 // Immutable snapshot of active matrix row & supplements
+
+  specialRequests       String?
+
+  @@map("package_enquiry_details")
+}
+
+enum VisaCategory {
+  TOURIST
+  BUSINESS
+  STUDENT
+  WORK
+  TRANSIT
+  OTHER
+}
+
+model VisaEnquiryDetail {
+  id                   String       @id @default(uuid())
+  leadId               String       @unique
+  lead                 Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  destinationCountry   String
+  visaCategory         VisaCategory @default(TOURIST)
+  travelPurpose        String?
+  applicantNationality String       @default("Indian")
+  residenceCountry     String       @default("India")
+  plannedTravelDate    DateTime?
+  stayDurationDays     Int?
+  applicantCount       Int          @default(1)
+  specialCircumstances String?
+
+  @@map("visa_enquiry_details")
+}
+
+// ====================================================
+// 5. PACKAGE CATALOGUE & MULTI-LAYER PRICING ENGINE
+// ====================================================
+
+enum PackageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PriceApprovalStatus {
+  APPROVED
+  PENDING_APPROVAL
+  REJECTED
+  SUPERSEDED
+}
+
+model Package {
+  id             String                 @id @default(uuid())
+  slug           String                 @unique // e.g. "kerala-6n7d-winter"
+  title          String                 // e.g. "Scenic Kerala & Backwaters Grand Tour"
+  destination    String                 // e.g. "Kerala, India"
+  region         String                 // e.g. "South India"
+  durationNights Int                    // e.g. 6
+  durationDays   Int                    // e.g. 7
+  pickupLocation String                 // e.g. "Cochin (COK)"
+  dropLocation   String                 // e.g. "Trivandrum (TRV) / Cochin (COK)"
+  overview       String                 @db.Text
+  heroImageUrl   String
+  galleryImages  String[]
+  inclusions     String[]
+  exclusions     String[]
+  importantNotes String[]
+  status         PackageStatus          @default(DRAFT)
+  featured       Boolean                @default(false)
+  
+  // Soft Deletion
+  isDeleted      Boolean                @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  itineraries    PackageItineraryDay[]
+  pricingMatrix  PackagePricingMatrix[]
+  supplements    PackageSupplement[]
+  enquiries      PackageEnquiryDetail[]
+
+  @@map("packages")
+}
+
+model PackageItineraryDay {
+  id              String   @id @default(uuid())
+  packageId       String
+  package         Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  dayNumber       Int
+  title           String   // e.g. "Day 1: Arrival Cochin & Transfer to Munnar"
+  description     String   @db.Text
+  mealsIncluded   String?  // e.g. "Breakfast"
+  stayDestination String   // e.g. "Munnar"
+  hotelOptions    Json?    // Array of hotel names per tier
+
+  @@unique([packageId, dayNumber])
+  @@map("package_itinerary_days")
+}
+
+model HotelTier {
+  id            String                 @id @default(uuid())
+  code          String                 @unique // "STANDARD", "DELUXE", "SUPER_DELUXE", "PREMIUM", "LUXURY"
+  name          String                 // "Package - 1 Standard", "Package - 2 Deluxe", etc.
+  sortOrder     Int                    @default(0)
+
+  pricingRows   PackagePricingMatrix[]
+  supplements   PackageSupplement[]
+  enquiries     PackageEnquiryDetail[]
+
+  @@map("hotel_tiers")
+}
+
+model PackagePricingMatrix {
+  id                     String              @id @default(uuid())
+  packageId              String
+  package                Package             @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  hotelTierId            String
+  hotelTier              HotelTier           @relation(fields: [hotelTierId], references: [id], onDelete: Restrict)
+
+  durationCode           String              @default("6N/7D")
+  minPax                 Int                 // 2, 4, 6, 8, 10
+  roomCount              Int                 // 1, 2, 3, 4, 5
+  vehicleType            String              // "AC Sedan", "Innova Crysta", "12-Seater AC Tempo Traveller"
+  vehicleConfigCode      String              // Distinguishes 6-pax Innova vs 6-pax Traveller
+
+  // Financial Layer Separation
+  supplierCostInr        Decimal             @db.Decimal(10, 2) // CONFIDENTIAL: Never exposed to public/agent
+  sourceRackRateInr      Decimal             @db.Decimal(10, 2) // Explicit source catalogue amount
+  varniSellingPriceInr   Decimal             @db.Decimal(10, 2) // Approved Public Selling Price
+  markupAmountInr        Decimal             @db.Decimal(10, 2) // Selling - Supplier
+  markupPercent          Decimal             @db.Decimal(5, 2)  // Actual percentage
+
+  // Source Document Traceability
+  sourceDocumentName     String              // e.g. "Travel-e (Kerala Winter Ready Packages) V6.docx"
+  sourceDocumentVersion  String              @default("V6")
+  sourceTableIndex       Int?
+  sourceRowIndex         Int?
+  sourceRateLayer        String              @default("RACK_RATE_15_PERCENT")
+  sourceImportedAt       DateTime            @default(now())
+
+  // Approval & Versioning
+  approvalStatus         PriceApprovalStatus @default(PENDING_APPROVAL)
+  approvedByUserId       String?
+  approvedAt             DateTime?
+  version                Int                 @default(1)
+
+  // Seasonality
+  validityStart          DateTime            @db.Date
+  validityEnd            DateTime            @db.Date
+  blackoutStart          DateTime?           @db.Date
+  blackoutEnd            DateTime?           @db.Date
+
+  isActive               Boolean             @default(true)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  enquiries              PackageEnquiryDetail[]
+
+  @@index([packageId, hotelTierId, minPax, vehicleConfigCode])
+  @@map("package_pricing_matrix")
+}
+
+model PackageSupplement {
+  id                    String              @id @default(uuid())
+  packageId             String
+  package               Package             @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  hotelTierId           String?
+  hotelTier             HotelTier?          @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
+
+  supplementType        String              // "EXTRA_ADULT_BED", "CHILD_WITH_BED", "CHILD_NO_BED", "INFANT", "MEAL_PLAN", "HOUSEBOAT_UPGRADE", "DAY_TRIP", "HONEYMOON"
+  description           String
+  basisUnit             String              // "PER_PERSON", "PER_VEHICLE", "PER_COUPLE"
+  
+  supplierCostInr       Decimal             @db.Decimal(10, 2)
+  sourceRackRateInr     Decimal             @db.Decimal(10, 2)
+  varniSellingPriceInr  Decimal             @db.Decimal(10, 2)
+  markupAmountInr       Decimal             @db.Decimal(10, 2)
+  markupPercent         Decimal             @db.Decimal(5, 2)
+
+  sourceDocumentName    String?
+  sourceRateLayer       String?
+  approvalStatus        PriceApprovalStatus @default(APPROVED)
+  isActive              Boolean             @default(true)
+
+  @@map("package_supplements")
+}
+
+// ====================================================
+// 6. QUOTATIONS & PROPOSALS
+// ====================================================
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  SUPERSEDED
+}
+
+model Quotation {
+  id                  String             @id @default(uuid())
+  quotationReference  String             @unique // e.g. "VH-QUO-202611-0001"
+  leadId              String
+  lead                Lead               @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  customerId          String
+  customer            Customer           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  createdByUserId     String
+  createdByUser       User               @relation("QuotationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  status              QuotationStatus    @default(DRAFT)
+  validUntil          DateTime
+  currency            String             @default("INR")
+
+  subtotalAmountInr   Decimal            @db.Decimal(10, 2)
+  taxAmountInr        Decimal            @default(0.00) @db.Decimal(10, 2)
+  feeAmountInr        Decimal            @default(0.00) @db.Decimal(10, 2)
+  discountAmountInr   Decimal            @default(0.00) @db.Decimal(10, 2)
+  totalAmountInr      Decimal            @db.Decimal(10, 2)
+
+  termsAndConditions  String?            @db.Text
+  customerNotes       String?            @db.Text
+  internalNotes       String?            @db.Text
+
+  customerAcceptedAt  DateTime?
+  customerRejectedAt  DateTime?
+  rejectionReason     String?
+  pricingSnapshotJson Json               // Complete calculation trace
+
+  // Soft Deletion
+  isDeleted           Boolean            @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  lineItems           QuotationLineItem[]
+  booking             Booking?
+
+  @@index([leadId])
+  @@index([customerId])
+  @@map("quotations")
+}
+
+model QuotationLineItem {
+  id                         String      @id @default(uuid())
+  quotationId                String
+  quotation                  Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  itemOrder                  Int
+  serviceType                ServiceType
+  title                      String
+  description                String?
+  quantity                   Int         @default(1)
+  
+  unitCostInr                Decimal?    @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
+  unitPriceInr               Decimal     @db.Decimal(10, 2) // Customer selling price
+  totalPriceInr              Decimal     @db.Decimal(10, 2)
+
+  isOptional                 Boolean     @default(false)
+  pricingMatrixReferenceId   String?
+
+  @@index([quotationId, itemOrder])
+  @@map("quotation_line_items")
+}
+
+// ====================================================
+// 7. BOOKINGS & PAYMENT RECORDS
+// ====================================================
+
+enum BookingStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Booking {
+  id                  String                    @id @default(uuid())
+  bookingReference    String                    @unique // e.g. "VH-BKG-202611-0008"
+  leadId              String?                   @unique
+  lead                Lead?                     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  customerId          String
+  customer            Customer                  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  quotationId         String?                   @unique
+  quotation           Quotation?                @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+
+  managedByUserId     String
+  managedBy           User                      @relation("BookingManager", fields: [managedByUserId], references: [id], onDelete: Restrict)
+
+  status              BookingStatus             @default(DRAFT) // NEVER default to CONFIRMED
+  totalAmountInr      Decimal                   @db.Decimal(10, 2)
+  paidAmountInr       Decimal                   @default(0.00) @db.Decimal(10, 2)
+  balanceAmountInr    Decimal                   @db.Decimal(10, 2)
+
+  bookingDate         DateTime                  @default(now())
+  confirmedAt         DateTime?
+  confirmedByUserId   String?
+  travelStartDate     DateTime
+  travelEndDate       DateTime
+  cancellationReason  String?
+  cancelledAt         DateTime?
+
+  // Soft Deletion
+  isDeleted           Boolean                   @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+
+  payments            PaymentRecord[]
+  services            BookingServiceComponent[]
+
+  @@index([customerId])
+  @@index([managedByUserId])
+  @@map("bookings")
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  UPI
+  CARD
+  CASH
+  CHEQUE
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model PaymentRecord {
+  id                   String        @id @default(uuid())
+  paymentReference     String        @unique // e.g. "VH-PAY-202611-0012"
+  bookingId            String
+  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  amount               Decimal       @db.Decimal(10, 2)
+  currency             String        @default("INR")
+  paymentMethod        PaymentMethod
+  paymentStatus        PaymentStatus @default(PENDING)
+
+  transactionReference String?       // Bank UTR, UPI ref, Cheque number
+  receivedDate         DateTime?
+  recordedByUserId     String
+  recordedBy           User          @relation("PaymentRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+
+  refundReference      String?
+  refundedAmount       Decimal?      @db.Decimal(10, 2)
+  refundedAt           DateTime?
+
+  notes                String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@index([bookingId])
+  @@map("payment_records")
+}
+
+// ====================================================
+// 8. BOOKING SERVICE COMPONENTS
+// ====================================================
+
+enum BookingServiceCategory {
+  FLIGHTS
+  HOTELS
+  TRANSFERS
+  INSURANCE
+  CRUISES
+  VISA
+  HOUSEBOAT
+  OTHER
+}
+
+enum BookingServiceStatus {
+  REQUESTED
+  PENDING_CONFIRMATION
+  CONFIRMED
+  VOUCHER_ISSUED
+  CANCELLED
+  AMENDED
+}
+
+model BookingServiceComponent {
+  id                             String                 @id @default(uuid())
+  bookingId                      String
+  booking                        Booking                @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  category                       BookingServiceCategory
+  serviceName                    String                 // e.g. "Las Palms Resort Munnar"
+  supplierName                   String?                // B2B Supplier / Hotelier
+
+  supplierConfirmationReference  String?                // Internal supplier booking code
+  customerConfirmationReference  String?                // Customer visible voucher / PNR
+  serviceStatus                  BookingServiceStatus   @default(REQUESTED)
+
+  costAmountInr                  Decimal                @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
+  sellingAmountInr               Decimal                @db.Decimal(10, 2) // Customer billable price
+
+  startDate                      DateTime?
+  endDate                        DateTime?
+  serviceDetailsJson             Json?
+  voucherDocumentUrl             String?
+
+  createdAt                      DateTime               @default(now())
+  updatedAt                      DateTime               @updatedAt
+
+  @@index([bookingId, category])
+  @@map("booking_service_components")
+}
+
+// ====================================================
+// 9. CRM ACTIVITIES, COMMUNICATIONS & AUDIT TRAIL
+// ====================================================
+
+enum ActivityType {
+  CALL
+  EMAIL
+  WHATSAPP
+  INTERNAL_NOTE
+  STAGE_CHANGE
+  ASSIGNMENT_CHANGE
+  MEETING
+}
+
+enum CallOutcome {
+  ANSWERED
+  NO_ANSWER
+  BUSY
+  CALLBACK_REQUESTED
+  NOT_INTERESTED
+  NUMBER_INVALID
+}
+
+model LeadActivity {
+  id               String       @id @default(uuid())
+  leadId           String
+  lead             Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  activityType     ActivityType
+  summary          String
+  details          String?      @db.Text
+  callOutcome      CallOutcome?
+  nextFollowUpDate DateTime?
+
+  createdAt        DateTime     @default(now())
+
+  @@index([leadId])
+  @@index([userId])
+  @@map("lead_activities")
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+  MISSED
+}
+
+model FollowUp {
+  id          String         @id @default(uuid())
+  leadId      String
+  lead        Lead           @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  dueDate     DateTime
+  title       String
+  notes       String?
+  status      FollowUpStatus @default(PENDING)
+  completedAt DateTime?
+
+  createdAt   DateTime       @default(now())
+
+  @@index([userId, status, dueDate])
+  @@map("follow_ups")
+}
+
+enum DeliveryChannel {
+  EMAIL
+  WHATSAPP
+  SMS
+  PHONE_CALL
+}
+
+enum CommunicationStatus {
+  RECORD_CREATED
+  SEND_INITIATED
+  PROVIDER_ACCEPTED
+  SENT
+  DELIVERED
+  FAILED
+  CLICK_TO_CHAT_TRIGGERED // Explicitly distinguished from DELIVERED
+}
+
+model CustomerUpdate {
+  id                      String              @id @default(uuid())
+  leadId                  String?
+  lead                    Lead?               @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  customerId              String
+  customer                Customer            @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  sentByUserId            String
+  sentBy                  User                @relation(fields: [sentByUserId], references: [id], onDelete: Restrict)
+
+  category                String              // "WELCOME", "HOTEL_RESERVATION", "FLIGHT_RESERVATION", "ITINERARY_READY", "VISA_SUBMITTED", "CONFIRMATION"
+  channel                 DeliveryChannel     @default(EMAIL)
+  status                  CommunicationStatus @default(RECORD_CREATED)
+
+  subject                 String?
+  messageContent          String              @db.Text
+  templateCode            String?
+
+  providerName            String?             // "RESEND", "META_WHATSAPP", "CLICK_TO_CHAT"
+  providerMessageId       String?
+  providerResponseJson    Json?
+  failureReason           String?
+
+  // Discrete Timestamps
+  createdAt               DateTime            @default(now())
+  sendInitiatedAt         DateTime?
+  sentAt                  DateTime?
+  deliveredAt             DateTime?
+  failedAt                DateTime?
+  clickToChatTriggeredAt  DateTime?
+
+  @@index([leadId])
+  @@index([customerId])
+  @@map("customer_updates")
+}
+
+// ====================================================
+// 10. SECURITY AUDIT & SYSTEM SETTINGS
+// ====================================================
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action         String   // "LOGIN", "LEAD_STAGE_CHANGE", "PRICE_MATRIX_UPDATE", "MERGE_CUSTOMERS", "EXPORT_REPORT"
+  entityType     String   // "Lead", "User", "PackagePricingMatrix", "Customer", etc.
+  entityId       String?
+  beforeDataJson Json?
+  afterDataJson  Json?
+  ipAddress      String?
+  userAgent      String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([action])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique // "BUSINESS_NAME", "OFFICE_PHONE", "WHATSAPP_NUMBER", "OFFICE_ADDRESS"
+  value       String   @db.Text
+  description String?
+  isPublic    Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  // STRICT SECURITY MANDATE:
+  // API keys, database credentials, and SMTP secrets MUST NEVER be stored in this table.
+  // Secrets are managed exclusively via server environment variables (.env.production).
+
+  @@map("system_settings")
+}
+
+// ====================================================
+// 11. GOOGLE SHEETS LIVE BUSINESS REPORTING (PHASE 2.1)
+// ====================================================
+
+enum SyncEventType {
+  LEAD_CREATED
+  LEAD_UPDATED
+  STAGE_CHANGED
+  ASSIGNMENT_CHANGED
+  FOLLOW_UP_CREATED
+  FOLLOW_UP_UPDATED
+  BOOKING_CREATED
+  BOOKING_STATUS_CHANGED
+  RECONCILIATION_FULL
+}
+
+enum SyncTargetTab {
+  ALL_LEADS
+  FOLLOW_UPS
+  BOOKINGS
+  BUSINESS_SUMMARY
+}
+
+enum SyncJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model GoogleSheetsSyncOutbox {
+  id           String        @id @default(uuid())
+  eventType    SyncEventType
+  targetTab    SyncTargetTab
+  entityId     String        // Lead reference, followUp ID, or booking reference
+  payloadJson  Json          // Sanitized outbound data strictly omitting sensitive fields
+  status       SyncJobStatus @default(PENDING)
+  retryCount   Int           @default(0)
+  maxRetries   Int           @default(5)
+  errorMessage String?       @db.Text
+  scheduledAt  DateTime      @default(now())
+  processedAt  DateTime?
+  createdAt    DateTime      @default(now())
+
+  @@index([status, scheduledAt])
+  @@index([targetTab, entityId])
+  @@map("google_sheets_sync_outbox")
+}
+
+model GoogleSheetsIntegrationConfig {
+  id                   String    @id @default(uuid())
+  spreadsheetId        String    @default("1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms")
+  spreadsheetUrl       String    @db.Text
+  serviceAccountEmail  String
+  activeViewerEmail    String    @default("neel@varniholidays.com")
+  status               String    @default("CONNECTED") // "CONNECTED", "DISCONNECTED", "ERROR"
+  lastSuccessfulSyncAt DateTime?
+  lastSyncError        String?   @db.Text
+  totalSyncedEvents    Int       @default(0)
+  updatedAt            DateTime  @updatedAt
+
+  @@map("google_sheets_integration_config")
+}
+```

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-highest":"#e4e2dd","on-primary-fixed-variant":"#2b4964","outline-variant":"#c3c7ce","on-tertiary-container":"#c1953e","secondary-fixed-dim":"#92ccff","surface-container":"#f0eee8","on-tertiary":"#ffffff","primary":"#002037","primary-fixed-dim":"#abcaea","tertiary-fixed-dim":"#f0bf63","secondary-container":"#8ccaff","ocean-mist-soft":"#E4EEF5","navy-shadow-tint":"#0C2132","on-surface":"#1b1c18","tertiary":"#2b1c00","secondary-fixed":"#cce5ff","surface":"#fbf9f3","on-secondary-container":"#005582","primary-container":"#153650","on-secondary-fixed-variant":"#004b73","on-tertiary-fixed":"#271900","error":"#ba1a1a","primary-fixed":"#cee5ff","inverse-surface":"#30312d","inverse-primary":"#abcaea","surface-container-lowest":"#ffffff","gold-deep":"#C29033","on-error":"#ffffff","tertiary-fixed":"#ffdea7","on-primary-fixed":"#001d32","surface-dim":"#dcdad4","on-primary":"#ffffff","surface-bright":"#fbf9f3","background":"#fbf9f3","on-tertiary-fixed-variant":"#5e4200","on-secondary-fixed":"#001d31","gold-light":"#F7E5BD","surface-cream-subtle":"#F1EEE5","surface-container-low":"#f5f3ed","tertiary-container":"#453000","error-container":"#ffdad6","surface-container-high":"#eae8e2","on-primary-container":"#819fbe","surface-sand-tint":"#E8E3D5","on-surface-variant":"#42474d","secondary":"#186393","inverse-on-surface":"#f3f1eb","on-secondary":"#ffffff","on-error-container":"#93000a","on-background":"#1b1c18","outline":"#73777e","surface-variant":"#e4e2dd","surface-tint":"#43617d"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"margin-mobile":"1.25rem",gutter:"1.5rem","space-xl":"3.5rem","space-lg":"2rem",margin:"3rem","gutter-mobile":"1rem","space-xs":"0.375rem","space-md":"1.25rem","space-sm":"0.75rem"},fontFamily:{"headline-lg-mobile":["Playfair Display"],"body-lg":["Plus Jakarta Sans"],"headline-sm":["Playfair Display"],"label-sm":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display-hero":["Playfair Display"],"headline-md":["Playfair Display"],"display-hero-mobile":["Playfair Display"],"body-sm":["Plus Jakarta Sans"],"headline-lg":["Playfair Display"],"title-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"title-md":["Plus Jakarta Sans"]},fontSize:{"headline-lg-mobile":["30px",{lineHeight:"38px",fontWeight:"600"}],"body-lg":["17px",{lineHeight:"28px",fontWeight:"400"}],"headline-sm":["22px",{lineHeight:"30px",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"700"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"600"}],"body-md":["15px",{lineHeight:"24px",fontWeight:"400"}],"display-hero":["56px",{lineHeight:"68px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-md":["28px",{lineHeight:"36px",fontWeight:"600"}],"display-hero-mobile":["38px",{lineHeight:"46px",letterSpacing:"-0.01em",fontWeight:"700"}],"body-sm":["13px",{lineHeight:"20px",fontWeight:"400"}],"headline-lg":["40px",{lineHeight:"50px",letterSpacing:"-0.015em",fontWeight:"600"}],"title-lg":["20px",{lineHeight:"28px",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"600"}],"title-md":["17px",{lineHeight:"24px",fontWeight:"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 pt-4 px-margin-mobile md:px-margin pointer-events-none"><div class="max-w-[1380px] mx-auto"><div class="pointer-events-auto h-20 bg-surface-container-lowest/90 backdrop-blur-xl rounded-full px-space-md md:px-space-lg flex items-center justify-between shadow-[8px_16px_28px_rgba(21,54,80,0.06),-6px_-6px_16px_rgba(255,255,255,0.8)]"><div class="flex items-center gap-space-sm"><img alt="Varni Holidays Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABOrNOSsjuPsvRAyZo-Wew6WZ9ombGXJxzV_8qJuHWonG_hJ_NcRnY4z6vBdsIvNG33WrsULEN3AJjgnqHWjPy-PpRIdkTZxZ1vZaR4FbjZBkn00WpxSJbkrHYNz9yTdySi6_-M3T0TF3LB5NAg-_YE1jZcyIwRYo9tW_7Imtjz5X5GVDtfeW86Gs2jlGpCzS61J6V73Pzg0TvZ1iZTKVwtvll4UtEFsAELvNsYXQC"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary leading-none tracking-tight">VARNI HOLIDAYS</span><span class="font-label-sm text-label-sm text-gold-deep tracking-wider uppercase mt-0.5">Your Gateway to Joyful Holidays</span></div></div><nav class="hidden xl:flex items-center gap-1 bg-surface-container-low/80 p-1.5 rounded-full shadow-[inset_2px_2px_5px_rgba(21,54,80,0.06)]" data-active-classes="bg-primary-container text-on-primary font-title-md"><a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface px-space-md py-space-xs rounded-full transition-all duration-200" data-path="home" href="#">Home</a><a aria-current="page" class="px-space-md py-space-xs rounded-full transition-all duration-200 bg-primary-container text-on-primary font-title-md" data-path="destinations" href="#">Destinations</a><a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface px-space-md py-space-xs rounded-full transition-all duration-200" data-path="tour-packages" href="#">Tour Packages</a><a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface px-space-md py-space-xs rounded-full transition-all duration-200" data-path="our-services" href="#">Our Services</a><a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface px-space-md py-space-xs rounded-full transition-all duration-200" data-path="about-us" href="#">About Us</a><a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface px-space-md py-space-xs rounded-full transition-all duration-200" data-path="contact" href="#">Contact</a></nav><div class="flex items-center gap-space-sm"><a class="hidden sm:flex items-center gap-2 bg-primary text-on-primary px-space-md py-space-xs rounded-full font-label-lg text-label-lg shadow-[0_8px_18px_rgba(21,54,80,0.22)] hover:bg-primary-container transition-all" href="https://wa.me/" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px] text-tertiary-fixed-dim">chat</span><span>Plan Your Trip</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<!-- Interactive Style Helpers -->
+<style>
+    .clay-surface {
+      background: linear-gradient(145deg, #ffffff, #f5f2e9);
+      box-shadow: 8px 16px 28px rgba(21, 54, 80, 0.06), -6px -6px 18px rgba(255, 255, 255, 0.85), inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+    }
+    .clay-surface-lg {
+      background: linear-gradient(160deg, #fdfbf7, #f2efe6);
+      box-shadow: 12px 24px 38px rgba(21, 54, 80, 0.08), -8px -8px 24px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9);
+    }
+    .clay-recessed {
+      background: #ece8dc;
+      box-shadow: inset 3px 3px 6px rgba(21, 54, 80, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+    }
+    .clay-pill-active {
+      background: #186393;
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(24, 99, 147, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+    }
+    .clay-button-amber {
+      background: linear-gradient(135deg, #f0bf63, #c29033);
+      box-shadow: 0 8px 18px rgba(194, 144, 51, 0.32), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+    .curved-sculpture {
+      border-radius: 42px 28px 48px 32px;
+    }
+  </style>
+<!-- Hero Header Section with Tactile Canvas -->
+<section class="relative px-margin-mobile md:px-margin pt-space-md pb-space-lg max-w-[1380px] mx-auto w-full">
+<div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-space-md mb-space-lg">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container text-primary font-label-md text-label-md mb-4 shadow-[inset_1px_1px_3px_rgba(21,54,80,0.06),2px_2px_6px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[16px] text-gold-deep" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="tracking-wide">CURATED GLOBAL ATLAS • 2025/26 COLLECTION</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+          Discover Extraordinary <span class="italic text-secondary font-serif font-normal">Destinations</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">
+          From pristine tropical atolls and sapphire archipelagos to alpine summits and timeless royal heritage hubs, each locale is customized with hallmark Gujarati hospitality.
+        </p>
+</div>
+<!-- Quick Stats Pill Badge -->
+<div class="flex items-center gap-space-sm clay-surface p-2.5 rounded-full">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Close up traveler smiling with scenic turquoise ocean behind in warm bright sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK3yGf3boPy5uBjbrM9x6r7uAlkCmtatI18tHbrwVprbeoa1BPREuhed14NCZd4m-U6jnRgRSjD5MhLr-OiFYowAXlrlokKSbf903CZp1HsUIF8-Dl4D98sfk0glauMvLHGz6G1U7e594-qUoux_G4y3ajy9avL8FShbUMvXw4SnbDLqunl368QEmRnoPs4wErkML8abx866XlTkAXbgHqMOIEwnMVOjiZxcsidjrt"/>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Portrait of smiling couple in wool jackets with Swiss Alps background in soft morning mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqhBm9zhMD_Uc0Q26qkeS2MbU98apWWDmtiTlFMUFQhiC5AKj_AIQYD9NyDtW0hfl0ekIiWsU46mUyiEdNVO2THiTlB8UAst1QrnQFY8tL2lIzkr8r2vRviOisUURfSsNh38exGFSSP98uxf0k7T95h_aMnvMVqI0AhzJkFUazbyCCO0JrWP6yRPbFwFgW5NkkoI8BdqJDlAIC8HDUjlkfOkEbUFMpSn7c8TSy8EUN"/>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Happy solo female traveler under ancient arched Indian sandstone pavilion with warm amber lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBXcduGDl7pXQFioijEKTC6903kQr_eGRqFa0HQo3U8XEABSvyTZjTdXy8VRaTXD1xMomkACSyKZvMtCpghXJPWUnIZB-cWTL4eOpjSbbMMmNrJ7BQOd_iU8msMjf5O0jUuI8rMwsy1yJbm1ikD08CevDlBly9vcNYt9jaXfVIyosjnRvnmqPcNBYXtEMPkISB9cN12cYV6Ja9-pdfdYZZG5Whlgzr7C7eEph_DG0X"/>
+</div>
+</div>
+<div class="pr-3 text-left">
+<p class="font-label-sm text-label-sm text-primary leading-tight">4,800+ Joyful Voyagers</p>
+<p class="font-body-sm text-body-sm text-gold-deep flex items-center gap-1 font-semibold leading-none mt-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9/5 Average Rating
+          </p>
+</div>
+</div>
+</div>
+<!-- Soft Organic Filter Bar & Clay Search Control -->
+<div class="clay-surface-lg rounded-3xl p-space-md md:p-space-lg flex flex-col gap-space-md">
+<!-- Search Input & Quick Domestic/International Segmented Switch -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-space-sm">
+<!-- Recessed Search Input -->
+<div class="relative w-full md:max-w-md flex items-center">
+<span class="material-symbols-outlined text-on-surface-variant/70 absolute left-4 text-[22px]">search</span>
+<input class="w-full pl-12 pr-4 py-3 rounded-full clay-recessed text-primary font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none transition-all" id="searchInput" placeholder="Search by country, city, or experience (e.g. Kashmir, Swiss, Safari)..." type="text"/>
+</div>
+<!-- Scope Segment Switch -->
+<div class="flex items-center clay-recessed p-1 rounded-full w-full md:w-auto self-stretch md:self-auto justify-center">
+<button class="category-btn clay-pill-active px-5 py-2 rounded-full font-label-lg text-label-lg transition-all duration-200" id="btn-all" onclick="filterCategory('all')">
+            All (28)
+          </button>
+<button class="category-btn text-on-surface-variant px-5 py-2 rounded-full font-label-lg text-label-lg hover:text-primary transition-all duration-200" id="btn-domestic" onclick="filterCategory('domestic')">
+            Domestic (India)
+          </button>
+<button class="category-btn text-on-surface-variant px-5 py-2 rounded-full font-label-lg text-label-lg hover:text-primary transition-all duration-200" id="btn-international" onclick="filterCategory('international')">
+            International
+          </button>
+</div>
+</div>
+<!-- Specific Destination Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 no-scrollbar">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">tune</span> Quick Filter:
+        </span>
+<button class="region-pill active-pill px-4 py-1.5 rounded-full clay-pill-active font-label-md text-label-md shrink-0 transition-all" onclick="filterRegion('all')">All Regions</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('kashmir')">Kashmir</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('switzerland')">Switzerland &amp; Alps</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('bali')">Bali &amp; Tropics</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('kerala')">Kerala Backwaters</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('dubai')">Dubai &amp; Emirates</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('rajasthan')">Rajasthan Heritage</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('maldives')">Maldives Atolls</button>
+<button class="region-pill px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary font-label-md text-label-md shrink-0 transition-all shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_4px_8px_rgba(21,54,80,0.04)]" onclick="filterRegion('vietnam')">Vietnam &amp; Halong</button>
+</div>
+</div>
+</section>
+<!-- Curated Destinations Grid -->
+<section class="px-margin-mobile md:px-margin py-space-md max-w-[1380px] mx-auto w-full">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<p class="font-label-md text-label-md text-gold-deep uppercase tracking-wider font-semibold">HANDPICKED SELECTION</p>
+<h2 class="font-headline-md text-headline-md text-primary">All Curated Escapes</h2>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant" id="result-count">Showing 8 Signature Gateways</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter" id="destinations-grid">
+<!-- Card 1: Kashmir -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="domestic" data-region="kashmir">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Traditional ornate shikara boat floating on tranquil Dal lake in Srinagar Kashmir surrounded by misty snowcapped Himalayan mountains and floating gardens in soft golden hour light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1cU37wz-WvYmoirvNJMId7icbChS7A6vwdj1Q9J7JyimnJKM0OOD9VEGOWGoFnAoINXDoi7M54Hv4WBTgMvcddJ9d2tKRssRmBw0jOeqLC_qGKeEjFHpo9FaRRO4ObdFrZoJAhwD1zDKcuULx5MH6tU1a-QVik5BCYwPtkoNGuHrVghIdKYq4mZ2oTucQNSvCBhdVWUUbSu7ZLRWpdkxV31g-NfYXxJaftD5cYrPZ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">location_on</span> Domestic • India
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.95 (142 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">wb_sunny</span> Apr - Oct (Pleasant)</span>
+<span class="text-secondary font-semibold">6 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Kashmir Valley</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Srinagar houseboats, Gulmarg gondolas, and saffron meadows of Pahalgam.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹24,500 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Kashmir%20Valley%20Tour%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 2: Switzerland -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="international" data-region="switzerland">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Iconic Swiss red scenic train winding through lush green alpine valleys with turquoise glacial lake and majestic snowy Matterhorn mountain peaks under crisp blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA188f2w_uucUaDw2_NBaGKoVQ4b43aaRctS3QPv4umhvqU0kTIFIDUNAtMh0dDs6x2bzUdVN283Qa3fqUh_HjD09529rAL_B9aywmz0loccTLwdWa0Wihkkz2r2PDJZns5zARMAilO_ddX6EwxUITlbvmVR2okm-hjKUpkzOxs9tyyyCQVqwrSYeq9P7qPeMxmRT0fhB58GObs3TFa17Q-cix8E6HyqgYWPB5ZjDZD"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">public</span> Europe • Swiss
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.98 (310 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">ac_unit</span> May - Dec (All Year)</span>
+<span class="text-secondary font-semibold">9 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Swiss &amp; The Alps</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Interlaken cable-cars, Lucerne lake cruises, and Jungfraujoch summit trails.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹1,65,000 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Switzerland%20Tour%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 3: Bali -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="international" data-region="bali">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Lush green tiered rice terraces in Ubud Bali at sunrise with warm golden morning light streaming through palm trees and serene Balinese temple gazebo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdMUcXE4q8PWzDEgUV-eNbavh5TCn2xe29hdVhmN5V2EtcP3WPzgfYXKkFb1m6hZFp0gavSVQ6VT9D0Vr9W7P5sa6FdhOCbjf_yqb13dGEFKGJycBEGCPGjZWnF3ntu-DV284qZp55-8ZCEzukavOxnoYiQ-S6ZagJoJJ56uOmEHV_-BngWh0dRpHqjicULVJf6XIRWSOu848eFwz_PixC2zo4yTsc4UOJCgmr81Nd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">public</span> Southeast Asia
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.90 (280 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">filter_drama</span> Apr - Oct (Dry Season)</span>
+<span class="text-secondary font-semibold">8 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Bali Tropical Haven</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Ubud private pool villas, Nusa Penida sea arches, and sacred cliffside temples.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹48,900 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Bali%20Tour%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 4: Kerala -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="domestic" data-region="kerala">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Traditional luxury wooden kettuvallam houseboat gliding smoothly through serene Alleppey Kerala backwaters bordered by thick coconut palms under soft sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPtmb5As5bgt5kfkk-LsF_6EWVfipPLGRl5hqE12VP9pAiHyV4TN_OIMltmPaFgvMxbgNAZciLqpd3LQuCWA3LbFFFVb4VI-PX7OAO0Xtc2_7M_VQ2y-62jkou1B2S3CBXASw8XtvZ7QehBh5Om_5u9CajJinyfVrCwYCKnTldY9fva1S4rA9K1UlIboxKD_cn8F9TecdjHjIDBP8i-fWlJt3SVx63Z8R2gUebC9Zo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">location_on</span> Domestic • India
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.88 (195 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">water_drop</span> Sep - Mar (Cool)</span>
+<span class="text-secondary font-semibold">5 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Kerala Backwaters</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Alleppey luxury houseboats, Munnar emerald tea gardens, and authentic Ayurvedic wellness.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹19,800 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Kerala%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 5: Dubai -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="international" data-region="dubai">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Gleaming futuristic Dubai skyline with Burj Khalifa towering over Dubai marina waterways at twilight with sparkling amber and cobalt city reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEoJQRkHH41LQ6KszuL6Mhmlpp0OWd4oRBxf8_VsTGtkXCRWJdQxbrwR9WzZ_nIDoSPVpt0KufN6XL1PuFRmNaz-W5su1ww7l3Waay-bwxvzFjV0gKSYS6gK16iAbPRqPvSAUR7jm6tFzeAaRVU3f8CLO_4Quu2OGS23f-ebmfqD3EHfFQ2it0P2D2fdn2JR2qpEDAkRHKapmbOWmPPLJjUW58Sj6kPJIcS5s5hWRv"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">public</span> Middle East
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.92 (390 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">wb_sunny</span> Oct - Apr (Winter Sun)</span>
+<span class="text-secondary font-semibold">11 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Dubai &amp; Abu Dhabi</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Desert dune safaris, Burj Khalifa views, luxury yacht dinners, and theme parks.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹42,000 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Dubai%20Tour%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 6: Rajasthan -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="domestic" data-region="rajasthan">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Majestic golden sandstone facade of Hawa Mahal and Lake Palace in Udaipur reflecting in calm blue waters during peaceful evening sunset in Rajasthan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9l83eTYGScY_Q7ml3IuPrxgGerLmsa3tO07ebaGAOvAZc7i0ZUhWZOmzwT-0r4MZUjBttduzmsoGUqxWk_NFGgNUu0aIVRare72nY2iTQhR-CfxfSXkpdF_aSZj2RYCAlwune3uNnZKqWH1K1wNE6qISyHqfy6kAzyGESS_rXuyTFcMkGk5rdaSu0Fuw4TCBXIMNxpwtaXcNbUHR_La2sg4L5GmxZFlg4Ay7D_gzu"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">location_on</span> Domestic • India
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.91 (230 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">nightlight</span> Oct - Mar (Royal Season)</span>
+<span class="text-secondary font-semibold">7 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Rajasthan Royal Regalia</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Udaipur palace waters, Jaipur pink courtyards, and Thar desert camp under stars.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹22,900 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Rajasthan%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 7: Maldives -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="international" data-region="maldives">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Overwater luxury thatched bungalows lined over crystalline azure lagoon with white powder sand beach and swaying coconut palms in Maldives island resort" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBR34CwW0HR0fEWBL0b1-3zpD7sMtBHEbBVtTG5sJxf_sMYa7_nF9HzWHSZp2fq9HBNd3Ddbw7AE4JLKI5H6ptPs9o0qnVsYe9rd6mleb58eKHzYPrvlUKMny0YUQjV1KWXPKy2TrcNRYKluF67xMMx8y502DRq7iRBHehuy_LxAFjg0I9gc7bNIoaUJmO-cz8IUdFa9gyBca1Z6fYte03d1r6DesIE3LXGo8ffWrUV"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">public</span> Indian Ocean
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.99 (415 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">beach_access</span> Nov - Apr (Dry Sunshine)</span>
+<span class="text-secondary font-semibold">12 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Maldives Coral Atolls</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">All-inclusive private water villas, seaplane transfers, and vibrant coral snorkeling.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹78,500 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Maldives%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 8: Vietnam -->
+<article class="destination-card clay-surface rounded-[32px] p-3 flex flex-col group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[16px_28px_40px_rgba(21,54,80,0.12),-8px_-8px_20px_rgba(255,255,255,0.9)]" data-cat="international" data-region="vietnam">
+<div class="relative w-full h-56 rounded-[24px] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Halong Bay Vietnam emerald green waters with towering limestone karst islands and traditional junk boats sailing through early morning mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdu9qdaCYuf50fqN0l2KQgc-RqoJqY8axGXFjOfzB4esU6bnl-ZoLiVeM3juaim7WwRLHgpfodezAHsVXFu-UXE3Cq5X01H5cgOazUY2MfT_cBFn1Ooza9V_KriEVO0_b4JSobkeDZdTKQfFHgkrLJbRUksNMo_raqjozxYFKZLx4JNPCeqQ_feXXycheml75VbWq99Sbr_ullGnIkb_CZaQbx2tzTsa54qvymTqx7"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent"></div>
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full text-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">public</span> Southeast Asia
+          </span>
+<span class="absolute bottom-3 left-3 text-on-primary font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span> 4.87 (160 reviews)
+          </span>
+</div>
+<div class="p-space-sm flex flex-col flex-grow justify-between">
+<div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-gold-deep">sailing</span> Oct - Apr (Mild &amp; Dry)</span>
+<span class="text-secondary font-semibold">6 Packages</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary leading-tight">Vietnam &amp; Halong</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Hanoi French quarters, Halong Bay luxury cruises, Da Nang Golden Bridge, and Hoi An.</p>
+</div>
+<div class="pt-4 mt-3 border-none flex items-center justify-between bg-surface-cream-subtle/60 p-2.5 rounded-2xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block leading-tight">Starting from</span>
+<span class="font-title-md text-title-md text-primary font-bold">₹38,200 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">/person</span></span>
+</div>
+<a class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-secondary transition-colors shadow-sm" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20interested%20in%20Vietnam%20Packages" target="_blank">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Featured Spotlight Section: Switzerland & The Alps (Inspired Sculpted Clay Panel) -->
+<section class="px-margin-mobile md:px-margin py-space-lg max-w-[1380px] mx-auto w-full">
+<div class="clay-surface-lg rounded-[40px] p-space-md md:p-space-lg relative overflow-hidden">
+<!-- Background Ambient Glow -->
+<div class="absolute -right-32 -top-32 w-96 h-96 rounded-full bg-secondary-fixed/30 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row items-center gap-space-lg">
+<!-- Visual Sculpted Composition (Inspired by user image fluid clay layout) -->
+<div class="w-full lg:w-7/12 flex flex-col gap-space-sm">
+<div class="relative rounded-[36px] overflow-hidden shadow-[12px_24px_36px_rgba(21,54,80,0.12),inset_2px_2px_4px_rgba(255,255,255,0.8)]">
+<div class="bg-cover bg-center w-full h-[380px] md:h-[460px] flex flex-col justify-between p-6" data-alt="Dramatic high panoramic view of Swiss alpine village Lauterbrunnen with cascading waterfalls, green meadows, traditional wooden chalets, and snow-capped peaks under clear blue skies" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzasUXeDpVyotzhpJLeD3Bh8WMvx1FghcDyMxDof0mm5pqz4IoQ_eLRcqrWT2fBT7s3saK3UhIhpYIfokCDOBkvNiNBpCD4dj-KCztK5kkSYJvhEcq4TjRuRqmFd26g8HMnlTRPqSuFYVm2khNdF8yjZh5upRLFy6gZTB7_tlCsEk7FqnGhTpWjQJucpOmgYODpDwJyxD1wgOZnu0XrJFMas8t3mHLsOjfpWXxQraV')">
+<div class="flex items-center justify-between">
+<span class="px-4 py-1.5 rounded-full bg-primary/80 backdrop-blur-md text-on-primary font-label-md text-label-md flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Signature Flagship Itinerary</span>
+</span>
+<div class="clay-surface px-4 py-2 rounded-2xl flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">thermostat</span>
+<span class="font-title-md text-title-md text-primary font-bold">18°C</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Alpine Mild</span>
+</div>
+</div>
+<!-- Floating Micro-Badge Inside Image -->
+<div class="bg-surface/90 backdrop-blur-lg p-4 rounded-3xl max-w-sm clay-surface">
+<p class="font-label-sm text-label-sm text-gold-deep uppercase tracking-wider font-semibold">Pure Comfort Guarantee</p>
+<h4 class="font-title-md text-title-md text-primary">Jain &amp; Pure-Veg Meal Plans Included</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Freshly prepared hot Gujarati/Indian delicacies on high-altitude excursions.</p>
+</div>
+</div>
+</div>
+<!-- Secondary Image Triptych Preview -->
+<div class="grid grid-cols-3 gap-3">
+<div class="h-28 rounded-2xl overflow-hidden clay-surface p-1">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Golden scenic train interior with floor-to-ceiling glass windows passing through Swiss green alpine valleys and blue lakes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApOoRaJa-2NUZ2QQ-vXGQfy_2PSNQEz_BbCOYpysWPTXbSk759egLrhRpvZPJOakh3M6SBNbDYgCDCiO-4gCvmPIlpC2SbfUoA3A_g3qn5fwizEzIeB5aEBno1F_7Q1xzFZW1L_FbaU-VHz0BZuKdpXHYLAqoMfHBYUIKhwhfV-PGRC6f3H2R9x8DeXYHJy_XSH2y283YStvmXM_WbYCKMKxwaI9bkSwNKPp6nkZbi"/>
+</div>
+<div class="h-28 rounded-2xl overflow-hidden clay-surface p-1">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Couple standing on high observation platform of Jungfraujoch Top of Europe surrounded by endless glacier and snow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkfLgU_Ng3hSXC-KOXQViNOFV2fu6er_d0B9ZMLFcPsbIhuLG9PVcY_GujZWQP2dbMJPRTn2Whkk19w3sp7KRSacTKDdE208OLGkL1w_s3RzY-zg8UgoM2LBjxs7mpyoqV_ALaUpiaaQoxNSkLic-ELK_D46-3ukvLxAABt6gbn4qdRpSu6RRhn-9LMNdVLWSw3m7X9ncMkgDaUZfg8Rl2eoZCaWhkAiaC3by_IVIl"/>
+</div>
+<div class="h-28 rounded-2xl overflow-hidden clay-surface p-1">
+<img class="w-full h-full object-cover rounded-xl" data-alt="Lucerne covered wooden bridge Chapel Bridge adorned with vibrant flowers across water in Switzerland" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnxbrGmG8P4zboBPKGJeKBYruB2RVHzyBcTDTt6A4d3BNvtQJELSKvNqIlaCKnu_sHfbY8_D89W0JzYuBmg97WZWq69-Rotk-fI_5-QkS2Z6vh_ZWEX8avHxmEtHefpa0tCIkfrxPloRKi4n13ug21ZuE1Kw18-P_i-PoH-OR5SQ-Qj36OBqg7OMv0Wr6PzbGlr_6XtB6tqNcXnqi2mMfYV9xk-jUAKqtTfOeQqyeO"/>
+</div>
+</div>
+</div>
+<!-- Editorial Content Column -->
+<div class="w-full lg:w-5/12 flex flex-col gap-space-sm text-left">
+<div class="inline-flex items-center gap-2 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">stars</span>
+<span>EXECUTIVE SPOTLIGHT</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary leading-tight">
+            Grand Alpine Switzerland &amp; Lake Geneva
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Immerse yourself in breathtaking 360° panoramas, private first-class Swiss Rail travel, and charming lakeside chalets. Hand-tailored specifically for discerning families with complete visa, baggage, and Indian kitchen concierge support.
+          </p>
+<!-- Day-by-Day Highlight Pebbles (Tactile timeline stepper inspired by guidelines) -->
+<div class="flex flex-col gap-2 my-2">
+<div class="flex items-center gap-3 clay-surface p-3 rounded-2xl">
+<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline-sm text-headline-sm text-sm shrink-0">
+                01
+              </div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary text-[15px] leading-snug">Zurich to Lucerne &amp; Lake Cruise</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Arrival transfer, private hotel check-in &amp; sunset paddle steamer</span>
+</div>
+</div>
+<div class="flex items-center gap-3 clay-surface p-3 rounded-2xl">
+<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline-sm text-headline-sm text-sm shrink-0">
+                02
+              </div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary text-[15px] leading-snug">Mt. Titlis Rotating Cable Car &amp; Glacier</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rotair cliff walk, ice flyer chairlift, and warm Indian lunch at summit</span>
+</div>
+</div>
+<div class="flex items-center gap-3 clay-surface p-3 rounded-2xl">
+<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline-sm text-headline-sm text-sm shrink-0">
+                03
+              </div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary text-[15px] leading-snug">Jungfraujoch - Top of Europe via Eiger Express</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sphinx observatory, ice palace, and chocolate masterclass in Interlaken</span>
+</div>
+</div>
+</div>
+<!-- Price & Action Trigger -->
+<div class="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">7 Days / 6 Nights All-Inclusive</span>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-primary">₹1,85,000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ traveler</span>
+</div>
+</div>
+<a class="clay-button-amber text-primary px-6 py-3 rounded-full font-label-lg text-label-lg flex items-center gap-2 hover:brightness-105 transition-all w-full sm:w-auto justify-center" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20am%20inquiring%20about%20Grand%20Alpine%20Switzerland%20Tour" target="_blank">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>Reserve With Consultant</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Map Explorer & Categories Grid (Inspired by Lower Section of Reference) -->
+<section class="px-margin-mobile md:px-margin py-space-md max-w-[1380px] mx-auto w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-stretch">
+<!-- Interactive World Routing Map Card -->
+<div class="lg:col-span-8 clay-surface-lg rounded-[36px] p-space-md md:p-space-lg flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+<div>
+<span class="font-label-sm text-label-sm text-gold-deep uppercase tracking-wider font-semibold">WORLD ROUTING NETWORK</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Direct Departures from Ahmedabad &amp; Mumbai</h3>
+</div>
+<span class="font-label-md text-label-md text-secondary bg-ocean-mist-soft px-3.5 py-1 rounded-full self-start">Group &amp; Customized</span>
+</div>
+<!-- Styled Static Map Presentation -->
+<div class="w-full h-72 md:h-80 bg-cover bg-center rounded-[28px] relative overflow-hidden shadow-[inset_2px_2px_4px_rgba(255,255,255,0.7),4px_8px_16px_rgba(21,54,80,0.08)]" data-location="Zurich, Switzerland" style="">
+<div class="absolute inset-0 bg-primary/10"></div>
+<!-- Route Pin Badges on Map -->
+<div class="absolute top-8 left-12 clay-surface px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-semibold text-primary shadow-md">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+            Sardar Vallabhbhai Patel Intl (AMD)
+          </div>
+<div class="absolute bottom-10 right-14 clay-surface px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-semibold text-primary shadow-md">
+<span class="material-symbols-outlined text-[16px] text-gold-deep">flight_takeoff</span>
+            Zurich • Dubai • Denpasar • Singapore
+          </div>
+<div class="absolute bottom-4 left-4 bg-surface-container-lowest/90 backdrop-blur-md p-3 rounded-2xl max-w-xs shadow-sm">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Visa on Arrival &amp; Fast-Track Schengen stamping assistance managed end-to-end from our Anand office.</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-3 pt-4 mt-2">
+<div class="flex items-center gap-4 text-on-surface-variant font-label-md text-label-md">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-secondary">flight</span> Direct Flights</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-gold-deep">translate</span> Gujarati / Hindi Tour Guides</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">restaurant</span> 100% Veg / Jain Options</span>
+</div>
+<a class="text-secondary font-label-lg text-label-lg hover:underline flex items-center gap-1" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20Please%20share%20departure%20schedules%20from%20Ahmedabad" target="_blank">
+            Check Flight Calendars <span class="material-symbols-outlined text-[18px]">arrow_outward</span>
+</a>
+</div>
+</div>
+<!-- Quick Travel Inspiration & Mode Chips -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Inspiration Quote Box (Aesthetic mirror to user reference card) -->
+<div class="clay-surface rounded-[36px] p-space-md flex flex-col justify-between flex-1 relative overflow-hidden">
+<div class="relative z-10">
+<span class="font-label-sm text-label-sm text-gold-deep uppercase tracking-wider font-semibold">TRAVEL INSPIRATION</span>
+<blockquote class="font-headline-sm text-headline-sm text-primary italic mt-2 leading-relaxed">
+              “Fill your life with experiences, not things. Have stories to tell, not clutter to show.”
+            </blockquote>
+<p class="font-label-md text-label-md text-on-surface-variant mt-2">— The Varni Philosophy</p>
+</div>
+<div class="relative z-10 pt-4 mt-4 border-none">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Recommended for Oct - Dec</span>
+<span class="font-label-md text-label-md text-secondary font-bold">Winter Escapes</span>
+</div>
+</div>
+<!-- Watermark icon -->
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-[130px] text-surface-container-highest/40 select-none pointer-events-none">format_quote</span>
+</div>
+<!-- Four Mode Buttons (Hotels, Flights, Visas, Packages) -->
+<div class="grid grid-cols-2 gap-3">
+<a class="clay-surface rounded-2xl p-3.5 flex flex-col items-center text-center group hover:bg-surface-cream-subtle transition-all" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20need%20hotel%20booking%20assistance" target="_blank">
+<div class="w-11 h-11 rounded-full bg-ocean-mist-soft flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[22px]">hotel</span>
+</div>
+<span class="font-title-md text-title-md text-primary mt-2 text-sm">Hotels</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 &amp; 5 Star Stays</span>
+</a>
+<a class="clay-surface rounded-2xl p-3.5 flex flex-col items-center text-center group hover:bg-surface-cream-subtle transition-all" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20need%20air%20ticket%20quote" target="_blank">
+<div class="w-11 h-11 rounded-full bg-secondary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[22px]">flight</span>
+</div>
+<span class="font-title-md text-title-md text-primary mt-2 text-sm">Flights</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Best Airfares</span>
+</a>
+<a class="clay-surface rounded-2xl p-3.5 flex flex-col items-center text-center group hover:bg-surface-cream-subtle transition-all" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20need%20visa%20guidance" target="_blank">
+<div class="w-11 h-11 rounded-full bg-gold-light flex items-center justify-center text-gold-deep group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[22px]">badge</span>
+</div>
+<span class="font-title-md text-title-md text-primary mt-2 text-sm">Visas</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Fast Documentation</span>
+</a>
+<a class="clay-surface rounded-2xl p-3.5 flex flex-col items-center text-center group hover:bg-surface-cream-subtle transition-all" href="https://wa.me/?text=Hello%20Varni%20Holidays%2C%20I%20need%20a%20tailored%20holiday%20package" target="_blank">
+<div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[22px]">luggage</span>
+</div>
+<span class="font-title-md text-title-md text-primary mt-2 text-sm">Custom Tours</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bespoke Curation</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Anand Office Direct Travel Consultant Helpline Banner -->
+<section class="px-margin-mobile md:px-margin pt-space-md pb-space-xl max-w-[1380px] mx-auto w-full">
+<div class="clay-surface-lg rounded-[38px] p-space-lg md:p-space-xl relative overflow-hidden bg-gradient-to-r from-surface-cream-subtle via-surface-container to-surface-cream-subtle">
+<div class="flex flex-col md:flex-row items-center justify-between gap-space-lg relative z-10">
+<div class="max-w-xl text-left">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-light text-tertiary font-label-md text-label-md mb-2">
+<span class="material-symbols-outlined text-[16px] text-gold-deep">support_agent</span>
+<span>Personalized Anand Branch Consultation</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary">Need assistance planning your itinerary?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+            Speak directly with our senior holiday specialists in Anand. We cater to family groupings, custom vegetarian culinary arrangements abroad, and visa appointments.
+          </p>
+<div class="flex flex-wrap items-center gap-4 mt-4 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-[18px]">location_on</span> Ganesh Crossing, Anand - Vidyanagar Rd</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-[18px]">call</span> +91 (02692) 245-890</span>
+</div>
+</div>
+<!-- WhatsApp Direct Connect Button Container -->
+<div class="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
+<a class="w-full sm:w-auto px-8 py-4 rounded-full bg-primary text-on-primary font-title-md text-title-md flex items-center justify-center gap-3 shadow-[0_12px_24px_rgba(0,32,55,0.25)] hover:bg-primary-container transition-all" href="https://wa.me/9102692245890?text=Hello%20Varni%20Holidays%2C%20I%20would%20like%20to%20plan%20my%20next%20vacation." rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[24px] text-tertiary-fixed-dim">chat</span>
+<span>Connect on WhatsApp</span>
+</a>
+<a class="w-full sm:w-auto px-6 py-4 rounded-full clay-surface text-primary font-title-md text-title-md flex items-center justify-center gap-2 hover:bg-surface-cream-subtle transition-all" href="tel:+9102692245890">
+<span class="material-symbols-outlined text-[22px] text-secondary">phone_in_talk</span>
+<span>Call Desk</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive JavaScript for Live Filtering and Search -->
+<script>
+    let currentCategory = 'all';
+    let currentRegion = 'all';
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      
+      // Update Category Button Styling
+      const catButtons = document.querySelectorAll('.category-btn');
+      catButtons.forEach(btn => {
+        btn.classList.remove('clay-pill-active');
+        btn.classList.add('text-on-surface-variant');
+      });
+
+      const activeBtn = document.getElementById('btn-' + cat);
+      if(activeBtn) {
+        activeBtn.classList.add('clay-pill-active');
+        activeBtn.classList.remove('text-on-surface-variant');
+      }
+
+      applyFilters();
+    }
+
+    function filterRegion(reg) {
+      currentRegion = reg;
+      
+      // Update Region Pills
+      const pills = document.querySelectorAll('.region-pill');
+      pills.forEach(p => {
+        p.classList.remove('clay-pill-active');
+        p.classList.add('bg-surface-container', 'text-on-surface-variant');
+      });
+
+      const clickedPill = window.event ? window.event.currentTarget : null;
+      if (clickedPill) {
+        clickedPill.classList.add('clay-pill-active');
+        clickedPill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+      }
+
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.destination-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-cat');
+        const reg = card.getAttribute('data-region');
+        const textContent = card.innerText.toLowerCase();
+
+        const matchCat = (currentCategory === 'all') || (cat === currentCategory);
+        const matchReg = (currentRegion === 'all') || (reg === currentRegion);
+        const matchSearch = !searchVal || textContent.includes(searchVal);
+
+        if (matchCat && matchReg && matchSearch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const countEl = document.getElementById('result-count');
+      if (countEl) {
+        countEl.textContent = 'Showing ' + visibleCount + ' Signature Gateways';
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+  </script>
+</div></main><footer class="w-full bg-surface-container-low text-on-surface mt-space-xl pt-space-xl pb-space-lg"><div class="max-w-[1380px] mx-auto px-margin-mobile md:px-margin"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-gutter mb-space-xl"><div class="lg:col-span-4 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><img alt="Varni Holidays Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABOrNOSsjuPsvRAyZo-Wew6WZ9ombGXJxzV_8qJuHWonG_hJ_NcRnY4z6vBdsIvNG33WrsULEN3AJjgnqHWjPy-PpRIdkTZxZ1vZaR4FbjZBkn00WpxSJbkrHYNz9yTdySi6_-M3T0TF3LB5NAg-_YE1jZcyIwRYo9tW_7Imtjz5X5GVDtfeW86Gs2jlGpCzS61J6V73Pzg0TvZ1iZTKVwtvll4UtEFsAELvNsYXQC"/><span class="font-headline-sm text-headline-sm text-primary">VARNI HOLIDAYS</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Bespoke holiday curation, domestic and international journeys, and unforgettable leisure designed with heritage warmth. Your Gateway to Joyful Holidays.</p><div class="flex items-center gap-space-sm pt-space-xs"><div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),8px_16px_28px_rgba(21,54,80,0.06)]"><span class="material-symbols-outlined text-primary text-[20px]">verified</span></div><span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">IATA Accredited &amp; Gujarat Tourism Partner</span></div></div><div class="lg:col-span-2 flex flex-col gap-space-sm"><h4 class="font-title-lg text-title-lg text-primary">Quick Links</h4><ul class="flex flex-col gap-space-xs"><li class="leading-none"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="home" href="#">Home</a></li><li class="leading-none"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="destinations" href="#">Destinations</a></li><li class="leading-none"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="tour-packages" href="#">Tour Packages</a></li><li class="leading-none"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="about-us" href="#">About Us</a></li><li class="leading-none"><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="contact" href="#">Contact</a></li></ul></div><div class="lg:col-span-3 flex flex-col gap-space-sm"><h4 class="font-title-lg text-title-lg text-primary">Our Services</h4><ul class="flex flex-col gap-space-xs"><li class="font-body-md text-body-md text-on-surface-variant">Curated Family Escapes</li><li class="font-body-md text-body-md text-on-surface-variant">International Honeymoon Tours</li><li class="font-body-md text-body-md text-on-surface-variant">Corporate MICE &amp; Retreats</li><li class="font-body-md text-body-md text-on-surface-variant">Flight, Visa &amp; Forex Assistance</li><li class="font-body-md text-body-md text-on-surface-variant">Custom Pilgrimage Journeys</li></ul></div><div class="lg:col-span-3 flex flex-col gap-space-sm"><h4 class="font-title-lg text-title-lg text-primary">Anand Office</h4><div class="flex flex-col gap-space-xs font-body-md text-body-md text-on-surface-variant"><div class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">location_on</span><span>Near Ganesh Crossing, Anand - Vidyanagar Road, Anand, Gujarat - 388001</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px] shrink-0">call</span><span>+91 (02692) 245-890</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px] shrink-0">mail</span><span>holidays@varniholidays.com</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-gold-deep text-[20px] shrink-0">schedule</span><span>Mon - Sat: 9:30 AM - 7:30 PM</span></div></div></div></div><div class="bg-surface-container p-space-lg rounded-lg mb-space-lg shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),8px_16px_28px_rgba(21,54,80,0.06)]"><div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md"><div class="flex flex-col"><h4 class="font-headline-sm text-headline-sm text-primary">Subscribe to Travel Gazettes</h4><p class="font-body-md text-body-md text-on-surface-variant">Receive seasonal brochures, private charter announcements, and handpicked deals.</p></div><div class="w-full md:w-auto flex flex-col sm:flex-row gap-space-xs"><input class="px-space-md py-space-xs rounded-full bg-surface-cream-subtle text-primary font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary min-w-[260px] shadow-[inset_2px_2px_5px_rgba(21,54,80,0.06)]" placeholder="Enter your email address" type="email"/><button class="px-space-lg py-space-xs rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-[0_8px_18px_rgba(21,54,80,0.22)]" type="button">Subscribe</button></div></div></div><div class="pt-space-md flex flex-col md:flex-row items-center justify-between gap-space-sm font-label-md text-label-md text-on-surface-variant"><p>© 2025 Varni Holidays Pvt. Ltd. All rights reserved.</p><div class="flex items-center gap-space-md"><a class="hover:text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Policy</a><a class="hover:text-primary transition-colors" data-path="terms-of-service" href="#">Terms of Service</a><a class="hover:text-primary transition-colors" data-path="disclaimer" href="#">Disclaimer</a></div></div></div></footer></body></html>
