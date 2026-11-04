@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useMemo } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
@@ -9,6 +9,7 @@ import {
   calculateKeralaPrice,
 } from "@/lib/pricing/kerala";
 import { safeSubmitPackageEnquiry } from "@/lib/enquirySubmitter";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function DynamicPricingCalculator() {
   const [selectedTier, setSelectedTier] = useState<"STANDARD" | "DELUXE" | "SUPER_DELUXE" | "PREMIUM" | "LUXURY">("DELUXE");
@@ -509,7 +510,7 @@ export default function DynamicPricingCalculator() {
           {/* Anand Office Direct WhatsApp */}
           <div className="pt-2 border-t border-surface-sand-tint text-center">
             <a
-              href="https://wa.me/919898000000?text=Hi%20Varni%20Holidays,%20I%20am%20inquiring%20about%20Kerala%206N7D%20Tour"
+              href={COMPANY_CONTACT.whatsapp.buildUrl("Hi Varni Holidays, I am inquiring about Kerala 6N7D Tour")}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-secondary font-bold inline-flex items-center gap-1 hover:underline"

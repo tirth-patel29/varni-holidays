@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function Header() {
           {/* Quick Action CTAs */}
           <div className="flex items-center gap-3">
             <a
-              href="https://wa.me/919898000000?text=Hello%20Varni%20Holidays,%20I%20want%20to%20plan%20a%20holiday"
+              href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays, I want to plan a holiday")}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-full text-xs font-bold clay-pill-button hover:bg-primary-container"
@@ -79,9 +80,9 @@ export default function Header() {
             </Link>
 
             <a
-              href="tel:+912692245890"
+              href={COMPANY_CONTACT.phone.tel}
               className="hidden lg:flex items-center justify-center w-9 h-9 rounded-full bg-surface-cream-subtle text-primary shadow-clay-inset hover:bg-surface-container transition-colors"
-              title="Call Anand Office: +91 (02692) 245-890"
+              title={`Call Anand Office: ${COMPANY_CONTACT.phone.display}`}
             >
               <span className="material-symbols-outlined text-[18px]">call</span>
             </a>
@@ -118,7 +119,7 @@ export default function Header() {
               ))}
               <div className="pt-4 border-t border-surface-sand-tint flex flex-col gap-3">
                 <a
-                  href="https://wa.me/919898000000?text=Hello%20Varni%20Holidays"
+                  href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-full text-sm font-bold shadow-clay-button"
@@ -127,11 +128,11 @@ export default function Header() {
                   <span>Connect on WhatsApp</span>
                 </a>
                 <a
-                  href="tel:+912692245890"
+                  href={COMPANY_CONTACT.phone.tel}
                   className="w-full flex items-center justify-center gap-2 bg-surface-cream-subtle text-primary py-2.5 rounded-full text-xs font-bold"
                 >
                   <span className="material-symbols-outlined text-[16px]">call</span>
-                  <span>Anand Office: +91 (02692) 245-890</span>
+                  <span>Anand Office: {COMPANY_CONTACT.phone.display}</span>
                 </a>
               </div>
             </nav>

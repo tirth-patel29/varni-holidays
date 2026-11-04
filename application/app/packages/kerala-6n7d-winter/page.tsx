@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import DynamicPricingCalculator from "@/components/DynamicPricingCalculator";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function KeralaPackageDetailPage() {
   const itineraryDays = [
@@ -126,7 +127,7 @@ export default function KeralaPackageDetailPage() {
                   <span className="material-symbols-outlined text-[16px]">expand_more</span>
                 </a>
                 <a
-                  href="https://wa.me/919898000000?text=Hi%20Varni%20Holidays,%20please%20send%20Kerala%206N7D%20Itinerary%20PDF"
+                  href={COMPANY_CONTACT.whatsapp.buildUrl("Hi Varni Holidays, please send Kerala 6N7D Itinerary PDF")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-5 py-3.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold hover:bg-white/30 transition-all flex items-center gap-1.5"

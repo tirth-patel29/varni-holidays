@@ -20,7 +20,7 @@ export const DEFAULT_USERS: Array<{
     id: 'usr-neel-patel-superadmin',
     email: 'neel@varniholidays.com',
     fullName: 'Neel Patel',
-    phone: '+91 99241 11111',
+    phone: '+91 63570 50505',
     role: 'SUPER_ADMIN',
     passwordPlain: 'Varni@Admin2026',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',

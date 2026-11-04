@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { getQuotationDetailsAction } from '@/app/actions/phase3';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 import {
   Printer,
   MessageSquare,
@@ -49,7 +50,7 @@ export default function PublicQuotationViewPage() {
     const msg = encodeURIComponent(
       `Hello Varni Holidays Anand! I have reviewed quotation ${q.quotationNumber} for "${q.title}" (Total: ₹${(q.totalAmountInr ?? 0).toLocaleString('en-IN')}). I would like to proceed with the booking confirmation. Please guide me with next steps!`
     );
-    window.open(`https://wa.me/919825012345?text=${msg}`, '_blank');
+    window.open(COMPANY_CONTACT.whatsapp.buildUrl(`Hello Varni Holidays Anand! I have reviewed quotation ${q.quotationNumber} for "${q.title}" (Total: ₹${(q.totalAmountInr ?? 0).toLocaleString('en-IN')}). I would like to proceed with the booking confirmation. Please guide me with next steps!`), '_blank');
   };
 
   if (loading) {
@@ -157,8 +158,8 @@ export default function PublicQuotationViewPage() {
                 Official Travel Proposal
               </span>
             </div>
-            <p className="text-xs text-slate-600 font-medium">Station Road, Anand, Gujarat 388001</p>
-            <p className="text-xs text-slate-500">Phone: +91 98250 12345 • Email: contact@varniholidays.com • GSTIN: 24AAACV1234P1Z5</p>
+            <p className="text-xs text-slate-600 font-medium">{COMPANY_CONTACT.address.full}</p>
+            <p className="text-xs text-slate-500">Phone: {COMPANY_CONTACT.phone.display} • Email: {COMPANY_CONTACT.email.primary} • GSTIN: {COMPANY_CONTACT.gstin}</p>
           </div>
 
           <div className="md:text-right">
@@ -351,7 +352,7 @@ export default function PublicQuotationViewPage() {
         <div className="pt-6 border-t border-slate-200 flex items-end justify-between text-xs text-slate-600">
           <div>
             <p className="font-semibold text-slate-900">Thank you for choosing Varni Holidays!</p>
-            <p className="text-[11px] text-slate-500">For inquiries or modifications, call +91 98250 12345.</p>
+            <p className="text-[11px] text-slate-500">For inquiries or modifications, call {COMPANY_CONTACT.phone.display} or WhatsApp {COMPANY_CONTACT.whatsapp.display}.</p>
           </div>
 
           <div className="text-right">

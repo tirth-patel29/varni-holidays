@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function PackagesPage() {
   return (
@@ -72,7 +73,7 @@ export default function PackagesPage() {
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
               <a
-                href="https://wa.me/919898000000?text=Hi%20Varni%20Holidays,%20please%20send%20details%20for%20Kerala%206N7D%20package"
+                href={COMPANY_CONTACT.whatsapp.buildUrl("Hi Varni Holidays, please send details for Kerala 6N7D package")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-3.5 px-6 rounded-full bg-surface-cream-subtle text-primary text-xs font-bold clay-pill-secondary flex items-center justify-center gap-1.5"

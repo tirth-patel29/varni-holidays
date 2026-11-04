@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 interface Destination {
   id: string;
@@ -268,7 +269,7 @@ export default function DestinationsPage() {
               Speak with a Travel Specialist
             </Link>
             <a
-              href="https://wa.me/919924111111?text=Hello%20Varni%20Holidays%2C%20I%20am%20looking%20for%20a%20custom%20holiday%20itinerary."
+              href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays, I am looking for a custom holiday itinerary.")}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-emerald-800 bg-emerald-50 hover:bg-emerald-100 font-bold text-sm transition-colors border border-emerald-200"

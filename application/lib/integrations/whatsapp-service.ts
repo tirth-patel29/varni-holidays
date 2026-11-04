@@ -6,6 +6,7 @@
  */
 
 import { UpdateCategory } from '../crm/types';
+import { COMPANY_CONTACT } from '../config/contact';
 
 export interface WhatsAppSendOptions {
   phoneNumber: string; // E.164 formatted or raw digits
@@ -38,6 +39,13 @@ export function normalizeWhatsAppNumber(phone: string, countryCode: string = '+9
     return cleanDigits;
   }
   return `${cleanCode}${cleanDigits}`;
+}
+
+/**
+ * Generates the official Varni Holidays company WhatsApp Click-to-Chat URL
+ */
+export function getCompanyWhatsAppUrl(message?: string): string {
+  return COMPANY_CONTACT.whatsapp.buildUrl(message);
 }
 
 /**

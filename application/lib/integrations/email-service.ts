@@ -5,6 +5,7 @@
  */
 
 import { UpdateCategory } from '../crm/types';
+import { COMPANY_CONTACT } from '../config/contact';
 
 export interface EmailSendOptions {
   to: string;
@@ -44,7 +45,7 @@ export interface EnquiryConfirmationParams {
     childrenCount?: number;
     infantsCount?: number;
     roomsCount?: number;
-    vehicleType?: string | null;
+    vehicleType?: string;
     totalEstimate?: number;
     originAirport?: string;
     destinationAirport?: string;
@@ -119,9 +120,9 @@ export function buildVarniEmailHtml(options: EmailSendOptions): string {
 
     <!-- Footer -->
     <div class="footer">
-      <p style="margin: 0 0 6px 0; font-weight: 600;">VARNI HOLIDAYS ANAND</p>
-      <p style="margin: 0 0 6px 0; font-size: 11px;">Station Road, Anand, Gujarat 388001 | Phone / WhatsApp: <a href="tel:+919825012345">+91 98250 12345</a></p>
-      <p style="margin: 0; font-size: 11px;">Inquiries: <a href="mailto:contact@varnitours.com">contact@varnitours.com</a> | Flights • Tour Packages • Visas • Hotels</p>
+      <p style="margin: 0 0 6px 0; font-weight: 600;">${COMPANY_CONTACT.businessName} ANAND</p>
+      <p style="margin: 0 0 6px 0; font-size: 11px;">${COMPANY_CONTACT.address.full} | Phone / WhatsApp: <a href="${COMPANY_CONTACT.phone.tel}">${COMPANY_CONTACT.phone.display}</a></p>
+      <p style="margin: 0; font-size: 11px;">Inquiries: <a href="${COMPANY_CONTACT.email.mailto}">${COMPANY_CONTACT.email.primary}</a> | Flights • Tour Packages • Visas • Hotels</p>
     </div>
   </div>
 </body>
@@ -231,18 +232,18 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
 
       <!-- CTA WhatsApp Button -->
       <div style="text-align: center; margin: 28px 0 16px 0;">
-        <a href="https://wa.me/919825012345?text=${waMessage}" style="display: inline-block; background: #25D366; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 12px 26px; border-radius: 6px; text-decoration: none; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);" target="_blank">
-          Chat Directly on WhatsApp (+91 98250 12345)
+        <a href="${COMPANY_CONTACT.whatsapp.url}?text=${waMessage}" style="display: inline-block; background: #25D366; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 12px 26px; border-radius: 6px; text-decoration: none; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);" target="_blank">
+          Chat Directly on WhatsApp (${COMPANY_CONTACT.whatsapp.display})
         </a>
       </div>
 
       <!-- Contact Details Block -->
       <div style="border-top: 1px solid #E2E8F0; padding-top: 18px; margin-top: 24px; font-size: 12px; color: #475569; line-height: 1.6;">
         <strong style="color: #0F172A; display: block; margin-bottom: 4px;">Need Immediate Assistance?</strong>
-        <div>📍 <strong>Head Office:</strong> Station Road, Anand, Gujarat 388001</div>
-        <div>📞 <strong>Phone:</strong> <a href="tel:+919825012345" style="color: #0F172A; text-decoration: none; font-weight: 600;">+91 98250 12345</a></div>
-        <div>✉️ <strong>Email:</strong> <a href="mailto:contact@varnitours.com" style="color: #0F172A; text-decoration: none; font-weight: 600;">contact@varnitours.com</a></div>
-        <div>⏰ <strong>Office Hours:</strong> Monday – Saturday, 9:30 AM – 8:00 PM IST</div>
+        <div>📍 <strong>Head Office:</strong> ${COMPANY_CONTACT.address.full}</div>
+        <div>📞 <strong>Phone:</strong> <a href="${COMPANY_CONTACT.phone.tel}" style="color: #0F172A; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.phone.display}</a></div>
+        <div>✉️ <strong>Email:</strong> <a href="${COMPANY_CONTACT.email.mailto}" style="color: #0F172A; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.email.primary}</a></div>
+        <div>⏰ <strong>Office Hours:</strong> ${COMPANY_CONTACT.hours.detailed}</div>
       </div>
     </div>
 
@@ -284,6 +285,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
         },
         body: JSON.stringify({
           from: fromEmail,
+          reply_to: COMPANY_CONTACT.email.primary,
           to: [options.to],
           subject: options.subject,
           html: renderedHtml,
@@ -305,6 +307,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
             },
             body: JSON.stringify({
               from: 'Varni Holidays <contact@varnitours.com>',
+              reply_to: COMPANY_CONTACT.email.primary,
               to: [options.to],
               subject: options.subject,
               html: renderedHtml,

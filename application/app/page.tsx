@@ -3,6 +3,7 @@ import Link from "next/link";
 import FlightSearchSection from "@/components/FlightSearchSection";
 import DynamicPricingCalculator from "@/components/DynamicPricingCalculator";
 import VisaEnquirySection from "@/components/VisaEnquirySection";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function HomePage() {
   return (
@@ -50,7 +51,7 @@ export default function HomePage() {
               </a>
 
               <a
-                href="https://wa.me/919898000000?text=Hello%20Varni%20Holidays,%20I%20want%20to%20plan%20a%20vacation"
+                href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays, I want to plan a vacation")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-surface-cream-subtle text-primary text-xs font-bold clay-pill-secondary"
@@ -377,7 +378,7 @@ export default function HomePage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <a
-                href="https://wa.me/919898000000?text=Hello%20Varni%20Holidays,%20I%20need%20a%20tailor-made%20holiday%20proposal"
+                href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays, I need a tailor-made holiday proposal")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gold-deep text-white text-xs font-bold clay-pill-button hover:brightness-110"
@@ -387,11 +388,11 @@ export default function HomePage() {
               </a>
 
               <a
-                href="tel:+912692245890"
+                href={COMPANY_CONTACT.phone.tel}
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-bold hover:bg-white/25 transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">call</span>
-                <span>Call Anand Office: (02692) 245-890</span>
+                <span>Call Anand Office: {COMPANY_CONTACT.phone.display}</span>
               </a>
             </div>
           </div>

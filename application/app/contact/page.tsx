@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import CountryPhoneInput from '@/components/CountryPhoneInput';
 import EnquirySuccessModal from '@/components/EnquirySuccessModal';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -104,9 +105,10 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-ocean text-xs uppercase tracking-wider mb-1">Office Address</h3>
                     <p className="text-slate-600 leading-relaxed text-xs">
-                      VARNI HOLIDAYS<br />
-                      Station Road / Amul Dairy Road Area,<br />
-                      Anand, Gujarat 388001, India
+                      <strong>{COMPANY_CONTACT.businessName}</strong><br />
+                      {COMPANY_CONTACT.address.building},<br />
+                      {COMPANY_CONTACT.address.street},<br />
+                      {COMPANY_CONTACT.address.city}, {COMPANY_CONTACT.address.state} {COMPANY_CONTACT.address.postalCode} ({COMPANY_CONTACT.address.landmark})
                     </p>
                   </div>
                 </div>
@@ -118,11 +120,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-ocean text-xs uppercase tracking-wider mb-1">Telephone & Direct Desk</h3>
                     <p className="text-slate-600 text-xs">
-                      <a href="tel:+919924111111" className="font-bold text-ocean hover:text-gold block">
-                        +91 99241 11111
-                      </a>
-                      <a href="tel:+912692222222" className="text-slate-500 hover:text-ocean block mt-0.5">
-                        Landline: +91 (02692) 222222
+                      <a href={COMPANY_CONTACT.phone.tel} className="font-bold text-ocean hover:text-gold block">
+                        {COMPANY_CONTACT.phone.display}
                       </a>
                     </p>
                   </div>
@@ -136,12 +135,12 @@ export default function ContactPage() {
                     <h3 className="font-bold text-ocean text-xs uppercase tracking-wider mb-1">Official WhatsApp Support</h3>
                     <p className="text-slate-600 text-xs">
                       <a
-                        href="https://wa.me/919924111111?text=Hello%20Varni%20Holidays%2C%20I%20would%20like%20to%20enquire%20about%20a%20trip."
+                        href={COMPANY_CONTACT.whatsapp.buildUrl("Hello Varni Holidays, I would like to enquire about a trip.")}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
                       >
-                        <span>Chat on +91 99241 11111</span>
+                        <span>Chat on {COMPANY_CONTACT.whatsapp.display}</span>
                         <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                       </a>
                     </p>
@@ -155,11 +154,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-ocean text-xs uppercase tracking-wider mb-1">Email Desk</h3>
                     <p className="text-slate-600 text-xs">
-                      <a href="mailto:info@varniholidays.com" className="font-semibold text-ocean hover:text-gold block">
-                        info@varniholidays.com
-                      </a>
-                      <a href="mailto:tours@varniholidays.com" className="text-slate-500 hover:text-ocean block">
-                        tours@varniholidays.com
+                      <a href={COMPANY_CONTACT.email.mailto} className="font-semibold text-ocean hover:text-gold block">
+                        {COMPANY_CONTACT.email.primary}
                       </a>
                     </p>
                   </div>
@@ -172,8 +168,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-ocean text-xs uppercase tracking-wider mb-1">Working Hours (IST)</h3>
                     <p className="text-slate-600 text-xs leading-relaxed">
-                      Monday to Saturday: 10:00 AM – 7:30 PM<br />
-                      Sunday: By Prior Appointment Only
+                      {COMPANY_CONTACT.hours.detailed}<br />
+                      {COMPANY_CONTACT.hours.sunday}
                     </p>
                   </div>
                 </div>

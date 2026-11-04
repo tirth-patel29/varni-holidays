@@ -35,8 +35,8 @@ RESEND_FROM_EMAIL="Varni Holidays <noreply@varniholidays.com>"
 
 # Primary Support & Office Contact
 OFFICE_EMAIL="varniinternational7@gmail.com"
-OFFICE_PHONE="+91 90339 10998"
-OFFICE_WHATSAPP="9163570 50505"
+OFFICE_PHONE="+91 63570 50505"
+OFFICE_WHATSAPP="916357050505"
 ```
 
 ---

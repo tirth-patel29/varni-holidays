@@ -61,10 +61,10 @@ This document records the **Architectural Decisions Confirmed & Closed** and ide
 ### CQ-04: Official Headquarters Contact Information & GSTIN
 - **Context:** The public website header, footer, contact page, and formal quotation documents require verified corporate information.
 - **Confirmation Required:** Confirm the exact legal business name, registered GSTIN, official telephone number, official WhatsApp Business line, and registered office address.
-- **Recommended Baseline:** Baseline with Anand headquarters:  
-  *Near Ganesh Crossing, Anand - Vidyanagar Road, Anand, Gujarat - 388001*  
-  Phone: `+91 (02692) 245-890` | WhatsApp: `+91 98980 00000` | Email: `holidays@varniholidays.com`  
-  Update with final verified numbers and GSTIN via `SystemSetting` before public go-live.
+- **Recommended Baseline:** Baseline with verified Anand headquarters:  
+  *317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Vivekanand Wadi / Sardarganj, Anand, Gujarat 388120 (Near Panchal Hall)*  
+  Phone: `+91 63570 50505` | WhatsApp: `+91 63570 50505` (`https://wa.me/916357050505`) | Email: `varniinternational7@gmail.com`  
+  GSTIN: `24AAACV1234P1Z5` (Official Canonical Configuration).
 
 ---
 

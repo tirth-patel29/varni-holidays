@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 export const metadata = {
   title: 'About Us | Varni Holidays – Your Gateway to Joyful Holidays',
@@ -130,11 +131,11 @@ export default function AboutPage() {
               <div className="pt-2 flex flex-col sm:flex-row gap-4 text-xs text-slate-700">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-gold">location_on</span>
-                  <span>Anand, Gujarat 388001, India</span>
+                  <span>{COMPANY_CONTACT.address.full}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-gold">schedule</span>
-                  <span>Mon – Sat: 10:00 AM – 7:30 PM IST</span>
+                  <span>{COMPANY_CONTACT.hours.detailed}</span>
                 </div>
               </div>
             </div>
@@ -146,10 +147,10 @@ export default function AboutPage() {
                 Schedule an In-Person Consultation
               </Link>
               <a
-                href="tel:+919924111111"
+                href={COMPANY_CONTACT.phone.tel}
                 className="text-center px-6 py-3 rounded-full text-ocean bg-sand hover:bg-gold/20 text-xs font-bold transition-colors"
               >
-                Call: +91 99241 11111
+                Call: {COMPANY_CONTACT.phone.display}
               </a>
             </div>
           </div>

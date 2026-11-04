@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 export const metadata = {
   title: 'Privacy Policy | Varni Holidays',
@@ -73,8 +74,8 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-2xl font-bold text-ocean mb-3">5. Data Retention & Your Rights</h2>
             <p>
               We retain customer enquiry records and booking histories to facilitate repeat travel assistance, duplicate verification, and fulfill statutory Indian tax mandates. You have the right to request a copy of your personal data, request corrections, or request archiving of your inactive profile by contacting our data desk at{' '}
-              <a href="mailto:info@varniholidays.com" className="text-ocean font-bold hover:underline">
-                info@varniholidays.com
+              <a href={COMPANY_CONTACT.email.mailto} className="text-ocean font-bold hover:underline">
+                {COMPANY_CONTACT.email.primary}
               </a>.
             </p>
           </div>
@@ -85,10 +86,10 @@ export default function PrivacyPage() {
               If you have any questions regarding this Privacy Policy or our customer data safeguards, please write to:
             </p>
             <div className="mt-3 p-4 rounded-xl bg-sand border border-sand-dark text-xs">
-              <strong>VARNI HOLIDAYS – Privacy & Compliance Officer</strong><br />
-              Anand, Gujarat 388001, India<br />
-              Email: <a href="mailto:info@varniholidays.com" className="text-ocean font-bold">info@varniholidays.com</a><br />
-              Telephone: +91 99241 11111
+              <strong>{COMPANY_CONTACT.businessName} – Privacy & Compliance Officer</strong><br />
+              {COMPANY_CONTACT.address.full}<br />
+              Email: <a href={COMPANY_CONTACT.email.mailto} className="text-ocean font-bold">{COMPANY_CONTACT.email.primary}</a><br />
+              Telephone: {COMPANY_CONTACT.phone.display}
             </div>
           </div>
         </div>

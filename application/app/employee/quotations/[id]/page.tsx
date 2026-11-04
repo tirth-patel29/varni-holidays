@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { getQuotationDetailsAction, convertQuotationToBookingAction, sendCustomerUpdateAction } from '@/app/actions/phase3';
 import { useCrm } from '@/components/crm/CrmContext';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 import {
   ArrowLeft,
   Printer,
@@ -119,7 +120,7 @@ To confirm your reservation or adjust any details, please reply directly to this
 Warm regards,
 *Neel Patel & Tour Operations Team*
 *Varni Holidays, Anand (Gujarat)*
-📞 +91 98250 12345`;
+📞 ${COMPANY_CONTACT.phone.display}`;
 
     await sendCustomerUpdateAction({
       customerId: data.customer.id,
@@ -299,8 +300,8 @@ Warm regards,
                   Private Travel Concierge
                 </span>
               </div>
-              <p className="text-xs text-slate-600 font-medium">Anand Headquarters: Station Road, Anand, Gujarat 388001</p>
-              <p className="text-xs text-slate-500">Phone: +91 98250 12345 • Email: contact@varniholidays.com • GSTIN: 24AAACV1234P1Z5</p>
+              <p className="text-xs text-slate-600 font-medium">Anand Headquarters: {COMPANY_CONTACT.address.full}</p>
+              <p className="text-xs text-slate-500">Phone: {COMPANY_CONTACT.phone.display} • Email: {COMPANY_CONTACT.email.primary} • GSTIN: {COMPANY_CONTACT.gstin}</p>
             </div>
 
             <div className="md:text-right">

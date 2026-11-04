@@ -26,8 +26,8 @@ The following environment variables must be configured in your production hostin
 | `NEXTAUTH_URL` | **YES** | `https://varniholidays.com` |
 | `RESEND_API_KEY` | **YES** | `re_icZsqJ2f_************************` (Active Resend Key) |
 | `RESEND_FROM_EMAIL` | **YES** | `Varni Holidays <noreply@varniholidays.com>` |
-| `OFFICE_PHONE` | **YES** | `+91 90339 10998` |
-| `OFFICE_WHATSAPP` | **YES** | `9163570 50505` |
+| `OFFICE_PHONE` | **YES** | `+91 63570 50505` |
+| `OFFICE_WHATSAPP` | **YES** | `916357050505` |
 | `OFFICE_EMAIL` | **YES** | `varniinternational7@gmail.com` |
 | `OFFICE_ADDRESS` | **YES** | `Station Road, Anand, Gujarat 388001` |
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | Optional | Target Google Sheets ID for live outbox sync |

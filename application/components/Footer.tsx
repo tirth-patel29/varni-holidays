@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 export default function Footer() {
   return (
@@ -110,15 +111,15 @@ export default function Footer() {
                   location_on
                 </span>
                 <span className="leading-snug">
-                  Near Ganesh Crossing, Anand - Vidyanagar Road, Anand, Gujarat - 388001
+                  {COMPANY_CONTACT.address.full}
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">
                   call
                 </span>
-                <a href="tel:+912692245890" className="hover:text-primary transition-colors">
-                  +91 (02692) 245-890
+                <a href={COMPANY_CONTACT.phone.tel} className="hover:text-primary transition-colors">
+                  {COMPANY_CONTACT.phone.display}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
@@ -126,27 +127,27 @@ export default function Footer() {
                   chat
                 </span>
                 <a
-                  href="https://wa.me/919898000000"
+                  href={COMPANY_CONTACT.whatsapp.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors font-medium text-primary"
                 >
-                  +91 98980 00000 (WhatsApp)
+                  {COMPANY_CONTACT.whatsapp.display} (WhatsApp)
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">
                   mail
                 </span>
-                <a href="mailto:holidays@varniholidays.com" className="hover:text-primary transition-colors">
-                  holidays@varniholidays.com
+                <a href={COMPANY_CONTACT.email.mailto} className="hover:text-primary transition-colors">
+                  {COMPANY_CONTACT.email.primary}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">
                   schedule
                 </span>
-                <span>Mon - Sat: 9:30 AM - 7:30 PM</span>
+                <span>{COMPANY_CONTACT.hours.display}</span>
               </div>
             </div>
           </div>

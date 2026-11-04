@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 export const metadata = {
   title: 'Travel & Visa Disclaimer | Varni Holidays',
@@ -81,7 +82,7 @@ export default function DisclaimerPage() {
 
           <div className="pt-4 border-t border-sand-dark">
             <p className="text-xs text-slate-500">
-              For any clarification regarding this disclaimer or our travel facilitation policies, please contact our office in Anand, Gujarat at <a href="mailto:info@varniholidays.com" className="text-ocean font-bold hover:underline">info@varniholidays.com</a>.
+              For any clarification regarding this disclaimer or our travel facilitation policies, please contact our office in Anand, Gujarat at <a href={COMPANY_CONTACT.email.mailto} className="text-ocean font-bold hover:underline">{COMPANY_CONTACT.email.primary}</a> or call {COMPANY_CONTACT.phone.display}.
             </p>
           </div>
         </div>

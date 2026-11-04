@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
+import { COMPANY_CONTACT, getTravelAgencyJsonLd } from "@/lib/config/contact";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -27,7 +28,15 @@ export const metadata: Metadata = {
     "Visa Assistance",
     "Gujarat Tour Operator",
   ],
-  authors: [{ name: "Varni Holidays", url: "https://varnitours.com" }],
+  authors: [{ name: "Varni Holidays", url: "https://varni-holidays.vercel.app" }],
+  openGraph: {
+    title: "Varni Holidays — Your Gateway to Joyful Holidays",
+    description: "Bespoke holiday curation, tour packages, flights and visa assistance from Anand, Gujarat.",
+    url: "https://varni-holidays.vercel.app",
+    siteName: COMPANY_CONTACT.businessName,
+    locale: "en_IN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -35,12 +44,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = getTravelAgencyJsonLd();
+
   return (
     <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
       <head>
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">

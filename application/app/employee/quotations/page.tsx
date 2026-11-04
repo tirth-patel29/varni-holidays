@@ -6,6 +6,7 @@ import CrmHeader from '@/components/crm/CrmHeader';
 import { getQuotationsAction, getLeadsAction, getCustomersAction } from '@/app/actions/crm';
 import { createQuotationAction, convertQuotationToBookingAction, updateQuotationStatusAction } from '@/app/actions/phase3';
 import { useCrm } from '@/components/crm/CrmContext';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 import {
   FileText,
   PlusCircle,
@@ -156,7 +157,7 @@ Please reply to this message to confirm your reservation!
 
 Warm regards,
 *Varni Holidays Anand*
-📞 +91 98250 12345`;
+📞 ${COMPANY_CONTACT.phone.display}`;
 
     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
   };

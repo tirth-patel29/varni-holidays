@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { COMPANY_CONTACT } from "@/lib/config/contact";
 
 interface EnquirySuccessModalProps {
   isOpen: boolean;
@@ -73,7 +74,7 @@ export default function EnquirySuccessModal({
             Close & Continue Browsing
           </button>
           <a
-            href={`https://wa.me/919898000000?text=Hello%20Varni%20Holidays,%20my%20enquiry%20reference%20is%20${referenceId}`}
+            href={COMPANY_CONTACT.whatsapp.buildUrl(`Hello Varni Holidays, my enquiry reference is ${referenceId}`)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 py-3.5 rounded-full bg-surface-container text-primary text-sm font-bold clay-pill-secondary flex items-center justify-center gap-2 text-center"
