@@ -7,6 +7,26 @@ import CrmHeader from '@/components/crm/CrmHeader';
 import { getCustomerByIdAction, getLeadsAction } from '@/app/actions/crm';
 import { getCustomerTimelineAction, sendCustomerUpdateAction } from '@/app/actions/phase3';
 import { useCrm } from '@/components/crm/CrmContext';
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  AlertTriangle,
+  MessageSquare,
+  FileText,
+  BookmarkCheck,
+  Send,
+  X,
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  Compass,
+  Plane,
+  Stamp,
+  ExternalLink,
+} from 'lucide-react';
 
 export default function CustomerProfilePage() {
   const params = useParams();
@@ -87,308 +107,315 @@ export default function CustomerProfilePage() {
 
   if (loading || !customer) {
     return (
-      <div className="flex-1 flex items-center justify-center p-20 text-slate-800 bg-slate-50 min-h-screen">
+      <div className="flex-1 flex items-center justify-center p-20 text-[#969CA5] bg-[#101113]">
         <div className="flex items-center gap-3">
-          <span className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <span className="font-bold text-sm text-slate-600">Loading Customer 360 Profile...</span>
+          <div className="w-5 h-5 border-2 border-[#E9B95E] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium">Loading 360 Customer Profile...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-slate-50 text-slate-900 font-sans">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
         title={customer.fullName}
-        subtitle={`Customer 360 Record • Registered ${new Date(customer.createdAt).toLocaleDateString('en-IN')}`}
+        subtitle={`Customer Identity: ${customer.id} • Registered ${new Date(customer.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
         actions={
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowUpdateModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5"
-            >
-              <span className="material-symbols-outlined text-sm">send</span>
-              <span>Send Message</span>
-            </button>
             <Link
               href="/employee/customers"
-              className="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors shadow-xs flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-md bg-[#17191D] hover:bg-[#1D2025] border border-[#2A2E34] text-xs font-medium text-[#F4F4F2] inline-flex items-center gap-1.5 transition-colors"
             >
-              <span className="material-symbols-outlined text-sm">arrow_back</span>
-              <span>Directory</span>
+              <ArrowLeft size={14} />
+              <span>All Customers</span>
             </Link>
+            <button
+              onClick={() => setShowUpdateModal(true)}
+              className="px-3.5 py-1.5 rounded-md bg-[#E9B95E] hover:bg-[#F0C878] text-[#101113] text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+            >
+              <Send size={14} />
+              <span>Send Message</span>
+            </button>
           </div>
         }
       />
 
-      <main className="p-6 sm:p-8 flex-1 flex flex-col min-w-0 space-y-6">
+      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
         {actionMsg && (
-          <div className={`px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between ${
-            actionMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'
-          }`}>
+          <div
+            className={`p-3 rounded-lg border text-xs flex items-center justify-between ${
+              actionMsg.type === 'success'
+                ? 'bg-[#55B98A]/10 border-[#55B98A]/30 text-[#55B98A]'
+                : 'bg-[#DF7373]/10 border-[#DF7373]/30 text-[#DF7373]'
+            }`}
+          >
             <span>{actionMsg.text}</span>
-            <button onClick={() => setActionMsg(null)} className="text-slate-500 hover:text-slate-800">×</button>
+            <button onClick={() => setActionMsg(null)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+              <X size={14} />
+            </button>
           </div>
         )}
 
-        {/* Duplicate Warning */}
-        {customer.duplicateWarning && (
-          <div className="bg-amber-50 rounded-2xl p-4 border border-amber-300 flex items-center justify-between gap-4 shadow-xs">
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-amber-700 text-2xl">warning</span>
-              <div>
-                <h4 className="font-bold text-amber-950 text-xs">Potential Duplicate Profile Detected</h4>
-                <p className="text-[11px] text-amber-900 font-medium">{customer.duplicateNotes}</p>
-              </div>
-            </div>
-            <Link
-              href="/admin/deduplication"
-              className="px-3 py-1.5 rounded-lg bg-amber-800 text-white font-bold text-xs shadow-xs hover:bg-amber-900 transition-colors whitespace-nowrap"
-            >
-              Deduplication Center
-            </Link>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Identity Snapshot */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-400/20 text-slate-900 flex items-center justify-center font-serif text-2xl font-bold border border-amber-400/30">
-                {customer.fullName.charAt(0)}
-              </div>
-
-              <div>
-                <h3 className="font-serif text-xl font-bold text-slate-900">{customer.fullName}</h3>
-                <span className="text-xs text-slate-500 font-semibold">{customer.city || 'Anand, Gujarat'}</span>
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 space-y-3 text-xs">
-                <div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Normalized Phone (E.164)</span>
-                  <span className="font-mono font-bold text-slate-900 text-sm">{customer.normalizedPhone}</span>
+        {/* 2-Column Desktop Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Left Column (4 cols): Profile Overview & Contact Info */}
+          <div className="lg:col-span-4 space-y-5">
+            {/* Customer Details Card */}
+            <div className="bg-[#17191D] rounded-lg p-4 border border-[#2A2E34] space-y-4">
+              <div className="flex items-center gap-3 pb-3 border-b border-[#2A2E34]">
+                <div className="w-10 h-10 rounded-md bg-[#1D2025] border border-[#2A2E34] flex items-center justify-center text-[#E9B95E] font-bold text-sm shrink-0">
+                  {customer.fullName.charAt(0)}
                 </div>
-                <div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Email Address</span>
-                  <span className="text-slate-700 font-medium">{customer.email || 'None provided'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Total Inquiries</span>
-                  <span className="font-bold text-slate-800">{customerLeads.length} Registered Leads</span>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold text-[#F4F4F2] truncate">{customer.fullName}</h2>
+                  <p className="text-[10px] text-[#666E79] font-mono">{customer.id}</p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Right Column: Customer 360 Tabs */}
-          <div className="lg:col-span-8 space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              {/* Tab Header */}
-              <div className="flex items-center gap-2 px-6 pt-4 border-b border-slate-100">
-                <button
-                  onClick={() => setActiveTab('TIMELINE')}
-                  className={`pb-3 text-xs font-bold border-b-2 transition-all ${
-                    activeTab === 'TIMELINE'
-                      ? 'border-slate-900 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  Customer 360 Journey Timeline ({timeline.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('LEADS')}
-                  className={`pb-3 text-xs font-bold border-b-2 transition-all ${
-                    activeTab === 'LEADS'
-                      ? 'border-slate-900 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  Active & Historical Leads ({customerLeads.length})
-                </button>
-              </div>
-
-              {/* Tab Content */}
-              <div className="p-6">
-                {activeTab === 'TIMELINE' ? (
-                  timeline.length === 0 ? (
-                    <div className="p-8 text-center text-xs text-slate-500">
-                      No interactions recorded in the timeline yet.
-                    </div>
-                  ) : (
-                    <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-                      {timeline.map((event) => {
-                        let dotColor = 'bg-slate-400';
-                        if (event.type === 'BOOKING') dotColor = 'bg-emerald-500';
-                        else if (event.type === 'PAYMENT') dotColor = 'bg-emerald-600';
-                        else if (event.type === 'QUOTATION') dotColor = 'bg-indigo-500';
-                        else if (event.type === 'SERVICE') dotColor = 'bg-purple-500';
-                        else if (event.type === 'COMMUNICATION') dotColor = 'bg-teal-500';
-                        else if (event.type === 'LEAD') dotColor = 'bg-sky-500';
-                        else if (event.type === 'ACTIVITY') dotColor = 'bg-amber-500';
-
-                        return (
-                          <div key={event.id} className="relative group">
-                            {/* Marker */}
-                            <span className={`absolute -left-[27px] top-1.5 w-3 h-3 rounded-full ${dotColor} ring-4 ring-white`} />
-
-                            <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 hover:bg-slate-100/60 transition-colors">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
-                                    {event.type}
-                                  </span>
-                                  <h4 className="font-bold text-xs text-slate-900">{event.title}</h4>
-                                </div>
-                                <span className="text-[10px] text-slate-400">
-                                  {new Date(event.timestamp).toLocaleString('en-IN')}
-                                </span>
-                              </div>
-
-                              {event.subtitle && (
-                                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                                  {event.subtitle}
-                                </p>
-                              )}
-
-                              {event.actor && (
-                                <span className="text-[10px] text-slate-400 block mt-1 font-medium">
-                                  Handled by: {event.actor}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                ) : (
-                  <div className="space-y-3">
-                    {customerLeads.map((lead) => (
-                      <div
-                        key={lead.id}
-                        className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 text-xs"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-slate-900">{lead.referenceId}</span>
-                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
-                              {lead.serviceType}
-                            </span>
-                            <span className="text-[10px] text-slate-400">
-                              {new Date(lead.createdAt).toLocaleDateString('en-IN')}
-                            </span>
-                          </div>
-                          <p className="text-slate-700 font-medium">
-                            {lead.serviceType === 'PACKAGE' && lead.packageDetail?.packageName}
-                            {lead.serviceType === 'FLIGHT' && `${lead.flightDetail?.originAirport} ✈ ${lead.flightDetail?.destinationAirport}`}
-                            {lead.serviceType === 'VISA' && `${lead.visaDetail?.destinationCountry} (${lead.visaDetail?.visaCategory})`}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-800">
-                            {lead.stage}
-                          </span>
-                          <Link
-                            href={`/employee/leads/${lead.id}`}
-                            className="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors"
-                          >
-                            Open Lead
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
+              {customer.duplicateWarning && (
+                <div className="p-2.5 rounded bg-[#E8B65E]/10 border border-[#E8B65E]/20 text-[#E8B65E] text-xs">
+                  <div className="flex items-center gap-1.5 font-medium mb-0.5">
+                    <AlertTriangle size={13} />
+                    <span>Potential Duplicate Account</span>
                   </div>
-                )}
+                  <p className="text-[11px] text-[#969CA5]">{customer.duplicateNotes}</p>
+                </div>
+              )}
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase text-[#666E79] block">Phone (Normalized)</span>
+                  <span className="font-mono text-[#F4F4F2]">
+                    {customer.phoneCountryCode} {customer.phoneNumber}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-[#666E79] block">Email</span>
+                  <span className="text-[#969CA5]">{customer.email || 'None provided'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-[#666E79] block">Location</span>
+                  <span className="text-[#969CA5]">{customer.city || 'Gujarat, India'}</span>
+                </div>
               </div>
             </div>
+
+            {/* Lifetime Stats */}
+            <div className="bg-[#17191D] rounded-lg p-4 border border-[#2A2E34] space-y-3">
+              <h3 className="text-xs font-medium text-[#F4F4F2] pb-2 border-b border-[#2A2E34]">
+                Relationship Summary
+              </h3>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
+                  <span className="text-[10px] uppercase text-[#666E79] block">Enquiries</span>
+                  <span className="text-lg font-semibold text-[#F4F4F2] tabular-nums">
+                    {customerLeads.length}
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
+                  <span className="text-[10px] uppercase text-[#666E79] block">Timeline Events</span>
+                  <span className="text-lg font-semibold text-[#55B98A] tabular-nums">
+                    {timeline.length}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column (8 cols): Interactive Timeline & Enquiries */}
+          <div className="lg:col-span-8 space-y-5">
+            {/* Tabs */}
+            <div className="bg-[#17191D] rounded-lg p-1.5 border border-[#2A2E34] flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab('TIMELINE')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  activeTab === 'TIMELINE'
+                    ? 'bg-[#1D2025] text-[#F4F4F2] border border-[#2A2E34]'
+                    : 'text-[#969CA5] hover:text-[#F4F4F2]'
+                }`}
+              >
+                Journey Timeline ({timeline.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('LEADS')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  activeTab === 'LEADS'
+                    ? 'bg-[#1D2025] text-[#F4F4F2] border border-[#2A2E34]'
+                    : 'text-[#969CA5] hover:text-[#F4F4F2]'
+                }`}
+              >
+                Enquiries & Leads ({customerLeads.length})
+              </button>
+            </div>
+
+            {/* Active Tab Content */}
+            {activeTab === 'TIMELINE' && (
+              <div className="bg-[#17191D] rounded-lg p-5 border border-[#2A2E34]">
+                <h3 className="text-sm font-semibold text-[#F4F4F2] mb-1">Chronological 360 Customer Journey</h3>
+                <p className="text-xs text-[#969CA5] mb-5">
+                  Aggregated omni-channel interactions, quotations, bookings, calls, emails, and payments
+                </p>
+
+                <div className="space-y-4">
+                  {timeline.map((item) => (
+                    <div key={item.id} className="flex items-start gap-3 text-xs">
+                      <span className="w-2 h-2 rounded-full bg-[#E9B95E] mt-1 shrink-0" />
+                      <div className="min-w-0 flex-1 p-3 rounded-md bg-[#1D2025] border border-[#2A2E34]">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-[#F4F4F2]">{item.title}</span>
+                          <span className="text-[10px] text-[#666E79] font-mono">
+                            {new Date(item.timestamp).toLocaleString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#969CA5] mt-1">{item.description}</p>
+                        <span className="text-[10px] text-[#666E79] block mt-1">By {item.actor}</span>
+                      </div>
+                    </div>
+                  ))}
+
+                  {timeline.length === 0 && (
+                    <p className="text-xs text-[#666E79] py-8 text-center">No timeline history recorded.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'LEADS' && (
+              <div className="bg-[#17191D] rounded-lg p-5 border border-[#2A2E34]">
+                <h3 className="text-sm font-semibold text-[#F4F4F2] mb-1">Customer Travel Enquiries</h3>
+                <p className="text-xs text-[#969CA5] mb-4">Historical and active leads submitted by this traveler</p>
+
+                <div className="space-y-3">
+                  {customerLeads.map((l) => (
+                    <div key={l.id} className="p-3.5 rounded-md bg-[#1D2025] border border-[#2A2E34] flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-[#F4F4F2] font-mono">{l.referenceId}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#17191D] text-[#969CA5] border border-[#2A2E34]">
+                            {l.serviceType}
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#17191D] text-[#F4F4F2] border border-[#2A2E34]">
+                            {l.stage}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#969CA5] mt-1">
+                          {l.serviceType === 'PACKAGE' && l.packageDetail?.packageName}
+                          {l.serviceType === 'FLIGHT' && `${l.flightDetail?.originAirport} → ${l.flightDetail?.destinationAirport}`}
+                          {l.serviceType === 'VISA' && `${l.visaDetail?.destinationCountry} Visa`}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/employee/leads/${l.id}`}
+                        className="text-xs text-[#E9B95E] hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>View Lead</span>
+                        <ExternalLink size={12} />
+                      </Link>
+                    </div>
+                  ))}
+
+                  {customerLeads.length === 0 && (
+                    <p className="text-xs text-[#666E79] py-6 text-center">No active travel enquiries found.</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
 
-      {/* Message Composer Modal */}
+      {/* Advisory Message Modal */}
       {showUpdateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 border border-slate-200 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] p-5 w-full max-w-lg space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Send Customer Update</h3>
-                <p className="text-xs text-slate-500">Dispatch message to {customer.fullName}</p>
+                <h3 className="text-sm font-semibold text-[#F4F4F2]">Send Advisory to {customer.fullName}</h3>
+                <p className="text-xs text-[#969CA5]">Direct outbound notification via Resend or WhatsApp</p>
               </div>
-              <button
-                onClick={() => setShowUpdateModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"
-              >
-                ×
+              <button onClick={() => setShowUpdateModal(false)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSendUpdate} className="space-y-4">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setChannel('EMAIL')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    channel === 'EMAIL'
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  Resend Email
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChannel('WHATSAPP')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    channel === 'WHATSAPP'
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  WhatsApp Business
-                </button>
+            <form onSubmit={handleSendUpdate} className="space-y-3.5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Channel</label>
+                  <select
+                    value={channel}
+                    onChange={(e: any) => setChannel(e.target.value)}
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
+                  >
+                    <option value="EMAIL">Email (Resend API)</option>
+                    <option value="WHATSAPP">WhatsApp (Click-to-Chat)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Template Category</label>
+                  <select
+                    value={category}
+                    onChange={(e: any) => setCategory(e.target.value)}
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
+                  >
+                    <option value="CUSTOM_MESSAGE">Custom Advisory</option>
+                    <option value="ITINERARY_UPDATE">Itinerary Update</option>
+                    <option value="VOUCHER_ISSUANCE">Voucher Issuance</option>
+                    <option value="PAYMENT_RECEIPT">Payment Receipt</option>
+                  </select>
+                </div>
               </div>
 
               {channel === 'EMAIL' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Email Subject</label>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Subject</label>
                   <input
                     type="text"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    placeholder="e.g. Travel Advisory from Varni Holidays"
-                    className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                    placeholder="Subject for customer..."
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Message Content</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Message Content</label>
                 <textarea
+                  rows={4}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Type your message..."
-                  rows={4}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  placeholder="Type advisory or itinerary update..."
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2] focus:outline-none focus:border-[#E9B95E]"
                   required
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"
                   onClick={() => setShowUpdateModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-1.5 text-xs text-[#969CA5] hover:text-[#F4F4F2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sending}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#E9B95E] text-[#101113] hover:bg-[#F0C878] transition-colors"
                 >
-                  {sending ? 'Dispatching...' : `Send via ${channel}`}
+                  {sending ? 'Dispatching...' : 'Dispatch Message'}
                 </button>
               </div>
             </form>

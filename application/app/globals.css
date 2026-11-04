@@ -57,6 +57,36 @@
   background: transparent;
 }
 
+/* Sleek Dark CRM Scrollbars */
+.crm-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #2A2E34 #101113;
+}
+
+.crm-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.crm-scrollbar::-webkit-scrollbar-track {
+  background: #101113;
+}
+
+.crm-scrollbar::-webkit-scrollbar-thumb {
+  background: #2A2E34;
+  border-radius: 9999px;
+}
+
+.crm-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3E444E;
+}
+
+/* Dark mode select dropdown option styling fix */
+select option {
+  background-color: #17191D;
+  color: #F4F4F2;
+}
+
 /* Hide scrollbar for tabs/carousels while preserving scroll functionality */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

@@ -3,99 +3,96 @@
 import React from 'react';
 import CrmHeader from '@/components/crm/CrmHeader';
 import { useCrm } from '@/components/crm/CrmContext';
+import {
+  Users,
+  ShieldCheck,
+  Check,
+  X,
+  Lock,
+} from 'lucide-react';
 
 export default function StaffManagementPage() {
-  const { allUsers, currentUser, isSuperAdmin } = useCrm();
+  const { allUsers, currentUser } = useCrm();
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
-        title="Staff & Role Permissions"
-        subtitle="Super Admin governance: multi-role access control and service-based operational boundaries."
+        title="Staff & Role Governance"
+        subtitle="Super Admin access controls and service-based operational boundaries."
         actions={
           <div className="flex items-center gap-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-[#E9B95E]/20 text-[#0B1E2E] font-bold text-xs border border-[#C29033]/40 flex items-center gap-1.5 shadow-sm">
-              <span className="material-symbols-outlined text-[16px] text-[#C29033]">shield_person</span>
-              <span>Super Admin: Neel Patel</span>
+            <span className="px-3 py-1 rounded-md bg-[#1D2025] text-[#E9B95E] text-xs font-medium border border-[#2A2E34] inline-flex items-center gap-1.5">
+              <ShieldCheck size={14} />
+              <span>Super Admin Active</span>
             </span>
           </div>
         }
       />
 
-      <main className="p-6 sm:p-8 flex-1 flex flex-col min-w-0 space-y-6">
-        <div className="clay-card rounded-3xl overflow-hidden border border-[#E3DCCB] bg-white">
-          <div className="p-6 border-b border-[#E3DCCB] flex items-center justify-between">
+      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
+        <div className="rounded-lg overflow-hidden border border-[#2A2E34] bg-[#17191D]">
+          <div className="p-4 border-b border-[#2A2E34] flex items-center justify-between">
             <div>
-              <h3 className="font-serif font-bold text-[#153650] text-lg">Employee Directory & Access Matrix</h3>
-              <p className="text-xs text-slate-600 mt-0.5">
-                Each team member is strictly bounded to authorized services and confidential data layers.
+              <h2 className="text-sm font-semibold text-[#F4F4F2]">Employee Directory & Permission Matrix</h2>
+              <p className="text-xs text-[#969CA5]">
+                Each staff member is restricted to designated services and confidential data layers
               </p>
             </div>
-            <span className="text-xs font-bold text-slate-500 bg-[#F5F2EB] px-3 py-1 rounded-full border border-[#E3DCCB]">
-              {allUsers.length} Active Employees
+            <span className="text-xs font-mono text-[#969CA5] bg-[#1D2025] px-2.5 py-1 rounded border border-[#2A2E34]">
+              {allUsers.length} Staff Accounts
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#E5DEC9]/80 text-[#153650] uppercase text-[10px] font-black tracking-wider border-b border-[#E3DCCB]">
+              <thead className="bg-[#101113] text-[#666E79] uppercase text-[10px] font-medium tracking-wider border-b border-[#2A2E34]">
                 <tr>
-                  <th className="px-6 py-4">Employee</th>
-                  <th className="px-5 py-4">Assigned Role</th>
-                  <th className="px-5 py-4">Service Authorizations</th>
-                  <th className="px-5 py-4 text-center">Supplier Net Costs</th>
-                  <th className="px-5 py-4 text-center">Rate Approval</th>
-                  <th className="px-5 py-4 text-center">Customer Merging</th>
-                  <th className="px-5 py-4 text-center">Audit Logs</th>
+                  <th className="px-4 py-3">Employee</th>
+                  <th className="px-4 py-3">Assigned Role</th>
+                  <th className="px-4 py-3">Service Scope</th>
+                  <th className="px-4 py-3 text-center">Supplier Net Costs</th>
+                  <th className="px-4 py-3 text-center">Rate Approval</th>
+                  <th className="px-4 py-3 text-center">Customer Merging</th>
+                  <th className="px-4 py-3 text-center">Audit Trail</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E3DCCB]/60 bg-[#FBF9F5]/60">
+              <tbody className="divide-y divide-[#1F2329] text-[#969CA5]">
                 {allUsers.map((u) => {
                   const isCurrent = u.id === currentUser.id;
 
                   return (
-                    <tr key={u.id} className={`hover:bg-[#F5F2EB] transition-colors ${isCurrent ? 'bg-[#E9B95E]/10' : ''}`}>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={u.avatarUrl}
-                            alt={u.fullName}
-                            className="w-9 h-9 rounded-full object-cover border border-[#E3DCCB] shrink-0"
-                          />
+                    <tr key={u.id} className={`hover:bg-[#1D2025]/60 transition-colors ${isCurrent ? 'bg-[#1D2025]/30' : ''}`}>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-md bg-[#1D2025] border border-[#2A2E34] flex items-center justify-center text-[#E9B95E] font-bold text-xs shrink-0">
+                            {u.fullName.charAt(0)}
+                          </div>
                           <div>
-                            <div className="font-bold text-[#153650] flex items-center gap-1.5">
+                            <div className="font-medium text-[#F4F4F2] flex items-center gap-1.5">
                               <span>{u.fullName}</span>
                               {isCurrent && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded font-black bg-[#E9B95E] text-[#0B1E2E] uppercase shadow-xs">
+                                <span className="text-[9px] px-1 rounded bg-[#E9B95E]/10 text-[#E9B95E] border border-[#E9B95E]/20">
                                   You
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-slate-500">{u.email}</span>
+                            <span className="text-[10px] text-[#666E79]">{u.email}</span>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded ${
-                            u.role === 'SUPER_ADMIN'
-                              ? 'bg-[#E9B95E] text-[#0B1E2E] shadow-xs'
-                              : u.role === 'MANAGER'
-                              ? 'bg-purple-100 text-purple-900 border border-purple-200'
-                              : 'bg-[#153650]/10 text-[#153650] border border-[#153650]/20'
-                          }`}
-                        >
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="inline-block text-[10px] font-medium uppercase px-2 py-0.5 rounded bg-[#1D2025] text-[#F4F4F2] border border-[#2A2E34]">
                           {u.role.replace('_', ' ')}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {u.servicePermissions.map((s) => (
                             <span
                               key={s}
-                              className="text-[9px] font-bold px-2 py-0.5 rounded bg-white border border-[#E3DCCB] text-[#153650]"
+                              className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#1D2025] border border-[#2A2E34] text-[#969CA5]"
                             >
                               {s}
                             </span>
@@ -103,35 +100,51 @@ export default function StaffManagementPage() {
                         </div>
                       </td>
 
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-4 py-3 text-center">
                         {u.canViewSupplierCosts ? (
-                          <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                          <span className="inline-flex items-center justify-center text-[#55B98A]">
+                            <Check size={14} />
+                          </span>
                         ) : (
-                          <span className="material-symbols-outlined text-slate-300 text-base">cancel</span>
+                          <span className="inline-flex items-center justify-center text-[#666E79]">
+                            <Lock size={12} />
+                          </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-4 py-3 text-center">
                         {u.canApprovePricing ? (
-                          <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                          <span className="inline-flex items-center justify-center text-[#55B98A]">
+                            <Check size={14} />
+                          </span>
                         ) : (
-                          <span className="material-symbols-outlined text-slate-300 text-base">cancel</span>
+                          <span className="inline-flex items-center justify-center text-[#666E79]">
+                            <X size={13} />
+                          </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-4 py-3 text-center">
                         {u.canMergeCustomers ? (
-                          <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                          <span className="inline-flex items-center justify-center text-[#55B98A]">
+                            <Check size={14} />
+                          </span>
                         ) : (
-                          <span className="material-symbols-outlined text-slate-300 text-base">cancel</span>
+                          <span className="inline-flex items-center justify-center text-[#666E79]">
+                            <X size={13} />
+                          </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-4 py-3 text-center">
                         {u.canViewAuditLogs ? (
-                          <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                          <span className="inline-flex items-center justify-center text-[#55B98A]">
+                            <Check size={14} />
+                          </span>
                         ) : (
-                          <span className="material-symbols-outlined text-slate-300 text-base">cancel</span>
+                          <span className="inline-flex items-center justify-center text-[#666E79]">
+                            <X size={13} />
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -145,4 +158,3 @@ export default function StaffManagementPage() {
     </div>
   );
 }
-

@@ -5,12 +5,23 @@ import Link from 'next/link';
 import CrmHeader from '@/components/crm/CrmHeader';
 import { getFollowUpsAction, completeFollowUpAction } from '@/app/actions/crm';
 import { useCrm } from '@/components/crm/CrmContext';
+import {
+  Calendar,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  RefreshCw,
+  User,
+  Filter,
+  Check,
+} from 'lucide-react';
 
 export default function FollowUpsPage() {
   const { currentUser } = useCrm();
   const [followUps, setFollowUps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('PENDING');
+  const [statusFilter, setStatusFilter] = useState<'PENDING' | 'ALL'>('PENDING');
 
   const loadData = async () => {
     setLoading(true);
@@ -28,90 +39,165 @@ export default function FollowUpsPage() {
     await loadData();
   };
 
+  const overdueCount = followUps.filter(
+    (f) => f.status === 'PENDING' && new Date(f.scheduledAt).getTime() < Date.now()
+  ).length;
+
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#FBF9F5]">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
         title="Follow-Up Schedule & Reminders"
-        subtitle="Ensure zero lead leakage with scheduled phone and consultation follow-ups."
+        subtitle="Ensure zero lead leakage with scheduled phone consultations and customer check-ins."
         actions={
           <div className="flex items-center gap-2">
             <button
               onClick={() => setStatusFilter(statusFilter === 'PENDING' ? 'ALL' : 'PENDING')}
-              className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition-colors shadow-sm ${
+              className={`px-3 py-1.5 rounded-md border text-xs font-medium transition-colors flex items-center gap-1.5 ${
                 statusFilter === 'PENDING'
-                  ? 'bg-[#E9B95E] text-[#0B1E2E] border-[#E9B95E]'
-                  : 'bg-white text-slate-800 border-[#E3DCCB] hover:bg-[#F5F2EB]'
+                  ? 'bg-[#E9B95E] text-[#0B0D0F] border-[#E9B95E]'
+                  : 'bg-[#17191D] text-[#969CA5] border-[#2A2E34] hover:text-[#F4F4F2]'
               }`}
             >
-              {statusFilter === 'PENDING' ? 'Showing Pending Only' : 'Showing All'}
+              <Filter size={13} />
+              <span>{statusFilter === 'PENDING' ? 'Pending Only' : 'All Follow-ups'}</span>
             </button>
             <button
               onClick={loadData}
-              className="p-2 rounded-xl bg-white border border-[#E3DCCB] text-[#153650] hover:bg-[#F5F2EB] transition-colors shadow-sm flex items-center justify-center"
+              disabled={loading}
+              className="p-1.5 rounded-md bg-[#17191D] hover:bg-[#1D2025] text-[#969CA5] hover:text-[#F4F4F2] border border-[#2A2E34] text-xs transition-colors"
               title="Refresh"
             >
-              <span className="material-symbols-outlined text-[18px]">refresh</span>
+              <RefreshCw size={14} className={loading ? 'animate-spin text-[#E9B95E]' : ''} />
             </button>
           </div>
         }
       />
 
-      <main className="p-6 sm:p-8 flex-1 flex flex-col min-w-0 space-y-6">
-        <div className="bg-white rounded-3xl p-6 border border-[#E3DCCB] shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#E3DCCB] pb-3">
-            <h3 className="font-serif font-bold text-[#153650] text-lg">Scheduled Reminders</h3>
-            <span className="text-xs font-bold text-[#153650] bg-[#F5F2EB] px-2.5 py-1 rounded-full">{followUps.length} Reminders</span>
+      <main className="p-4 sm:p-6 flex-1 flex flex-col min-w-0 space-y-4">
+        {/* Status Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="bg-[#17191D] rounded-lg p-3.5 border border-[#2A2E34] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-[#666E79] font-medium block">
+                Total Listed
+              </span>
+              <span className="text-xl font-mono font-bold text-[#F4F4F2]">{followUps.length}</span>
+            </div>
+            <Calendar size={18} className="text-[#969CA5]" />
           </div>
 
-          {loading ? (
-            <div className="py-12 text-center text-slate-500 font-semibold">Loading reminders...</div>
-          ) : followUps.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 font-medium">
-              No follow-ups currently due. Great job maintaining customer contact!
+          <div className="bg-[#17191D] rounded-lg p-3.5 border border-[#2A2E34] flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-[#666E79] font-medium block">
+                Pending Actions
+              </span>
+              <span className="text-xl font-mono font-bold text-[#E9B95E]">
+                {followUps.filter((f) => f.status === 'PENDING').length}
+              </span>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {followUps.map((f) => {
-                const isOverdue = new Date(f.scheduledAt).getTime() < Date.now() && f.status === 'PENDING';
+            <Clock size={18} className="text-[#E9B95E]" />
+          </div>
+
+          <div
+            className={`rounded-lg p-3.5 border flex items-center justify-between ${
+              overdueCount > 0
+                ? 'bg-[#DF7373]/10 border-[#DF7373]/30 text-[#DF7373]'
+                : 'bg-[#17191D] border-[#2A2E34] text-[#55B98A]'
+            }`}
+          >
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-[#666E79] font-medium block">
+                Overdue Reminders
+              </span>
+              <span className="text-xl font-mono font-bold">{overdueCount}</span>
+            </div>
+            <AlertTriangle size={18} />
+          </div>
+        </div>
+
+        {/* Reminders List */}
+        <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] overflow-hidden flex-1 flex flex-col">
+          <div className="p-3.5 border-b border-[#2A2E34] bg-[#1D2025] flex items-center justify-between">
+            <h3 className="font-medium text-xs text-[#F4F4F2] flex items-center gap-2">
+              <Calendar size={14} className="text-[#E9B95E]" />
+              Scheduled Consultations & Reminders
+            </h3>
+            <span className="text-[10px] font-mono text-[#969CA5] px-2 py-0.5 rounded bg-[#101113] border border-[#2A2E34]">
+              {followUps.length} records
+            </span>
+          </div>
+
+          <div className="p-3 sm:p-4 overflow-y-auto crm-scrollbar flex-1 space-y-2.5">
+            {loading ? (
+              <div className="py-16 text-center text-[#666E79] flex flex-col items-center gap-2">
+                <RefreshCw size={20} className="animate-spin text-[#E9B95E]" />
+                <span className="text-xs">Loading follow-up schedule...</span>
+              </div>
+            ) : followUps.length === 0 ? (
+              <div className="py-16 text-center text-[#666E79] flex flex-col items-center gap-2">
+                <CheckCircle2 size={24} className="text-[#55B98A]" />
+                <span className="text-xs font-medium text-[#F4F4F2]">All follow-ups completed</span>
+                <span className="text-[11px] text-[#666E79]">Zero lead leakage. Good work!</span>
+              </div>
+            ) : (
+              followUps.map((f) => {
+                const isOverdue =
+                  new Date(f.scheduledAt).getTime() < Date.now() && f.status === 'PENDING';
 
                 return (
                   <div
                     key={f.id}
-                    className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                    className={`p-3.5 rounded-lg border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                       isOverdue
-                        ? 'bg-rose-50/90 border-rose-300'
+                        ? 'bg-[#DF7373]/5 border-[#DF7373]/30'
                         : f.status === 'COMPLETED'
-                        ? 'bg-slate-50 border-slate-200 opacity-60'
-                        : 'bg-[#F5F2EB]/70 border-[#E3DCCB]'
+                        ? 'bg-[#101113]/60 border-[#2A2E34]/50 opacity-60'
+                        : 'bg-[#1D2025] border-[#2A2E34] hover:border-[#383E47]'
                     }`}
                   >
-                    <div className="space-y-1.5 min-w-0">
+                    <div className="space-y-1.5 min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span
-                          className={`text-[10px] font-black px-2 py-0.5 rounded uppercase ${
+                          className={`text-[9px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide ${
                             isOverdue
-                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                              ? 'bg-[#DF7373]/15 text-[#DF7373] border border-[#DF7373]/30'
                               : f.status === 'COMPLETED'
-                              ? 'bg-slate-200 text-slate-700'
-                              : 'bg-[#F7E5BD] text-[#453000] border border-[#E9B95E]'
+                              ? 'bg-[#2A2E34] text-[#969CA5]'
+                              : 'bg-[#E9B95E]/15 text-[#E9B95E] border border-[#E9B95E]/30'
                           }`}
                         >
-                          {isOverdue ? 'Overdue Reminder' : f.status}
+                          {isOverdue ? 'Overdue' : f.status}
                         </span>
 
-                        <span className="font-mono font-bold text-[#153650] text-xs">{f.leadRef}</span>
-                        <span className="text-slate-400">•</span>
-                        <span className="font-bold text-slate-800 text-xs">{f.customerName}</span>
+                        <span className="font-mono text-xs text-[#E9B95E] font-medium">
+                          {f.leadRef}
+                        </span>
+                        <span className="text-[#666E79]">•</span>
+                        <span className="text-xs font-medium text-[#F4F4F2] truncate">
+                          {f.customerName}
+                        </span>
                       </div>
 
-                      <p className="text-xs text-slate-800 font-medium leading-relaxed">{f.note}</p>
+                      <p className="text-xs text-[#969CA5] leading-relaxed">
+                        {f.note}
+                      </p>
 
-                      <div className="flex items-center gap-3 text-[11px] text-slate-600 font-semibold">
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[15px] text-[#C29033]">schedule</span>
-                          <span>{new Date(f.scheduledAt).toLocaleString('en-IN')}</span>
+                      <div className="flex items-center gap-3 text-[11px] text-[#666E79] flex-wrap">
+                        <span className="flex items-center gap-1.5">
+                          <Clock size={12} className={isOverdue ? 'text-[#DF7373]' : 'text-[#E9B95E]'} />
+                          <span className={isOverdue ? 'text-[#DF7373] font-medium' : 'text-[#969CA5]'}>
+                            {new Date(f.scheduledAt).toLocaleString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
                         </span>
-                        <span>Assigned: {f.userName}</span>
+                        <span className="flex items-center gap-1 text-[#666E79]">
+                          <User size={12} />
+                          Assigned: {f.userName || 'Unassigned'}
+                        </span>
                       </div>
                     </div>
 
@@ -119,26 +205,26 @@ export default function FollowUpsPage() {
                       {f.status === 'PENDING' && (
                         <button
                           onClick={() => handleComplete(f.id)}
-                          className="px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors shadow-sm inline-flex items-center gap-1"
+                          className="px-2.5 py-1.5 rounded-md bg-[#55B98A]/15 text-[#55B98A] hover:bg-[#55B98A] hover:text-[#0B0D0F] border border-[#55B98A]/30 text-xs font-medium transition-colors inline-flex items-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-[16px]">done</span>
+                          <Check size={13} />
                           <span>Mark Done</span>
                         </button>
                       )}
 
                       <Link
                         href={`/employee/leads/${f.leadId}`}
-                        className="px-3.5 py-2 rounded-xl bg-[#153650] text-white font-bold text-xs hover:bg-[#24689B] transition-colors inline-flex items-center gap-1 shadow-sm"
+                        className="px-2.5 py-1.5 rounded-md bg-[#101113] hover:bg-[#1D2025] text-[#969CA5] hover:text-[#F4F4F2] border border-[#2A2E34] text-xs font-medium transition-colors inline-flex items-center gap-1"
                       >
                         <span>Open Lead</span>
-                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        <ArrowRight size={13} />
                       </Link>
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          )}
+              })
+            )}
+          </div>
         </div>
       </main>
     </div>

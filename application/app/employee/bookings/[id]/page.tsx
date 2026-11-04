@@ -9,10 +9,24 @@ import {
   updateBookingServiceComponentAction,
   addBookingServiceComponentAction,
   recordPaymentAction,
-  recordRefundAction,
   sendCustomerUpdateAction,
 } from '@/app/actions/phase3';
 import { useCrm } from '@/components/crm/CrmContext';
+import {
+  ArrowLeft,
+  CreditCard,
+  PlusCircle,
+  CheckCircle2,
+  Send,
+  X,
+  Compass,
+  Plane,
+  Stamp,
+  Clock,
+  ExternalLink,
+  ShieldCheck,
+  Calendar,
+} from 'lucide-react';
 
 export default function BookingDetailPage() {
   const params = useParams();
@@ -99,18 +113,20 @@ export default function BookingDetailPage() {
     setRecordingPay(true);
     const res = await recordPaymentAction({
       bookingId: data.booking.id,
-      amountInr: Number(payAmount) || 0,
+      amountInr: Number(payAmount),
       paymentMethod: payMethod,
-      upiRef: payMethod === 'UPI' ? payRef : undefined,
-      bankTransactionRef: payMethod === 'BANK_TRANSFER' ? payRef : undefined,
+      upiRef: payRef,
       internalNotes: payNotes,
       recordedByUserId: currentUser.id,
+      recordedByName: currentUser.fullName,
     });
     setRecordingPay(false);
 
-    if (res.success && res.payment) {
+    if (res.success) {
       setShowPayModal(false);
-      setActionMsg({ text: `Payment of ₹${res.payment.amountInr.toLocaleString('en-IN')} recorded successfully! Ref: ${res.payment.paymentReference}`, type: 'success' });
+      setPayNotes('');
+      setPayRef('');
+      setActionMsg({ text: `Payment recorded successfully! New Balance: ₹${res.booking?.balanceAmountInr?.toLocaleString('en-IN')}`, type: 'success' });
       await loadData();
     } else {
       setActionMsg({ text: res.error || 'Failed to record payment', type: 'error' });
@@ -122,41 +138,38 @@ export default function BookingDetailPage() {
     if (!data?.booking || !compName) return;
 
     setAddingComp(true);
-    const res = await addBookingServiceComponentAction(
-      data.booking.id,
-      {
-        bookingId: data.booking.id,
-        serviceCategory: compCategory,
-        serviceName: compName,
-        supplierName: compSupplier,
-        customerConfirmationRef: compRef,
-        status: compStatus,
-        responsibleUserId: currentUser.id,
-        responsibleUserName: currentUser.fullName,
-      },
-      currentUser.id
-    );
+    const res = await addBookingServiceComponentAction({
+      bookingId: data.booking.id,
+      serviceCategory: compCategory,
+      serviceName: compName,
+      supplierName: compSupplier,
+      internalReference: compRef,
+      status: compStatus,
+      startDate: data.booking.travelStartDate,
+      endDate: data.booking.travelEndDate,
+      responsibleUserId: currentUser.id,
+      responsibleUserName: currentUser.fullName,
+    });
     setAddingComp(false);
 
     if (res.success) {
       setShowCompModal(false);
       setCompName('');
-      setActionMsg({ text: 'New service component attached to booking', type: 'success' });
+      setCompSupplier('');
+      setCompRef('');
+      setActionMsg({ text: 'Service component added to fulfillment roadmap!', type: 'success' });
       await loadData();
     } else {
-      setActionMsg({ text: res.error || 'Failed to add service component', type: 'error' });
+      setActionMsg({ text: res.error || 'Failed to add component', type: 'error' });
     }
   };
 
-  const handleSendUpdate = async (e: React.FormEvent) => {
+  const handleSendCustomerUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!data?.booking || !data?.customer) return;
+    if (!data?.customer || !data?.booking) return;
 
     setSendingUpdate(true);
-    const recipientContact =
-      updateChannel === 'EMAIL'
-        ? data.customer.email
-        : `${data.customer.phoneCountryCode || '+91'}${data.customer.phoneNumber}`;
+    const recipientContact = updateChannel === 'EMAIL' ? data.customer.email : `${data.customer.phoneCountryCode || '+91'}${data.customer.phoneNumber}`;
 
     const res = await sendCustomerUpdateAction({
       customerId: data.customer.id,
@@ -165,8 +178,8 @@ export default function BookingDetailPage() {
       senderUserName: currentUser.fullName,
       channel: updateChannel,
       category: updateCategory,
-      templateTitle: `Booking Update: ${data.booking.bookingReference}`,
-      subject: updateSubject,
+      templateTitle: `Reservation Notice: ${data.booking.bookingReference}`,
+      subject: updateChannel === 'EMAIL' ? updateSubject : undefined,
       content: updateContent,
       recipientContact,
     });
@@ -177,309 +190,238 @@ export default function BookingDetailPage() {
       if (res.clickToChatUrl) {
         window.open(res.clickToChatUrl, '_blank');
       }
-      setActionMsg({
-        text: `${updateChannel} update dispatched! (Status: ${res.deliveryStatus})`,
-        type: 'success',
-      });
+      setActionMsg({ text: `Update dispatched via ${updateChannel}! (Status: ${res.deliveryStatus})`, type: 'success' });
       await loadData();
     } else {
-      setActionMsg({ text: res.error || 'Failed to dispatch customer update', type: 'error' });
+      setActionMsg({ text: res.error || 'Failed to send update', type: 'error' });
     }
   };
 
-  if (loading) {
+  if (loading || !data?.booking) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
-        <div className="flex items-center gap-3 text-slate-600 font-medium">
-          <span className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <span>Loading Booking Command Desk...</span>
+      <div className="min-h-screen bg-[#101113] flex items-center justify-center p-8 text-[#969CA5]">
+        <div className="flex items-center gap-3 text-xs font-medium">
+          <div className="w-5 h-5 border-2 border-[#E9B95E] border-t-transparent rounded-full animate-spin" />
+          <span>Loading Booking Management Dossier...</span>
         </div>
       </div>
     );
   }
 
-  if (!data?.booking) {
-    return (
-      <div className="min-h-screen bg-slate-50 p-8 flex flex-col items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center max-w-md shadow-sm">
-          <span className="material-symbols-outlined text-4xl text-rose-500 mb-2">error</span>
-          <h2 className="text-lg font-bold text-slate-800">Booking Not Found</h2>
-          <p className="text-sm text-slate-600 mt-1 mb-4">The reservation record could not be located.</p>
-          <Link href="/employee/bookings" className="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold">
-            Back to Bookings Desk
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const { booking, services, payments, customer } = data;
-  const paymentPercent = booking.totalAmountInr > 0 ? Math.min(100, Math.round(((booking.paidAmountInr || 0) / booking.totalAmountInr) * 100)) : 0;
+  const b = data.booking;
+  const c = data.customer;
+  const components = data.serviceComponents || [];
+  const payments = data.payments || [];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-16">
-      {/* Top Breadcrumb & Quick Bar */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
+      {/* Header */}
+      <header className="bg-[#17191D] border-b border-[#2A2E34] px-6 py-3 flex items-center justify-between gap-4 sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          <Link href="/employee/bookings" className="flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900">
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span>Bookings</span>
+          <Link
+            href="/employee/bookings"
+            className="p-1.5 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-[#969CA5] hover:text-[#F4F4F2] border border-[#2A2E34] transition-colors"
+          >
+            <ArrowLeft size={16} />
           </Link>
-          <span className="text-slate-300">/</span>
-          <span className="font-mono font-bold text-sm text-slate-900">{booking.bookingReference}</span>
-          <span className={`text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full ${
-            booking.status === 'CONFIRMED'
-              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              : booking.status === 'IN_PROGRESS'
-              ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-              : booking.status === 'PENDING'
-              ? 'bg-amber-50 text-amber-700 border border-amber-200'
-              : 'bg-slate-100 text-slate-700 border border-slate-200'
-          }`}>
-            {booking.status}
-          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm font-semibold text-[#F4F4F2] font-mono">{b.bookingReference}</h1>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#1D2025] text-[#969CA5] border border-[#2A2E34]">
+                {b.serviceType}
+              </span>
+            </div>
+            <p className="text-[11px] text-[#969CA5]">
+              Customer: <span className="text-[#F4F4F2] font-medium">{c?.fullName}</span> • Period:{' '}
+              {new Date(b.travelStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} →{' '}
+              {new Date(b.travelEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowUpdateModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+            className="px-3 py-1.5 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-xs font-medium text-[#F4F4F2] border border-[#2A2E34] inline-flex items-center gap-1.5 transition-colors"
           >
-            <span className="material-symbols-outlined text-sm">send</span>
-            <span>Notify Customer</span>
+            <Send size={13} />
+            <span>Send Advisory</span>
           </button>
-
           <button
             onClick={() => setShowPayModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs"
+            className="px-3.5 py-1.5 rounded bg-[#E9B95E] hover:bg-[#F0C878] text-[#101113] text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
           >
-            <span className="material-symbols-outlined text-sm font-bold">payments</span>
+            <CreditCard size={13} />
             <span>Record Payment</span>
           </button>
+        </div>
+      </header>
 
-          <select
-            value={booking.status}
-            onChange={(e) => handleBookingStatusChange(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 font-bold text-slate-700 focus:outline-none"
+      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
+        {actionMsg && (
+          <div
+            className={`p-3 rounded-lg border text-xs flex items-center justify-between ${
+              actionMsg.type === 'success'
+                ? 'bg-[#55B98A]/10 border-[#55B98A]/30 text-[#55B98A]'
+                : 'bg-[#DF7373]/10 border-[#DF7373]/30 text-[#DF7373]'
+            }`}
           >
-            <option value="PENDING">PENDING</option>
-            <option value="CONFIRMED">CONFIRMED</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="COMPLETED">COMPLETED</option>
-            <option value="CANCELLED">CANCELLED</option>
-          </select>
-        </div>
-      </div>
+            <span>{actionMsg.text}</span>
+            <button onClick={() => setActionMsg(null)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
-      {actionMsg && (
-        <div className={`max-w-6xl mx-auto mt-4 px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between ${
-          actionMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'
-        }`}>
-          <span>{actionMsg.text}</span>
-          <button onClick={() => setActionMsg(null)} className="text-slate-500 hover:text-slate-800">×</button>
-        </div>
-      )}
+        {/* Financial Progress & Lifecycle Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5">
+          <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
+            <span className="text-[10px] text-[#666E79] uppercase block">Total Package Value</span>
+            <span className="text-xl font-semibold text-[#F4F4F2] font-mono tabular-nums mt-0.5 block">
+              ₹{b.totalAmountInr.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] text-[#969CA5]">Quoted contract amount</span>
+          </div>
 
-      <main className="max-w-6xl mx-auto p-6 sm:p-8 space-y-8">
-        {/* Reservation Overview & Financial Bar */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Client Information</span>
-            <div className="text-base font-bold text-slate-900">{customer?.fullName || booking.customerName}</div>
-            <div className="text-xs text-slate-600 leading-relaxed">
-              <p>Phone: {customer?.phoneCountryCode} {customer?.phoneNumber}</p>
-              <p>Email: {customer?.email || 'N/A'}</p>
-              <p>City: {customer?.city || 'Anand, Gujarat'}</p>
-            </div>
-            {customer && (
-              <Link
-                href={`/employee/customers/${customer.id}`}
-                className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline pt-1"
+          <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
+            <span className="text-[10px] text-[#666E79] uppercase block">Total Received</span>
+            <span className="text-xl font-semibold text-[#55B98A] font-mono tabular-nums mt-0.5 block">
+              ₹{b.paidAmountInr.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] text-[#55B98A]">{payments.length} ledger receipts</span>
+          </div>
+
+          <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
+            <span className="text-[10px] text-[#666E79] uppercase block">Outstanding Balance</span>
+            <span
+              className={`text-xl font-semibold font-mono tabular-nums mt-0.5 block ${
+                b.balanceAmountInr > 0 ? 'text-[#DF7373]' : 'text-[#55B98A]'
+              }`}
+            >
+              ₹{b.balanceAmountInr.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] text-[#666E79]">
+              {b.balanceAmountInr > 0 ? 'Pending traveler payment' : 'Fully Settled'}
+            </span>
+          </div>
+
+          <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
+            <span className="text-[10px] text-[#666E79] uppercase block">Booking Lifecycle</span>
+            <div className="mt-1">
+              <select
+                value={b.status}
+                onChange={(e) => handleBookingStatusChange(e.target.value)}
+                className="w-full text-xs bg-[#1D2025] text-[#F4F4F2] rounded px-2 py-1.5 border border-[#2A2E34] focus:outline-none cursor-pointer"
               >
-                <span>View Customer 360 Profile</span>
-                <span className="material-symbols-outlined text-xs">open_in_new</span>
-              </Link>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Trip & Booking Schedule</span>
-            <div className="text-sm font-bold text-slate-900">{booking.serviceType} Journey</div>
-            <div className="text-xs text-slate-600 space-y-1">
-              <p>
-                Departure: <strong className="text-slate-800">{new Date(booking.travelStartDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</strong>
-              </p>
-              <p>
-                Return: <strong className="text-slate-800">{new Date(booking.travelEndDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</strong>
-              </p>
-              <p>Case Manager: <span className="font-semibold text-slate-800">{booking.managedByName}</span></p>
+                <option value="PENDING">PENDING</option>
+                <option value="CONFIRMED">CONFIRMED</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
             </div>
-          </div>
-
-          {/* Financials */}
-          <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200/80 space-y-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Financial Ledger</span>
-            <div className="flex justify-between items-baseline">
-              <span className="text-xs text-slate-600">Total Booked:</span>
-              <span className="font-mono font-bold text-slate-900 text-base">₹{booking.totalAmountInr.toLocaleString('en-IN')}</span>
-            </div>
-            <div className="flex justify-between items-baseline">
-              <span className="text-xs text-emerald-700 font-medium">Collected:</span>
-              <span className="font-mono font-bold text-emerald-700">₹{(booking.paidAmountInr || 0).toLocaleString('en-IN')}</span>
-            </div>
-            <div className="flex justify-between items-baseline">
-              <span className="text-xs text-amber-700 font-medium">Balance Due:</span>
-              <span className="font-mono font-bold text-amber-700">₹{(booking.balanceAmountInr || 0).toLocaleString('en-IN')}</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-300 ${paymentPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'}`}
-                style={{ width: `${paymentPercent}%` }}
-              />
-            </div>
-            <div className="text-[10px] text-slate-500 text-right">{paymentPercent}% Settled</div>
+            <span className="text-[10px] text-[#969CA5] mt-1 block">Managed by {b.managedByName}</span>
           </div>
         </div>
 
-        {/* Service Progress Tracking Cards */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
+        {/* Service Components (Operational Vouchers & Suppliers) */}
+        <div className="bg-[#17191D] rounded-lg p-5 border border-[#2A2E34] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Component Service Operations</h2>
-              <p className="text-xs text-slate-500">Independent tracking for flights, hotel vouchers, visa filings, and transfers.</p>
+              <h2 className="text-sm font-semibold text-[#F4F4F2]">Operational Service Components</h2>
+              <p className="text-xs text-[#969CA5]">Supplier reservations, confirmations, and traveler vouchers</p>
             </div>
             <button
               onClick={() => setShowCompModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-800 border border-slate-200 hover:bg-slate-50 shadow-xs"
+              className="px-2.5 py-1 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-xs font-medium text-[#F4F4F2] border border-[#2A2E34] inline-flex items-center gap-1.5 transition-colors"
             >
-              <span className="material-symbols-outlined text-sm font-bold">add</span>
-              <span>Add Service Component</span>
+              <PlusCircle size={13} />
+              <span>Add Component</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {services.length === 0 ? (
-              <div className="col-span-2 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
-                No service components attached yet. Click "Add Service Component" to attach Flights, Hotels, or Transfers.
-              </div>
-            ) : (
-              services.map((srv: any) => (
-                <div key={srv.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className={`inline-block text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full mb-1.5 ${
-                        srv.serviceCategory === 'FLIGHT'
-                          ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                          : srv.serviceCategory === 'HOTEL'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : srv.serviceCategory === 'VISA'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'bg-amber-50 text-amber-700 border border-amber-200'
-                      }`}>
-                        {srv.serviceCategory}
-                      </span>
-                      <h3 className="font-bold text-sm text-slate-900">{srv.serviceName}</h3>
-                    </div>
-
-                    <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200">
-                      {srv.status}
+          <div className="divide-y divide-[#1F2329]">
+            {components.map((comp: any) => (
+              <div key={comp.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-medium px-1.5 py-0.5 rounded bg-[#1D2025] text-[#969CA5] border border-[#2A2E34]">
+                      {comp.serviceCategory}
                     </span>
+                    <h3 className="text-xs font-semibold text-[#F4F4F2]">{comp.serviceName}</h3>
                   </div>
-
-                  <div className="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    {srv.supplierName && (
-                      <p><strong className="text-slate-700">Vendor / Supplier:</strong> {srv.supplierName}</p>
+                  <div className="text-[11px] text-[#969CA5] flex items-center gap-3">
+                    <span>Supplier: <strong className="text-[#F4F4F2]">{comp.supplierName || 'Varni Concierge'}</strong></span>
+                    {comp.customerConfirmationRef && (
+                      <span className="font-mono text-[#55B98A]">Ref: {comp.customerConfirmationRef}</span>
                     )}
-                    {srv.customerConfirmationRef && (
-                      <p>
-                        <strong className="text-slate-700">Confirmation / PNR / Voucher:</strong>{' '}
-                        <span className="font-mono font-bold text-indigo-700">{srv.customerConfirmationRef}</span>
-                      </p>
-                    )}
-                    {srv.notes && <p className="text-slate-500 italic mt-1">"{srv.notes}"</p>}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                    <span className="text-[11px] text-slate-400">Assigned: {srv.responsibleUserName}</span>
-                    <div className="flex items-center gap-1.5">
-                      <select
-                        value={srv.status}
-                        onChange={(e) => handleServiceStatusChange(srv.id, e.target.value)}
-                        className="text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1 text-slate-700 font-semibold focus:outline-none"
-                      >
-                        <option value="REQUESTED">REQUESTED</option>
-                        <option value="PENDING_CONFIRMATION">PENDING_CONFIRMATION</option>
-                        <option value="CONFIRMED">CONFIRMED</option>
-                        <option value="VOUCHER_ISSUED">VOUCHER_ISSUED</option>
-                        <option value="RESERVED_TICKETED">RESERVED_TICKETED</option>
-                        <option value="SUBMITTED">SUBMITTED</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                      </select>
-                    </div>
                   </div>
                 </div>
-              ))
+
+                <div className="flex items-center gap-2">
+                  <select
+                    value={comp.status}
+                    onChange={(e) => handleServiceStatusChange(comp.id, e.target.value, comp.customerConfirmationRef)}
+                    className="text-[11px] bg-[#1D2025] text-[#F4F4F2] rounded px-2 py-1 border border-[#2A2E34] focus:outline-none cursor-pointer"
+                  >
+                    <option value="REQUESTED">REQUESTED</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="VOUCHER_ISSUED">VOUCHER ISSUED</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                </div>
+              </div>
+            ))}
+
+            {components.length === 0 && (
+              <p className="text-xs text-[#666E79] py-6 text-center">No service components attached yet.</p>
             )}
           </div>
         </div>
 
-        {/* Payments Ledger Section */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+        {/* Payment Ledger */}
+        <div className="bg-[#17191D] rounded-lg p-5 border border-[#2A2E34] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Payment Transactions & Receipts</h2>
-              <p className="text-xs text-slate-500">Record payments via UPI, Bank Transfer, Card, or Cash with audit tracking.</p>
+              <h2 className="text-sm font-semibold text-[#F4F4F2]">Payment Ledger & Receipts</h2>
+              <p className="text-xs text-[#969CA5]">All financial receipts registered against booking {b.bookingReference}</p>
             </div>
-            <button
-              onClick={() => setShowPayModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs"
-            >
-              <span className="material-symbols-outlined text-sm font-bold">add</span>
-              <span>Record New Payment</span>
-            </button>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200">
-                <tr>
-                  <th className="px-6 py-3.5">Payment Ref</th>
-                  <th className="px-5 py-3.5">Amount</th>
-                  <th className="px-5 py-3.5">Method</th>
-                  <th className="px-5 py-3.5">Transaction ID / URN</th>
-                  <th className="px-5 py-3.5">Status</th>
-                  <th className="px-5 py-3.5">Received Date</th>
-                  <th className="px-6 py-3.5">Recorded By</th>
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-[#2A2E34] text-[10px] uppercase text-[#666E79]">
+                  <th className="py-2.5 px-3">Receipt Ref</th>
+                  <th className="py-2.5 px-3">Amount</th>
+                  <th className="py-2.5 px-3">Payment Method</th>
+                  <th className="py-2.5 px-3">Transaction / UPI Ref</th>
+                  <th className="py-2.5 px-3">Recorded At</th>
+                  <th className="py-2.5 px-3">Recorded By</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {payments.length === 0 ? (
+              <tbody className="divide-y divide-[#1F2329] text-[#969CA5]">
+                {payments.map((p: any) => (
+                  <tr key={p.id}>
+                    <td className="py-3 px-3 font-mono font-medium text-[#F4F4F2]">{p.paymentReference}</td>
+                    <td className="py-3 px-3 font-mono font-semibold text-[#55B98A] tabular-nums">
+                      ₹{p.amountInr.toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-3 uppercase text-[10px]">{p.paymentMethod}</td>
+                    <td className="py-3 px-3 font-mono text-[11px]">{p.upiRef || '—'}</td>
+                    <td className="py-3 px-3 text-[#666E79]">
+                      {new Date(p.receivedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </td>
+                    <td className="py-3 px-3 text-[#F4F4F2]">{p.recordedByName}</td>
+                  </tr>
+                ))}
+
+                {payments.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
-                      No payments recorded yet for this booking.
+                    <td colSpan={6} className="py-6 text-center text-[#666E79]">
+                      No payments recorded yet.
                     </td>
                   </tr>
-                ) : (
-                  payments.map((p: any) => (
-                    <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="px-6 py-3.5 font-mono font-bold text-slate-900">{p.paymentReference}</td>
-                      <td className="px-5 py-3.5 font-mono font-bold text-emerald-700">₹{p.amountInr.toLocaleString('en-IN')}</td>
-                      <td className="px-5 py-3.5">
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                          {p.paymentMethod}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 font-mono text-[11px] text-slate-600">{p.upiRef || p.bankTransactionRef || 'N/A'}</td>
-                      <td className="px-5 py-3.5">
-                        <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {p.paymentStatus}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 text-slate-600">{new Date(p.receivedAt).toLocaleString('en-IN')}</td>
-                      <td className="px-6 py-3.5 text-slate-600 font-medium">{p.recordedByName}</td>
-                    </tr>
-                  ))
                 )}
               </tbody>
             </table>
@@ -489,85 +431,81 @@ export default function BookingDetailPage() {
 
       {/* Record Payment Modal */}
       {showPayModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 border border-slate-200 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] p-5 w-full max-w-md space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Record Client Payment</h3>
-                <p className="text-xs text-slate-500">Log incoming funds and update booking balance.</p>
+                <h3 className="text-sm font-semibold text-[#F4F4F2]">Record Payment Receipt</h3>
+                <p className="text-xs text-[#969CA5]">Booking: {b.bookingReference}</p>
               </div>
-              <button
-                onClick={() => setShowPayModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"
-              >
-                ×
+              <button onClick={() => setShowPayModal(false)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleRecordPayment} className="space-y-4">
+            <form onSubmit={handleRecordPayment} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Amount (INR)</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Receipt Amount (₹)</label>
                 <input
                   type="number"
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  placeholder="e.g. 25000"
-                  className="w-full text-base font-mono font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Payment Method</label>
                 <select
                   value={payMethod}
-                  onChange={(e) => setPayMethod(e.target.value as any)}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  onChange={(e: any) => setPayMethod(e.target.value)}
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 >
-                  <option value="UPI">UPI (Google Pay, PhonePe, Paytm, BHIM)</option>
-                  <option value="BANK_TRANSFER">Bank Transfer (NEFT / RTGS / IMPS)</option>
+                  <option value="UPI">UPI (Google Pay / PhonePe / Paytm)</option>
+                  <option value="BANK_TRANSFER">Bank IMPS / NEFT / RTGS</option>
                   <option value="CARD">Credit / Debit Card</option>
-                  <option value="CASH">Cash Deposit at Anand Office</option>
-                  <option value="CHEQUE">Cheque / Demand Draft</option>
+                  <option value="CASH">Cash Deposit at Anand Desk</option>
+                  <option value="CHEQUE">Bank Cheque</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Bank Transaction / UPI Reference ID</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Transaction Ref / Cheque #</label>
                 <input
                   type="text"
                   value={payRef}
                   onChange={(e) => setPayRef(e.target.value)}
-                  placeholder="e.g. UPI/20261104/991823 or HDFC-NEFT-88192"
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono focus:ring-2 focus:ring-amber-400"
+                  placeholder="e.g. UPI/20261104/991823/HDFC"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Internal Notes</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Notes</label>
                 <textarea
+                  rows={2}
                   value={payNotes}
                   onChange={(e) => setPayNotes(e.target.value)}
-                  placeholder="e.g. 50% advance confirmed by accounts."
-                  rows={2}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  placeholder="Receipt notes..."
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"
                   onClick={() => setShowPayModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-1.5 text-xs text-[#969CA5] hover:text-[#F4F4F2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={recordingPay}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#E9B95E] text-[#101113] hover:bg-[#F0C878] transition-colors"
                 >
-                  {recordingPay ? 'Processing...' : 'Confirm Receipt'}
+                  {recordingPay ? 'Saving...' : 'Record Receipt'}
                 </button>
               </div>
             </form>
@@ -577,98 +515,80 @@ export default function BookingDetailPage() {
 
       {/* Add Component Modal */}
       {showCompModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 border border-slate-200 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] p-5 w-full max-w-md space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Add Service Component</h3>
-                <p className="text-xs text-slate-500">Attach an operational requirement to this booking.</p>
+                <h3 className="text-sm font-semibold text-[#F4F4F2]">Add Operational Service Component</h3>
+                <p className="text-xs text-[#969CA5]">Attach hotel, transfer, cruise, flight, or visa voucher</p>
               </div>
-              <button
-                onClick={() => setShowCompModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"
-              >
-                ×
+              <button onClick={() => setShowCompModal(false)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleAddComponent} className="space-y-4">
+            <form onSubmit={handleAddComponent} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Category</label>
                 <select
                   value={compCategory}
-                  onChange={(e) => setCompCategory(e.target.value as any)}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  onChange={(e: any) => setCompCategory(e.target.value)}
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 >
-                  <option value="FLIGHT">Flight Reservation (PNR Tracker)</option>
-                  <option value="HOTEL">Hotel / Resort Stay</option>
-                  <option value="VISA">Visa Application</option>
-                  <option value="TRANSFER">Ground Transfer / Vehicle</option>
+                  <option value="HOTEL">Hotel Accommodation</option>
+                  <option value="TRANSFER">Private Cab / Transfer</option>
                   <option value="CRUISE">Houseboat / Cruise</option>
+                  <option value="FLIGHT">Flight Ticket</option>
+                  <option value="VISA">Visa Application</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Service Name / Route</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Component Name</label>
                 <input
                   type="text"
                   value={compName}
                   onChange={(e) => setCompName(e.target.value)}
-                  placeholder="e.g. Ahmedabad - Dubai IndiGo 6E-1453"
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  placeholder="e.g. 2N Deluxe Room Munnar (Breakfast & Dinner)"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Supplier / Vendor</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Supplier Name</label>
                 <input
                   type="text"
                   value={compSupplier}
                   onChange={(e) => setCompSupplier(e.target.value)}
-                  placeholder="e.g. IndiGo Airlines / Spice Country Kochi"
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  placeholder="e.g. Spice Country Holidays Kochi"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">PNR / Voucher / Ref Number</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Voucher / Confirmation Ref</label>
                 <input
                   type="text"
                   value={compRef}
                   onChange={(e) => setCompRef(e.target.value)}
-                  placeholder="e.g. PNR-6E-88291"
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono focus:ring-2 focus:ring-amber-400"
+                  placeholder="e.g. CONF-KL-9921"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Initial Status</label>
-                <select
-                  value={compStatus}
-                  onChange={(e) => setCompStatus(e.target.value)}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
-                >
-                  <option value="REQUESTED">REQUESTED</option>
-                  <option value="PENDING_CONFIRMATION">PENDING_CONFIRMATION</option>
-                  <option value="CONFIRMED">CONFIRMED</option>
-                  <option value="VOUCHER_ISSUED">VOUCHER_ISSUED</option>
-                  <option value="RESERVED_TICKETED">RESERVED_TICKETED</option>
-                </select>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"
                   onClick={() => setShowCompModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-1.5 text-xs text-[#969CA5] hover:text-[#F4F4F2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addingComp}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#E9B95E] text-[#101113] hover:bg-[#F0C878] transition-colors"
                 >
                   {addingComp ? 'Adding...' : 'Attach Component'}
                 </button>
@@ -678,103 +598,87 @@ export default function BookingDetailPage() {
         </div>
       )}
 
-      {/* Customer Update Composer Modal */}
+      {/* Advisory Modal */}
       {showUpdateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] p-5 w-full max-w-lg space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Notify Customer (Composer)</h3>
-                <p className="text-xs text-slate-500">Send an update via Resend Email or Meta WhatsApp.</p>
+                <h3 className="text-sm font-semibold text-[#F4F4F2]">Send Traveler Notification</h3>
+                <p className="text-xs text-[#969CA5]">Direct outbound itinerary or voucher advisory</p>
               </div>
-              <button
-                onClick={() => setShowUpdateModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"
-              >
-                ×
+              <button onClick={() => setShowUpdateModal(false)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSendUpdate} className="space-y-4">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setUpdateChannel('EMAIL')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    updateChannel === 'EMAIL'
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  Resend Email
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUpdateChannel('WHATSAPP')}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    updateChannel === 'WHATSAPP'
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  WhatsApp Business
-                </button>
-              </div>
+            <form onSubmit={handleSendCustomerUpdate} className="space-y-3.5">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Channel</label>
+                  <select
+                    value={updateChannel}
+                    onChange={(e: any) => setUpdateChannel(e.target.value)}
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
+                  >
+                    <option value="EMAIL">Email (Resend API)</option>
+                    <option value="WHATSAPP">WhatsApp (Click-to-Chat)</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Update Category</label>
-                <select
-                  value={updateCategory}
-                  onChange={(e) => setUpdateCategory(e.target.value as any)}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
-                >
-                  <option value="BOOKING_CONFIRMATION">Booking Confirmation</option>
-                  <option value="FLIGHT_CONFIRMED">Flight Ticket / PNR Issued</option>
-                  <option value="HOTEL_CONFIRMED">Hotel Confirmation & Voucher</option>
-                  <option value="VISA_SUBMITTED">Visa Application Progress</option>
-                  <option value="ITINERARY_PREPARED">Itinerary Shared</option>
-                  <option value="CUSTOM_MESSAGE">Custom Advisory</option>
-                </select>
+                <div>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Category</label>
+                  <select
+                    value={updateCategory}
+                    onChange={(e: any) => setUpdateCategory(e.target.value)}
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
+                  >
+                    <option value="BOOKING_CONFIRMATION">Booking Confirmation</option>
+                    <option value="VOUCHER_ISSUANCE">Voucher Issuance</option>
+                    <option value="PAYMENT_RECEIPT">Payment Receipt</option>
+                    <option value="CUSTOM_MESSAGE">Custom Advisory</option>
+                  </select>
+                </div>
               </div>
 
               {updateChannel === 'EMAIL' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Email Subject</label>
+                  <label className="block text-[10px] text-[#666E79] uppercase mb-1">Subject</label>
                   <input
                     type="text"
                     value={updateSubject}
                     onChange={(e) => setUpdateSubject(e.target.value)}
-                    className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                    className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Message Content</label>
+                <label className="block text-[10px] text-[#666E79] uppercase mb-1">Content</label>
                 <textarea
+                  rows={4}
                   value={updateContent}
                   onChange={(e) => setUpdateContent(e.target.value)}
-                  rows={5}
-                  className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-400"
+                  className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs text-[#F4F4F2]"
                   required
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"
                   onClick={() => setShowUpdateModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-1.5 text-xs text-[#969CA5] hover:text-[#F4F4F2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sendingUpdate}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-xs disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#E9B95E] text-[#101113] hover:bg-[#F0C878] transition-colors"
                 >
-                  {sendingUpdate ? 'Dispatching...' : `Send via ${updateChannel}`}
+                  {sendingUpdate ? 'Dispatching...' : 'Dispatch Advisory'}
                 </button>
               </div>
             </form>
@@ -784,4 +688,3 @@ export default function BookingDetailPage() {
     </div>
   );
 }
-

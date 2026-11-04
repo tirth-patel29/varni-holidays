@@ -40,6 +40,25 @@ const config: Config = {
         "on-tertiary": "#ffffff",
         "on-tertiary-container": "#c1953e",
 
+        // Internal Dark Portal Palette (Unslop Dark Ember Reference)
+        portal: {
+          bg: "#101113",
+          sidebar: "#0B0D0F",
+          card: "#17191D",
+          elevated: "#1D2025",
+          border: "#2A2E34",
+          "border-subtle": "#1F2329",
+          text: "#F4F4F2",
+          secondary: "#969CA5",
+          muted: "#666E79",
+          accent: "#E9B95E",
+          "accent-hover": "#F0C878",
+          positive: "#55B98A",
+          warning: "#E8B65E",
+          critical: "#DF7373",
+          info: "#6FA9D8",
+        },
+
         // Warm Tactile Surfaces
         surface: "#fbf9f3",
         "on-surface": "#1b1c18",

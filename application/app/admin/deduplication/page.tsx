@@ -4,6 +4,15 @@ import React, { useState, useEffect } from 'react';
 import CrmHeader from '@/components/crm/CrmHeader';
 import { getPotentialDuplicatesAction, mergeCustomersAction } from '@/app/actions/crm';
 import { useCrm } from '@/components/crm/CrmContext';
+import {
+  Merge,
+  Phone,
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  User,
+} from 'lucide-react';
 
 export default function DeduplicationPage() {
   const { currentUser } = useCrm();
@@ -15,7 +24,7 @@ export default function DeduplicationPage() {
   const loadData = async () => {
     setLoading(true);
     const data = await getPotentialDuplicatesAction();
-    setDuplicateGroups(data);
+    setDuplicateGroups(data || []);
     setLoading(false);
   };
 
@@ -37,111 +46,102 @@ export default function DeduplicationPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
         title="Customer Deduplication & Merging"
         subtitle="Admin-controlled identity resolution: merge duplicates without losing historical inquiries."
       />
 
-      <main className="p-6 sm:p-8 flex-1 flex flex-col min-w-0 space-y-6">
+      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
         {/* Compliance Banner */}
-        <div className="clay-card rounded-2xl p-5 bg-[#FBF9F5] border border-[#C29033]/40 text-xs text-slate-700 space-y-2 shadow-xs">
-          <div className="flex items-center gap-2 font-bold text-[#153650]">
-            <span className="material-symbols-outlined text-[#C29033]">shield</span>
+        <div className="rounded-lg p-4 bg-[#17191D] border border-[#2A2E34] text-xs text-[#969CA5] space-y-1.5">
+          <div className="flex items-center gap-2 font-medium text-[#F4F4F2]">
+            <ShieldCheck size={16} className="text-[#E9B95E]" />
             <span>Non-Destructive Merge Governance Rules</span>
           </div>
-          <p className="leading-relaxed text-slate-600">
+          <p className="leading-relaxed text-[11px]">
             1. Customers in India frequently share mobile numbers across joint families and corporate bookings. <strong>Automatic merging is strictly prohibited.</strong><br />
             2. When an authorized administrator merges two profiles, the subordinate customer record is archived (never permanently erased), and all historical leads, activity timelines, and quotations are re-attributed to the primary customer profile with a permanent audit trail.
           </p>
         </div>
 
         {mergeResult && (
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2">
-            <span className="material-symbols-outlined text-base">check_circle</span>
+          <div className="p-3 rounded-lg bg-[#55B98A]/10 border border-[#55B98A]/30 text-[#55B98A] text-xs flex items-center gap-2">
+            <CheckCircle2 size={15} />
             <span>{mergeResult}</span>
           </div>
         )}
 
         {/* Duplicate Groups List */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {loading ? (
-            <div className="py-16 text-center text-slate-500">Scanning customer registry for duplicates...</div>
+            <div className="py-16 text-center text-[#969CA5]">Scanning customer registry for duplicates...</div>
           ) : duplicateGroups.length === 0 ? (
-            <div className="clay-card rounded-3xl p-12 text-center border border-[#E3DCCB] bg-white text-slate-500 space-y-2">
-              <span className="material-symbols-outlined text-4xl text-emerald-600">verified</span>
-              <h4 className="font-serif text-lg font-bold text-[#153650]">No Unresolved Duplicates</h4>
-              <p className="text-xs max-w-md mx-auto text-slate-600">
+            <div className="rounded-lg p-10 text-center border border-[#2A2E34] bg-[#17191D] text-[#969CA5] space-y-2">
+              <CheckCircle2 size={32} className="text-[#55B98A] mx-auto" />
+              <h3 className="text-sm font-semibold text-[#F4F4F2]">No Unresolved Duplicate Records</h3>
+              <p className="text-xs max-w-md mx-auto text-[#666E79]">
                 All customer records have unique identity assignments or have already been merged with preserved audit trails.
               </p>
             </div>
           ) : (
             duplicateGroups.map((group, idx) => (
-              <div key={idx} className="clay-card rounded-3xl p-6 border border-[#E3DCCB] bg-white space-y-5 shadow-sm">
-                <div className="flex items-center justify-between border-b border-[#E3DCCB] pb-3">
+              <div key={idx} className="rounded-lg p-5 border border-[#2A2E34] bg-[#17191D] space-y-4">
+                <div className="flex items-center justify-between border-b border-[#2A2E34] pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-amber-600">phone_in_talk</span>
-                    <span className="text-xs font-bold text-[#153650] uppercase tracking-wider">
-                      Shared Contact Number: <strong className="font-mono text-sm text-[#153650]">{group.primary.normalizedPhone}</strong>
+                    <Phone size={14} className="text-[#E8B65E]" />
+                    <span className="text-xs text-[#969CA5]">
+                      Shared Contact Number: <strong className="font-mono text-[#F4F4F2]">{group.primary.normalizedPhone}</strong>
                     </span>
                   </div>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#E8B65E]/10 text-[#E8B65E] border border-[#E8B65E]/20">
                     {group.matches.length + 1} Profiles Match
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                   {/* Primary Record */}
-                  <div className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-300 text-xs space-y-2">
+                  <div className="p-4 rounded-md bg-[#1D2025] border border-[#2A2E34] text-xs space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900 bg-emerald-200 px-2 py-0.5 rounded">
+                      <span className="text-[10px] uppercase font-medium text-[#55B98A] bg-[#55B98A]/10 px-1.5 py-0.5 rounded border border-[#55B98A]/20">
                         Target Primary Profile
                       </span>
-                      <span className="font-mono text-[10px] text-slate-500">{group.primary.id}</span>
+                      <span className="font-mono text-[10px] text-[#666E79]">{group.primary.id}</span>
                     </div>
-                    <div className="font-serif text-base font-bold text-[#153650]">{group.primary.fullName}</div>
-                    <div className="text-slate-700">Email: {group.primary.email || 'None'}</div>
-                    <div className="text-slate-700">City: {group.primary.city || 'Anand, Gujarat'}</div>
-                    <div className="text-[10px] text-slate-500 pt-1">
-                      Created: {new Date(group.primary.createdAt).toLocaleString('en-IN')}
+                    <div className="text-sm font-semibold text-[#F4F4F2]">{group.primary.fullName}</div>
+                    <div className="text-[#969CA5] text-[11px]">
+                      Email: {group.primary.email || 'None'} • City: {group.primary.city}
+                    </div>
+                    <div className="text-[10px] text-[#666E79]">
+                      Registered: {new Date(group.primary.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                   </div>
 
-                  {/* Duplicate Matches */}
-                  <div className="space-y-4">
-                    {group.matches.map((match: any) => (
+                  {/* Subordinate Matches */}
+                  <div className="space-y-3">
+                    {group.matches.map((sub: any) => (
                       <div
-                        key={match.id}
-                        className="p-5 rounded-2xl bg-amber-50/80 border border-amber-300 text-xs space-y-3"
+                        key={sub.id}
+                        className="p-4 rounded-md bg-[#1D2025] border border-[#2A2E34] text-xs space-y-2.5"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200 px-2 py-0.5 rounded">
-                            Candidate Duplicate
+                          <span className="text-[10px] uppercase font-medium text-[#DF7373] bg-[#DF7373]/10 px-1.5 py-0.5 rounded border border-[#DF7373]/20">
+                            Subordinate Duplicate Candidate
                           </span>
-                          <span className="font-mono text-[10px] text-slate-500">{match.id}</span>
+                          <span className="font-mono text-[10px] text-[#666E79]">{sub.id}</span>
                         </div>
-
-                        <div>
-                          <div className="font-serif text-base font-bold text-[#153650]">{match.fullName}</div>
-                          <div className="text-slate-700">Email: {match.email || 'None'}</div>
-                          <div className="text-[10px] text-slate-500 mt-1">
-                            Created: {new Date(match.createdAt).toLocaleString('en-IN')}
-                          </div>
+                        <div className="text-sm font-semibold text-[#F4F4F2]">{sub.fullName}</div>
+                        <div className="text-[#969CA5] text-[11px]">
+                          Email: {sub.email || 'None'} • City: {sub.city}
                         </div>
-
-                        <div className="pt-2 border-t border-amber-200/80 flex items-center justify-between">
-                          <span className="text-[11px] text-slate-600 italic">
-                            All leads & history will merge into {group.primary.fullName}
-                          </span>
-                          <button
-                            onClick={() => handleMerge(group.primary.id, match.id)}
-                            disabled={mergingId === match.id}
-                            className="px-4 py-2 rounded-xl bg-[#153650] text-white font-bold text-xs shadow hover:bg-[#24689B] transition-colors inline-flex items-center gap-1.5"
-                          >
-                            <span className="material-symbols-outlined text-[16px]">call_merge</span>
-                            <span>{mergingId === match.id ? 'Merging...' : 'Merge Profiles'}</span>
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => handleMerge(group.primary.id, sub.id)}
+                          disabled={mergingId === sub.id}
+                          className="w-full py-1.5 rounded bg-[#E9B95E] hover:bg-[#F0C878] text-[#101113] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <Merge size={13} />
+                          <span>{mergingId === sub.id ? 'Merging...' : `Merge Into ${group.primary.fullName}`}</span>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -154,4 +154,3 @@ export default function DeduplicationPage() {
     </div>
   );
 }
-

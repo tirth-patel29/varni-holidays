@@ -4,6 +4,16 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import CrmHeader from '@/components/crm/CrmHeader';
 import { getCustomersAction, getPotentialDuplicatesAction } from '@/app/actions/crm';
+import {
+  Users,
+  Search,
+  AlertTriangle,
+  ArrowUpRight,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+} from 'lucide-react';
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<any[]>([]);
@@ -15,8 +25,8 @@ export default function CustomersPage() {
     setLoading(true);
     const custs = await getCustomersAction();
     const dups = await getPotentialDuplicatesAction();
-    setCustomers(custs);
-    setDuplicates(dups);
+    setCustomers(custs || []);
+    setDuplicates(dups || []);
     setLoading(false);
   };
 
@@ -33,121 +43,122 @@ export default function CustomersPage() {
   );
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#FBF9F5]">
+    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
-        title="Customer Directory & Profiles"
-        subtitle="Universal customer identity, phone normalization, and duplicate detection."
+        title="Customer Directory"
+        subtitle="Universal traveler profiles, normalized contact records, and duplicate prevention."
         actions={
           duplicates.length > 0 ? (
             <Link
               href="/admin/deduplication"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs shadow-sm hover:bg-amber-200 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#E8B65E]/10 text-[#E8B65E] border border-[#E8B65E]/20 text-xs font-medium hover:bg-[#E8B65E]/20 transition-colors"
             >
-              <span className="material-symbols-outlined text-[16px] text-amber-700">warning</span>
-              <span>{duplicates.length} Potential Duplicates Flagged</span>
+              <AlertTriangle size={13} />
+              <span>{duplicates.length} Duplicate Warnings</span>
             </Link>
           ) : undefined
         }
       />
 
-      <main className="p-6 sm:p-8 flex-1 flex flex-col min-w-0 space-y-6">
+      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
         {/* Search Bar */}
-        <div className="bg-white rounded-2xl p-4 flex items-center gap-3 border border-[#E3DCCB] shadow-sm">
-          <div className="flex-1 relative">
+        <div className="bg-[#17191D] rounded-lg p-3 flex items-center justify-between gap-3 border border-[#2A2E34]">
+          <div className="flex-1 relative max-w-md">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search customers by name, phone (+91...), email, or city..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E3DCCB] bg-[#F5F2EB]/50 text-xs text-slate-800 placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-[#153650]/20 focus:bg-white"
+              placeholder="Search by customer name, phone (+91...), email, city..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-md border border-[#2A2E34] bg-[#1D2025] text-xs text-[#F4F4F2] placeholder-[#666E79] focus:outline-none focus:border-[#E9B95E] transition-colors"
             />
-            <span className="material-symbols-outlined text-[18px] text-slate-500 absolute left-3 top-2.5">
-              search
-            </span>
+            <Search size={14} className="text-[#666E79] absolute left-2.5 top-2.5" />
           </div>
-          <span className="text-xs font-bold text-[#153650] whitespace-nowrap bg-[#F5F2EB] px-3 py-1.5 rounded-xl border border-[#E3DCCB]">
-            {filtered.length} Customers Found
+          <span className="text-xs font-mono text-[#969CA5] px-2.5 py-1 rounded bg-[#1D2025] border border-[#2A2E34]">
+            {filtered.length} Customers
           </span>
         </div>
 
-        {/* Customers Table */}
-        <div className="bg-white rounded-3xl overflow-hidden border border-[#E3DCCB] shadow-sm">
+        {/* Customers Data Table */}
+        <div className="bg-[#17191D] rounded-lg overflow-hidden border border-[#2A2E34]">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#E5DEC9]/70 text-[#153650] uppercase text-[10px] font-black tracking-wider border-b border-[#E3DCCB]">
+              <thead className="bg-[#101113] text-[#666E79] uppercase text-[10px] font-medium tracking-wider border-b border-[#2A2E34]">
                 <tr>
-                  <th className="px-6 py-4">Customer Name</th>
-                  <th className="px-5 py-4">Contact Phone (E.164 Normalized)</th>
-                  <th className="px-5 py-4">Email</th>
-                  <th className="px-5 py-4">City / Region</th>
-                  <th className="px-5 py-4">Status & Flags</th>
-                  <th className="px-5 py-4">Joined Date</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-4 py-3">Traveler</th>
+                  <th className="px-4 py-3">Phone (Normalized)</th>
+                  <th className="px-4 py-3">Email Address</th>
+                  <th className="px-4 py-3">Location</th>
+                  <th className="px-4 py-3">Account Flags</th>
+                  <th className="px-4 py-3">Created</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E3DCCB]/60 bg-white">
+              <tbody className="divide-y divide-[#1F2329] text-[#969CA5]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-slate-500 font-semibold">
-                      Loading Customer Database...
+                    <td colSpan={7} className="px-4 py-12 text-center text-[#666E79]">
+                      Loading customer directory...
                     </td>
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-slate-500 font-semibold">
-                      No matching customers found.
+                    <td colSpan={7} className="px-4 py-12 text-center text-[#666E79]">
+                      No matching customer records found.
                     </td>
                   </tr>
                 ) : (
                   filtered.map((c) => (
-                    <tr key={c.id} className="hover:bg-[#F5F2EB]/60 transition-colors">
-                      <td className="px-6 py-4 font-bold text-[#153650]">
-                        <Link href={`/employee/customers/${c.id}`} className="hover:text-[#24689B] hover:underline">
+                    <tr key={c.id} className="hover:bg-[#1D2025]/60 transition-colors">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <Link
+                          href={`/employee/customers/${c.id}`}
+                          className="font-medium text-[#F4F4F2] hover:text-[#E9B95E] transition-colors block"
+                        >
                           {c.fullName}
                         </Link>
+                        <span className="text-[10px] text-[#666E79] font-mono">{c.id}</span>
                       </td>
 
-                      <td className="px-5 py-4 font-mono font-semibold text-slate-800">
-                        {c.normalizedPhone || `${c.phoneCountryCode} ${c.phoneNumber}`}
+                      <td className="px-4 py-3 whitespace-nowrap font-mono text-[#F4F4F2]">
+                        {c.phoneCountryCode} {c.phoneNumber}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-700 font-medium">
-                        {c.email || <span className="text-slate-400 italic">None</span>}
+                      <td className="px-4 py-3 whitespace-nowrap text-[#969CA5]">
+                        {c.email || '—'}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-700 font-medium">
-                        {c.city || 'Anand / Gujarat'}
+                      <td className="px-4 py-3 whitespace-nowrap text-[#969CA5]">
+                        {c.city || 'Gujarat'}
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         {c.duplicateWarning ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                            <span className="material-symbols-outlined text-[12px] text-amber-700">warning</span>
-                            Duplicate Warning
+                          <span className="inline-flex items-center gap-1 text-[10px] text-[#E8B65E] bg-[#E8B65E]/10 px-1.5 py-0.5 rounded border border-[#E8B65E]/20">
+                            <AlertTriangle size={11} />
+                            Duplicate Flag
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                            <span className="material-symbols-outlined text-[12px] text-emerald-700">verified_user</span>
+                          <span className="text-[10px] text-[#55B98A] bg-[#55B98A]/10 px-1.5 py-0.5 rounded border border-[#55B98A]/20">
                             Verified
                           </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-500 text-[11px] font-semibold">
-                        {new Date(c.createdAt).toLocaleDateString('en-IN', {
+                      <td className="px-4 py-3 whitespace-nowrap text-[#666E79] font-mono text-[11px]">
+                        {new Date(c.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
                         })}
                       </td>
 
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
                         <Link
                           href={`/employee/customers/${c.id}`}
-                          className="px-3.5 py-1.5 rounded-xl bg-[#153650] text-white hover:bg-[#24689B] transition-colors text-xs font-bold inline-flex items-center gap-1 shadow-sm"
+                          className="inline-flex items-center gap-1 text-xs text-[#E9B95E] hover:underline"
                         >
                           <span>360 Profile</span>
-                          <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                          <ArrowUpRight size={13} />
                         </Link>
                       </td>
                     </tr>

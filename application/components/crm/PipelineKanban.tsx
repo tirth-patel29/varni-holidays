@@ -3,15 +3,25 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { LeadRecord, CustomerRecord } from '@/lib/crm/types';
-import { PipelineStageCode, PriorityLevelCode } from '@/lib/auth/types';
+import { PipelineStageCode } from '@/lib/auth/types';
 import {
   updateLeadStageAction,
-  assignLeadAction,
-  updateLeadPriorityAction,
   recordWhatsAppClickAction,
   logCallActivityAction,
 } from '@/app/actions/crm';
 import { useCrm } from './CrmContext';
+import {
+  MessageSquare,
+  Phone,
+  Calendar,
+  Compass,
+  Plane,
+  Stamp,
+  User,
+  ArrowRight,
+  Clock,
+  X,
+} from 'lucide-react';
 
 interface LeadWithCustomer extends LeadRecord {
   customer: CustomerRecord;
@@ -23,16 +33,16 @@ interface PipelineKanbanProps {
   onRefresh: () => void;
 }
 
-const STAGES: Array<{ code: PipelineStageCode; label: string; dotColor: string; badgeBg: string }> = [
-  { code: 'REQUESTS', label: 'Fresh Requests', dotColor: 'bg-sky-500', badgeBg: 'bg-sky-50 text-sky-700 border border-sky-200' },
-  { code: 'GENERAL', label: 'General Discussions', dotColor: 'bg-amber-500', badgeBg: 'bg-amber-50 text-amber-700 border border-amber-200' },
-  { code: 'PRIORITY', label: 'Priority / High Intent', dotColor: 'bg-indigo-600', badgeBg: 'bg-indigo-50 text-indigo-700 border border-indigo-200' },
-  { code: 'CONVERTED', label: 'Converted to Booking', dotColor: 'bg-emerald-600', badgeBg: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  { code: 'CLOSED', label: 'Closed / Lost', dotColor: 'bg-slate-400', badgeBg: 'bg-slate-100 text-slate-700 border border-slate-200' },
+const STAGES: Array<{ code: PipelineStageCode; label: string; dotColor: string }> = [
+  { code: 'REQUESTS', label: 'Requests', dotColor: 'bg-[#6FA9D8]' },
+  { code: 'GENERAL', label: 'General', dotColor: 'bg-[#969CA5]' },
+  { code: 'PRIORITY', label: 'Priority', dotColor: 'bg-[#E9B95E]' },
+  { code: 'CONVERTED', label: 'Converted', dotColor: 'bg-[#55B98A]' },
+  { code: 'CLOSED', label: 'Lost / Closed', dotColor: 'bg-[#666E79]' },
 ];
 
 export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps) {
-  const { currentUser, allUsers, hasServiceAccess } = useCrm();
+  const { currentUser } = useCrm();
 
   const [callModalLead, setCallModalLead] = useState<LeadWithCustomer | null>(null);
   const [callDuration, setCallDuration] = useState('300');
@@ -43,7 +53,7 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
   // Quick Stage Mover
   const handleStageChange = async (leadId: string, newStage: PipelineStageCode) => {
     setLoadingAction(true);
-    await updateLeadStageAction(leadId, newStage, `Moved from Kanban board by ${currentUser.fullName}`, currentUser.id);
+    await updateLeadStageAction(leadId, newStage, `Moved via Kanban by ${currentUser.fullName}`, currentUser.id);
     setLoadingAction(false);
     onRefresh();
   };
@@ -74,7 +84,7 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
       callModalLead.id,
       parseInt(callDuration, 10),
       callOutcome,
-      callNotes || 'Phone call concluded.',
+      callNotes || 'Phone consultation concluded.',
       currentUser.id
     );
     setLoadingAction(false);
@@ -84,27 +94,30 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
   };
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 select-none">
+    <div className="flex gap-3.5 overflow-x-auto pb-4 select-none crm-scrollbar">
       {STAGES.map((stage) => {
         const stageLeads = leads.filter((l) => l.stage === stage.code);
 
         return (
-          <div key={stage.code} className="w-80 shrink-0 flex flex-col bg-slate-100/70 rounded-2xl p-3 border border-slate-200/80">
+          <div
+            key={stage.code}
+            className="w-72 shrink-0 flex flex-col bg-[#17191D] rounded-lg p-3 border border-[#2A2E34]"
+          >
             {/* Column Header */}
-            <div className="flex items-center justify-between px-3 py-2 mb-2">
+            <div className="flex items-center justify-between px-2 py-1.5 mb-2.5">
               <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${stage.dotColor} shadow-xs`} />
-                <h3 className="font-sans font-bold text-sm text-slate-800">{stage.label}</h3>
+                <span className={`w-2 h-2 rounded-full ${stage.dotColor}`} />
+                <h3 className="font-medium text-xs text-[#F4F4F2]">{stage.label}</h3>
               </div>
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${stage.badgeBg}`}>
+              <span className="text-[10px] font-mono text-[#969CA5] px-1.5 py-0.5 rounded bg-[#1D2025] border border-[#2A2E34]">
                 {stageLeads.length}
               </span>
             </div>
 
             {/* Cards Container */}
-            <div className="space-y-3 flex-1 overflow-y-auto max-h-[calc(100vh-230px)] pr-1">
+            <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[calc(100vh-250px)] pr-0.5 crm-scrollbar">
               {stageLeads.length === 0 ? (
-                <div className="p-6 text-center rounded-xl border border-dashed border-slate-200 text-xs font-medium text-slate-400 bg-white/50">
+                <div className="p-6 text-center rounded-md border border-dashed border-[#2A2E34] text-xs text-[#666E79]">
                   No leads in {stage.label.toLowerCase()}
                 </div>
               ) : (
@@ -112,74 +125,68 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
                   return (
                     <div
                       key={lead.id}
-                      className="bg-white rounded-xl p-4 transition-all hover:shadow-md border border-slate-200 flex flex-col justify-between group shadow-xs"
+                      className="bg-[#1D2025] rounded-md p-3.5 border border-[#2A2E34] hover:border-[#383E47] transition-all flex flex-col justify-between"
                     >
                       <div>
-                        {/* Top Meta Row: Service + Priority + Ref */}
+                        {/* Top Meta: Service & Priority */}
                         <div className="flex items-center justify-between mb-2">
-                          <span
-                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                              lead.serviceType === 'PACKAGE'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : lead.serviceType === 'FLIGHT'
-                                ? 'bg-sky-50 text-sky-700 border border-sky-200'
-                                : 'bg-blue-50 text-blue-700 border border-blue-200'
-                            }`}
-                          >
+                          <span className="text-[10px] font-medium tracking-wide uppercase px-1.5 py-0.5 rounded bg-[#17191D] text-[#969CA5] border border-[#2A2E34]">
                             {lead.serviceType}
                           </span>
 
                           <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                            className={`text-[9px] font-medium px-1.5 py-0.5 rounded uppercase ${
                               lead.priorityLevel === 'URGENT'
-                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                ? 'text-[#DF7373] bg-[#DF7373]/10 border border-[#DF7373]/20'
                                 : lead.priorityLevel === 'HIGH'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                ? 'text-[#E8B65E] bg-[#E8B65E]/10 border border-[#E8B65E]/20'
+                                : 'text-[#969CA5] bg-[#17191D]'
                             }`}
                           >
                             {lead.priorityLevel}
                           </span>
                         </div>
 
-                        {/* Customer Name & Link */}
+                        {/* Customer Name */}
                         <Link
                           href={`/employee/leads/${lead.id}`}
-                          className="font-serif text-base font-bold text-slate-900 hover:text-blue-600 block leading-tight truncate transition-colors"
+                          className="text-xs font-semibold text-[#F4F4F2] hover:text-[#E9B95E] transition-colors block leading-tight truncate"
                         >
-                          {lead.customer.fullName}
+                          {lead.customer?.fullName}
                         </Link>
-                        <span className="text-[11px] text-slate-400 font-mono font-medium block mb-2">
+                        <span className="text-[10px] text-[#666E79] font-mono block mb-2">
                           {lead.referenceId}
                         </span>
 
-                        {/* Service Summary Content */}
-                        <div className="text-xs text-slate-700 mb-3 space-y-1 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        {/* Destination / Service Summary */}
+                        <div className="text-xs text-[#969CA5] mb-3 p-2 rounded bg-[#17191D] border border-[#2A2E34]/80 space-y-1">
                           {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
                             <>
-                              <div className="font-bold text-slate-900 line-clamp-1">
+                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                <Compass size={12} className="text-[#E9B95E] shrink-0" />
                                 {lead.packageDetail.packageName}
                               </div>
-                              <div className="text-[11px] text-slate-500 font-medium">
+                              <div className="text-[10px] text-[#969CA5]">
                                 {lead.packageDetail.adultsCount} Adults • {lead.packageDetail.hotelTier}
                               </div>
-                              <div className="font-bold text-emerald-700 text-xs">
+                              <div className="text-[11px] font-semibold text-[#55B98A] tabular-nums">
                                 {lead.packageDetail.quotedTotalPriceInr
                                   ? `₹${lead.packageDetail.quotedTotalPriceInr.toLocaleString('en-IN')}`
-                                  : 'Custom Quote Required'}
+                                  : 'Custom Quote'}
                               </div>
                             </>
                           )}
 
                           {lead.serviceType === 'FLIGHT' && lead.flightDetail && (
                             <>
-                              <div className="font-bold text-slate-900 line-clamp-1">
+                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                <Plane size={12} className="text-[#6FA9D8] shrink-0" />
                                 {lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]}
                               </div>
-                              <div className="text-[11px] text-slate-500 font-medium">
-                                {lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Adults ({lead.flightDetail.cabinClass})
+                              <div className="text-[10px] text-[#969CA5]">
+                                {lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Pax
                               </div>
-                              <div className="text-[11px] text-slate-500 font-semibold">
+                              <div className="text-[10px] text-[#666E79]">
                                 Dep: {lead.flightDetail.departureDate}
                               </div>
                             </>
@@ -187,72 +194,67 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
 
                           {lead.serviceType === 'VISA' && lead.visaDetail && (
                             <>
-                              <div className="font-bold text-slate-900 line-clamp-1">
-                                {lead.visaDetail.destinationCountry}
+                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                <Stamp size={12} className="text-[#55B98A] shrink-0" />
+                                {lead.visaDetail.destinationCountry} Visa
                               </div>
-                              <div className="text-[11px] text-slate-500 font-medium">
+                              <div className="text-[10px] text-[#969CA5]">
                                 {lead.visaDetail.visaCategory} • {lead.visaDetail.applicantCount} Applicants
                               </div>
                             </>
                           )}
                         </div>
 
-                        {/* Assignee & Location */}
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 mb-3 font-medium">
-                          <span className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[15px] text-amber-500">person</span>
-                            <span className="font-bold text-slate-700 truncate max-w-[110px]">{lead.assigneeName}</span>
+                        {/* Assignee & Dates */}
+                        <div className="flex items-center justify-between text-[10px] text-[#666E79] mb-2.5">
+                          <span className="flex items-center gap-1 truncate max-w-[120px]">
+                            <User size={11} />
+                            {lead.assigneeName || 'Unassigned'}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-semibold">
-                            {new Date(lead.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                          <span className="font-mono">
+                            {new Date(lead.updatedAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
                           </span>
                         </div>
                       </div>
 
-                      {/* Action Bar */}
-                      <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-1.5">
-                        {/* Quick WhatsApp (Click-to-chat) */}
-                        <button
-                          type="button"
-                          onClick={() => handleWhatsAppClick(lead)}
-                          title="Launch WhatsApp Web (Strict Click-to-Chat Logged)"
-                          className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center justify-center font-bold shadow-2xs"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">chat</span>
-                        </button>
+                      {/* Card Footer Actions */}
+                      <div className="pt-2 border-t border-[#2A2E34] flex items-center justify-between gap-1.5">
+                        {/* Quick Communication Actions */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleWhatsAppClick(lead)}
+                            title="Open WhatsApp Web"
+                            className="p-1 rounded bg-[#17191D] hover:bg-[#2A2E34] text-[#969CA5] hover:text-[#55B98A] border border-[#2A2E34] transition-colors"
+                          >
+                            <MessageSquare size={13} />
+                          </button>
+                          <button
+                            onClick={() => setCallModalLead(lead)}
+                            title="Log Phone Call"
+                            className="p-1 rounded bg-[#17191D] hover:bg-[#2A2E34] text-[#969CA5] hover:text-[#6FA9D8] border border-[#2A2E34] transition-colors"
+                          >
+                            <Phone size={13} />
+                          </button>
+                        </div>
 
-                        {/* Quick Phone Call Log */}
-                        <button
-                          type="button"
-                          onClick={() => setCallModalLead(lead)}
-                          title="Log Phone Call"
-                          className="p-1.5 rounded-lg bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 transition-colors flex items-center justify-center font-bold shadow-2xs"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">call</span>
-                        </button>
-
-                        {/* Move Stage Selector */}
-                        <select
-                          value={lead.stage}
-                          onChange={(e) => handleStageChange(lead.id, e.target.value as PipelineStageCode)}
-                          disabled={loadingAction}
-                          className="text-[10px] bg-slate-50 rounded-lg px-2 py-1 text-slate-700 font-bold border border-slate-200 hover:border-slate-400 focus:outline-none"
-                        >
-                          {STAGES.map((s) => (
-                            <option key={s.code} value={s.code}>
-                              Move: {s.label.split(' ')[0]}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* View Details Link */}
-                        <Link
-                          href={`/employee/leads/${lead.id}`}
-                          className="p-2 rounded-xl bg-[#153650] text-white hover:bg-[#24689B] transition-colors flex items-center justify-center shadow-sm"
-                          title="Open Full Lead Dossier"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-                        </Link>
+                        {/* Stage Selector */}
+                        <div className="flex-1 max-w-[110px]">
+                          <select
+                            value={lead.stage}
+                            onChange={(e) => handleStageChange(lead.id, e.target.value as PipelineStageCode)}
+                            disabled={loadingAction}
+                            className="w-full text-[10px] bg-[#17191D] text-[#969CA5] hover:text-[#F4F4F2] rounded px-1.5 py-1 border border-[#2A2E34] focus:outline-none transition-colors cursor-pointer"
+                          >
+                            {STAGES.map((s) => (
+                              <option key={s.code} value={s.code}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
                   );
@@ -265,73 +267,74 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
 
       {/* Call Logger Modal */}
       {callModalLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-[#FBF9F5] rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#E9B95E]">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-[#17191D] rounded-lg border border-[#2A2E34] p-5 w-full max-w-md space-y-4 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-[#2A2E34]">
               <div>
-                <span className="text-xs font-bold text-[#C29033] uppercase tracking-wider">Log Call Activity</span>
-                <h3 className="font-serif text-xl font-bold text-[#153650]">{callModalLead.customer.fullName}</h3>
-                <p className="text-xs text-slate-600 font-mono font-semibold">{callModalLead.referenceId}</p>
+                <h3 className="text-sm font-semibold text-[#F4F4F2]">Log Phone Consultation</h3>
+                <p className="text-xs text-[#969CA5]">
+                  Customer: {callModalLead.customer.fullName} ({callModalLead.referenceId})
+                </p>
               </div>
               <button
                 onClick={() => setCallModalLead(null)}
-                className="text-slate-500 hover:text-slate-800 p-1"
+                className="text-[#969CA5] hover:text-[#F4F4F2] p-1 rounded"
               >
-                <span className="material-symbols-outlined">close</span>
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCallLogSubmit} className="space-y-4">
+            <form onSubmit={handleCallLogSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-[#153650] uppercase mb-1">Call Outcome</label>
-                <select
-                  value={callOutcome}
-                  onChange={(e: any) => setCallOutcome(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-[#E3DCCB] bg-white text-xs font-bold text-slate-800"
-                >
-                  <option value="CONNECTED">Connected & Spoke with Customer</option>
-                  <option value="BUSY">Line Busy</option>
-                  <option value="UNANSWERED">Ringing / Unanswered</option>
-                  <option value="CALLBACK_REQUESTED">Customer Requested Callback</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#153650] uppercase mb-1">Duration (Seconds)</label>
+                <label className="block text-xs text-[#969CA5] mb-1">Call Duration (seconds)</label>
                 <input
                   type="number"
                   value={callDuration}
                   onChange={(e) => setCallDuration(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-[#E3DCCB] bg-white text-xs font-semibold text-slate-800"
-                  placeholder="e.g., 300 for 5 minutes"
+                  className="w-full text-xs bg-[#1D2025] text-[#F4F4F2] rounded-md px-3 py-2 border border-[#2A2E34] focus:outline-none focus:border-[#E9B95E]"
+                  required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#153650] uppercase mb-1">Discussion Summary & Next Steps</label>
+                <label className="block text-xs text-[#969CA5] mb-1">Call Outcome</label>
+                <select
+                  value={callOutcome}
+                  onChange={(e) => setCallOutcome(e.target.value as any)}
+                  className="w-full text-xs bg-[#1D2025] text-[#F4F4F2] rounded-md px-3 py-2 border border-[#2A2E34] focus:outline-none focus:border-[#E9B95E]"
+                >
+                  <option value="CONNECTED">Connected & Discussed</option>
+                  <option value="CALLBACK_REQUESTED">Callback Requested</option>
+                  <option value="BUSY">Line Busy / Rejected</option>
+                  <option value="UNANSWERED">Unanswered / Switched Off</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs text-[#969CA5] mb-1">Discussion Notes</label>
                 <textarea
-                  rows={3}
                   value={callNotes}
                   onChange={(e) => setCallNotes(e.target.value)}
-                  placeholder="Key topics discussed, budget preferences, special flight or hotel requirements..."
-                  className="w-full p-2.5 rounded-xl border border-[#E3DCCB] bg-white text-xs text-slate-800"
+                  rows={3}
+                  placeholder="Record key passenger preferences, budget, departure expectations..."
+                  className="w-full text-xs bg-[#1D2025] text-[#F4F4F2] rounded-md px-3 py-2 border border-[#2A2E34] focus:outline-none focus:border-[#E9B95E]"
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"
                   onClick={() => setCallModalLead(null)}
-                  className="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-[#E3DCCB] hover:bg-[#D4CCB6] transition-colors"
+                  className="px-3 py-1.5 text-xs text-[#969CA5] hover:text-[#F4F4F2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loadingAction}
-                  className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white bg-[#153650] hover:bg-[#0B1E2E] transition-colors shadow-md"
+                  className="px-4 py-1.5 text-xs font-semibold rounded bg-[#E9B95E] text-[#101113] hover:bg-[#F0C878] transition-colors"
                 >
-                  Save Call Log
+                  {loadingAction ? 'Saving...' : 'Save Activity Record'}
                 </button>
               </div>
             </form>
