@@ -843,7 +843,7 @@ class CrmRepository {
   }
 
   public getLeadById(id: string): (LeadRecord & { customer: CustomerRecord; assigneeName?: string }) | null {
-    const lead = this.state.leads.find((l) => l.id === id && !l.isDeleted);
+    const lead = this.state.leads.find((l) => (l.id === id || l.referenceId === id) && !l.isDeleted);
     if (!lead) return null;
     const customer =
       this.getCustomerById(lead.customerId) || {

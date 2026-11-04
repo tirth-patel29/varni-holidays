@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { prisma } from "@/lib/prisma";
 import { crmRepo } from "@/lib/crm/store";
@@ -41,14 +41,17 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
 
     const referenceId = generateReference("FLT");
 
+    let dbCustomer: any = null;
+    let dbCreatedLead: any = null;
+
     // Optional Prisma sync
     try {
-      let customer = await prisma.customer.findFirst({
+      dbCustomer = await prisma.customer.findFirst({
         where: { normalizedPhone: phoneValidation.normalized },
       });
 
-      if (!customer) {
-        customer = await prisma.customer.create({
+      if (!dbCustomer) {
+        dbCustomer = await prisma.customer.create({
           data: {
             fullName: data.fullName,
             email: data.email || null,
@@ -60,14 +63,14 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
         });
       }
 
-      await prisma.lead.create({
+      dbCreatedLead = await prisma.lead.create({
         data: {
           referenceId,
           serviceType: "FLIGHT",
           stage: "REQUESTS",
           priorityLevel: "MEDIUM",
           source: "WEBSITE_FLIGHT_FORM",
-          customerId: customer.id,
+          customerId: dbCustomer.id,
           flightDetail: {
             create: {
               tripType: data.tripType,
@@ -117,7 +120,7 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
       let cust = crmRepo.findCustomerByPhoneOrEmail(phoneValidation.normalized, data.email);
       if (!cust) {
         cust = crmRepo.saveCustomer({
-          id: `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          id: dbCustomer?.id || `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           fullName: data.fullName,
           email: data.email || null,
           phoneCountryCode: data.phoneCountryCode,
@@ -136,7 +139,7 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
       }
 
       const newLead = crmRepo.saveLead({
-        id: `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        id: dbCreatedLead?.id || `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         referenceId,
         serviceType: 'FLIGHT',
         stage: 'REQUESTS',
@@ -215,13 +218,16 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
       includeKanyakumariTrip: data.includeKanyakumariTrip,
     });
 
+    let dbCustomer: any = null;
+    let dbCreatedLead: any = null;
+
     try {
-      let customer = await prisma.customer.findFirst({
+      dbCustomer = await prisma.customer.findFirst({
         where: { normalizedPhone: phoneValidation.normalized },
       });
 
-      if (!customer) {
-        customer = await prisma.customer.create({
+      if (!dbCustomer) {
+        dbCustomer = await prisma.customer.create({
           data: {
             fullName: data.fullName,
             email: data.email || null,
@@ -257,14 +263,14 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
         });
       }
 
-      await prisma.lead.create({
+      dbCreatedLead = await prisma.lead.create({
         data: {
           referenceId,
           serviceType: "PACKAGE",
           stage: "REQUESTS",
           priorityLevel: "HIGH",
           source: "WEBSITE_PACKAGE_PAGE",
-          customerId: customer.id,
+          customerId: dbCustomer.id,
           packageDetail: {
             create: {
               packageId: pkg.id,
@@ -303,7 +309,7 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
       let cust = crmRepo.findCustomerByPhoneOrEmail(phoneValidation.normalized, data.email);
       if (!cust) {
         cust = crmRepo.saveCustomer({
-          id: `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          id: dbCustomer?.id || `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           fullName: data.fullName,
           email: data.email || null,
           phoneCountryCode: data.phoneCountryCode,
@@ -322,7 +328,7 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
       }
 
       const newLead = crmRepo.saveLead({
-        id: `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        id: dbCreatedLead?.id || `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         referenceId,
         serviceType: 'PACKAGE',
         stage: 'REQUESTS',
@@ -397,13 +403,16 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
 
     const referenceId = generateReference("VIS");
 
+    let dbCustomer: any = null;
+    let dbCreatedLead: any = null;
+
     try {
-      let customer = await prisma.customer.findFirst({
+      dbCustomer = await prisma.customer.findFirst({
         where: { normalizedPhone: phoneValidation.normalized },
       });
 
-      if (!customer) {
-        customer = await prisma.customer.create({
+      if (!dbCustomer) {
+        dbCustomer = await prisma.customer.create({
           data: {
             fullName: data.fullName,
             email: data.email || null,
@@ -415,14 +424,14 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
         });
       }
 
-      await prisma.lead.create({
+      dbCreatedLead = await prisma.lead.create({
         data: {
           referenceId,
           serviceType: "VISA",
           stage: "REQUESTS",
           priorityLevel: "MEDIUM",
           source: "WEBSITE_VISA_PAGE",
-          customerId: customer.id,
+          customerId: dbCustomer.id,
           visaDetail: {
             create: {
               destinationCountry: data.destinationCountry,
@@ -455,7 +464,7 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
       let cust = crmRepo.findCustomerByPhoneOrEmail(phoneValidation.normalized, data.email);
       if (!cust) {
         cust = crmRepo.saveCustomer({
-          id: `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          id: dbCustomer?.id || `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           fullName: data.fullName,
           email: data.email || null,
           phoneCountryCode: data.phoneCountryCode,
@@ -474,7 +483,7 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
       }
 
       const newLead = crmRepo.saveLead({
-        id: `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        id: dbCreatedLead?.id || `lead-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         referenceId,
         serviceType: 'VISA',
         stage: 'REQUESTS',

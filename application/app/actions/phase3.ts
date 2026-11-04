@@ -1,5 +1,6 @@
 'use server';
 
+import { prisma } from '@/lib/prisma';
 import { crmRepo } from '@/lib/crm/store';
 import {
   QuotationRecord,
@@ -331,11 +332,70 @@ export async function getBookingDetailsAction(bookingId: string) {
 
 export async function getQuotationDetailsAction(quotationId: string) {
   try {
+    // 1. Try Prisma first if database is available
+    try {
+      const dbQuo = await prisma.quotation.findFirst({
+        where: {
+          OR: [
+            { id: quotationId },
+            { quotationReference: quotationId },
+          ],
+        },
+        include: {
+          customer: true,
+          lead: true,
+          lineItems: true,
+          createdByUser: true,
+        },
+      });
+
+      if (dbQuo) {
+        const lineItems = dbQuo.lineItems.map((li) => ({
+          itemOrder: li.itemOrder,
+          description: li.title || li.description || 'Travel Service',
+          serviceCategory: li.serviceType,
+          quantity: li.quantity,
+          unitPriceInr: Number(li.unitPriceInr),
+          totalPriceInr: Number(li.totalPriceInr),
+        }));
+
+        return {
+          success: true,
+          quotation: {
+            id: dbQuo.id,
+            quotationNumber: dbQuo.quotationReference,
+            leadId: dbQuo.leadId,
+            customerId: dbQuo.customerId,
+            createdByUserId: dbQuo.createdByUserId,
+            createdByName: dbQuo.createdByUser?.fullName || 'Neel Patel',
+            status: dbQuo.status,
+            title: (dbQuo as any).title || dbQuo.customerNotes || 'Customized Travel Quotation',
+            subtotalInr: Number(dbQuo.subtotalAmountInr || dbQuo.totalAmountInr),
+            taxesInr: Number(dbQuo.taxAmountInr || 0),
+            discountInr: Number(dbQuo.discountAmountInr || 0),
+            totalAmountInr: Number(dbQuo.totalAmountInr),
+            validUntil: dbQuo.validUntil.toISOString(),
+            terms: dbQuo.termsAndConditions || '50% advance for booking confirmation. Balance due 7 days prior to travel.',
+            inclusions: (dbQuo as any).inclusions || ['Accommodation with breakfast', 'Private AC Vehicle & Chauffeur', 'Tolls, parking, and driver allowances'],
+            exclusions: (dbQuo as any).exclusions || ['Airfare (unless specified)', 'Personal expenses', 'Monument entry fees'],
+            lineItems,
+            createdAt: dbQuo.createdAt.toISOString(),
+          },
+          customer: dbQuo.customer,
+          lead: dbQuo.lead,
+          lineItems,
+        };
+      }
+    } catch (e) {
+      console.warn('Prisma getQuotationDetails fallback to crmRepo:', e);
+    }
+
+    // 2. Fallback to crmRepo
     const quotation = crmRepo.getQuotationById(quotationId);
     if (!quotation) return { success: false, error: 'Quotation not found' };
     const customer = crmRepo.getCustomerById(quotation.customerId);
     const lead = quotation.leadId ? crmRepo.getLeadById(quotation.leadId) : undefined;
-    return { success: true, quotation, customer, lead };
+    return { success: true, quotation, customer, lead, lineItems: quotation.lineItems };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

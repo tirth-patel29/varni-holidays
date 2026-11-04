@@ -60,18 +60,21 @@ export default function LeadDetailPage() {
   const [followUpDate, setFollowUpDate] = useState('');
   const [followUpNote, setFollowUpNote] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
+    setNotFound(false);
     const data = await getLeadByIdAction(leadId);
     if (!data) {
-      router.push('/employee/leads');
+      setNotFound(true);
+      setLoading(false);
       return;
     }
     setLead(data);
-    const acts = await getLeadActivitiesAction(leadId);
+    const acts = await getLeadActivitiesAction(data.id || leadId);
     setActivities(acts || []);
-    const quotes = await getQuotationsAction(leadId);
+    const quotes = await getQuotationsAction(data.id || leadId);
     setQuotations(quotes || []);
     setLoading(false);
   };
@@ -145,19 +148,61 @@ export default function LeadDetailPage() {
     const rawDigits = lead.customer.phoneNumber.replace(/\D/g, '');
     const cleanPhone = `${lead.customer.phoneCountryCode.replace('+', '')}${rawDigits}`;
     await recordWhatsAppClickAction(lead.id, `${lead.customer.phoneCountryCode} ${lead.customer.phoneNumber}`, currentUser.id);
+
+    let detailsSummary = '';
+    if (lead.serviceType === 'PACKAGE' && lead.packageDetail) {
+      detailsSummary = ` regarding your Kerala holiday enquiry for "${lead.packageDetail.packageName}" (${lead.packageDetail.adultsCount} Adults, ${lead.packageDetail.hotelTier} tier, Total Estimate: ₹${(lead.packageDetail.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')})`;
+    } else if (lead.serviceType === 'FLIGHT' && lead.flightDetail) {
+      detailsSummary = ` regarding your flight enquiry (${lead.flightDetail.originAirport} ✈ ${lead.flightDetail.destinationAirport}, ${lead.flightDetail.adultsCount} Adults)`;
+    } else if (lead.serviceType === 'VISA' && lead.visaDetail) {
+      detailsSummary = ` regarding your ${lead.visaDetail.destinationCountry} ${lead.visaDetail.visaCategory} visa assistance application`;
+    }
+
     const msg = encodeURIComponent(
-      `Hello ${lead.customer.fullName}, greetings from Varni Holidays Anand! I am ${currentUser.fullName}. Regarding your travel enquiry (${lead.referenceId}), I am available to assist you.`
+      `Hello ${lead.customer.fullName}, greetings from Varni Holidays Anand! I am ${currentUser.fullName}${detailsSummary}. Reference: ${lead.referenceId}. How may I assist you with your travel confirmation today?`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
     await loadData();
   };
 
-  if (loading || !lead) {
+  if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-20 text-[#969CA5] bg-[#101113]">
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-[#E9B95E] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-medium">Loading Customer Lead Dossier...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !lead) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-12 text-[#969CA5] bg-[#101113]">
+        <div className="max-w-md w-full bg-[#17191D] border border-[#2A2E34] rounded-xl p-8 text-center space-y-4 shadow-xl">
+          <div className="w-12 h-12 rounded-full bg-[#DF7373]/10 text-[#DF7373] flex items-center justify-center mx-auto">
+            <AlertTriangle size={24} />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-[#F4F4F2]">Lead Record Not Found</h2>
+            <p className="text-xs text-[#969CA5] mt-1">
+              Could not locate dossier for reference: <span className="font-mono text-[#E9B95E]">{leadId}</span>. It may have been archived or is still indexing.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              onClick={loadData}
+              className="px-4 py-2 rounded-md bg-[#1D2025] hover:bg-[#2A2E34] border border-[#2A2E34] text-xs font-medium text-[#F4F4F2] transition-colors"
+            >
+              Retry Loading
+            </button>
+            <Link
+              href="/employee/leads"
+              className="px-4 py-2 rounded-md bg-[#E9B95E] hover:bg-[#F0C878] text-xs font-semibold text-[#101113] transition-colors"
+            >
+              Back to Pipeline
+            </Link>
+          </div>
         </div>
       </div>
     );

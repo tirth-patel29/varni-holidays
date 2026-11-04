@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -17,6 +17,7 @@ import {
   CreditCard,
   Trash2,
   ExternalLink,
+  MessageSquare,
 } from 'lucide-react';
 export default function QuotationsPage() {
   const router = useRouter();
@@ -134,6 +135,32 @@ export default function QuotationsPage() {
       setActionMsg({ text: res.error || 'Failed to create quotation', type: 'error' });
     }
   };
+  const handleQuickWhatsApp = (q: any) => {
+    const cust = customers.find((c) => c.id === q.customerId);
+    const phone = `${cust?.phoneCountryCode || '+91'}${cust?.phoneNumber || ''}`.replace(/\D/g, '');
+    const cleanPhone = phone.startsWith('91') ? phone : `91${phone}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://varni-holidays.vercel.app';
+    const publicUrl = `${origin}/quotation/${q.quotationReference || q.quotationNumber || q.id}`;
+    const msg = `*VARNI HOLIDAYS - OFFICIAL TRAVEL QUOTATION*
+Namaste ${cust?.fullName || q.customerName || 'Travel Guest'}! 🙏
+
+Greetings from Varni Holidays Anand! Your customized proposal (${q.quotationReference || q.quotationNumber}) is ready:
+✈️ *Package:* ${q.title}
+💰 *Total Amount:* ₹${(q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN')} (All Taxes Included)
+⏳ *Valid Until:* ${new Date(q.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+
+📄 *View & Download Official Quotation:*
+${publicUrl}
+
+Please reply to this message to confirm your reservation!
+
+Warm regards,
+*Varni Holidays Anand*
+📞 +91 98250 12345`;
+
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
   const filteredQuotes = quotations.filter((q) => {
     if (filterStatus === 'ALL') return true;
     return q.status === filterStatus;
@@ -264,6 +291,14 @@ export default function QuotationsPage() {
                               Convert to Booking
                             </button>
                           )}
+                          <button
+                            onClick={() => handleQuickWhatsApp(q)}
+                            className="p-1 px-2 rounded bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/30 inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
+                            title="Send Quotation to Client via WhatsApp"
+                          >
+                            <MessageSquare size={12} />
+                            <span>WhatsApp</span>
+                          </button>
                           <Link
                             href={`/employee/quotations/${q.id}`}
                             className="inline-flex items-center gap-1 text-xs text-[#E9B95E] hover:underline"
