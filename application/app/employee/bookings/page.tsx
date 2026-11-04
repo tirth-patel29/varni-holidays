@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -211,12 +211,12 @@ export default function BookingsPage() {
 
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="font-mono tabular-nums font-semibold text-[#F4F4F2]">
-                          ₹{b.totalAmountInr.toLocaleString('en-IN')}
+                          ₹{(b?.totalAmountInr ?? 0).toLocaleString('en-IN')}
                         </div>
                         <div className="text-[10px] text-[#666E79]">
-                          Paid: <span className="text-[#55B98A]">₹{b.paidAmountInr.toLocaleString('en-IN')}</span> • Bal:{' '}
+                          Paid: <span className="text-[#55B98A]">₹{(b?.paidAmountInr ?? 0).toLocaleString('en-IN')}</span> • Bal:{' '}
                           <span className={b.balanceAmountInr > 0 ? 'text-[#DF7373]' : 'text-[#666E79]'}>
-                            ₹{b.balanceAmountInr.toLocaleString('en-IN')}
+                            ₹{(b?.balanceAmountInr ?? 0).toLocaleString('en-IN')}
                           </span>
                         </div>
                       </td>

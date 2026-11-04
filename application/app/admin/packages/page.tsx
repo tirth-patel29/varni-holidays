@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import CrmHeader from '@/components/crm/CrmHeader';
@@ -116,21 +116,21 @@ export default function PackageCostGovernancePage() {
 
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums text-[#DF7373]">
                         {currentUser.canViewSupplierCosts
-                          ? `₹${item.supplierCostInr.toLocaleString('en-IN')}`
+                          ? `₹${(item?.supplierCostInr ?? 0).toLocaleString('en-IN')}`
                           : '••••••'}
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums text-[#969CA5]">
-                        ₹{item.sourceRackRateInr.toLocaleString('en-IN')}
+                        ₹{(item?.sourceRackRateInr ?? 0).toLocaleString('en-IN')}
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums font-semibold text-[#55B98A]">
-                        ₹{item.varniSellingPriceInr.toLocaleString('en-IN')}
+                        ₹{(item?.varniSellingPriceInr ?? 0).toLocaleString('en-IN')}
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums text-[#E9B95E]">
                         {currentUser.canViewSupplierCosts
-                          ? `₹${item.marginAmountInr.toLocaleString('en-IN')} (${item.marginPercent}%)`
+                          ? `₹${(item?.marginAmountInr ?? 0).toLocaleString('en-IN')} (${item.marginPercent}%)`
                           : '••••••'}
                       </td>
 

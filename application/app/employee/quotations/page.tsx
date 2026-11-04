@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -253,7 +253,7 @@ export default function QuotationsPage() {
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums font-semibold text-[#55B98A]">
-                        ₹{q.finalPayableAmountInr.toLocaleString('en-IN')}
+                        ₹{(q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN')}
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap">

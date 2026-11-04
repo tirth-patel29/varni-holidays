@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -278,7 +278,7 @@ export default function BookingDetailPage() {
           <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
             <span className="text-[10px] text-[#666E79] uppercase block">Total Package Value</span>
             <span className="text-xl font-semibold text-[#F4F4F2] font-mono tabular-nums mt-0.5 block">
-              ₹{b.totalAmountInr.toLocaleString('en-IN')}
+              ₹{(b?.totalAmountInr ?? 0).toLocaleString('en-IN')}
             </span>
             <span className="text-[10px] text-[#969CA5]">Quoted contract amount</span>
           </div>
@@ -286,7 +286,7 @@ export default function BookingDetailPage() {
           <div className="bg-[#17191D] border border-[#2A2E34] rounded-lg p-3.5">
             <span className="text-[10px] text-[#666E79] uppercase block">Total Received</span>
             <span className="text-xl font-semibold text-[#55B98A] font-mono tabular-nums mt-0.5 block">
-              ₹{b.paidAmountInr.toLocaleString('en-IN')}
+              ₹{(b?.paidAmountInr ?? 0).toLocaleString('en-IN')}
             </span>
             <span className="text-[10px] text-[#55B98A]">{payments.length} ledger receipts</span>
           </div>
@@ -298,7 +298,7 @@ export default function BookingDetailPage() {
                 b.balanceAmountInr > 0 ? 'text-[#DF7373]' : 'text-[#55B98A]'
               }`}
             >
-              ₹{b.balanceAmountInr.toLocaleString('en-IN')}
+              ₹{(b?.balanceAmountInr ?? 0).toLocaleString('en-IN')}
             </span>
             <span className="text-[10px] text-[#666E79]">
               {b.balanceAmountInr > 0 ? 'Pending traveler payment' : 'Fully Settled'}
@@ -405,7 +405,7 @@ export default function BookingDetailPage() {
                   <tr key={p.id}>
                     <td className="py-3 px-3 font-mono font-medium text-[#F4F4F2]">{p.paymentReference}</td>
                     <td className="py-3 px-3 font-mono font-semibold text-[#55B98A] tabular-nums">
-                      ₹{p.amountInr.toLocaleString('en-IN')}
+                      ₹{(p?.amountInr ?? 0).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-3 uppercase text-[10px]">{p.paymentMethod}</td>
                     <td className="py-3 px-3 font-mono text-[11px]">{p.upiRef || '—'}</td>

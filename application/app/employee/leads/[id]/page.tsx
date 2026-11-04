@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -364,7 +364,7 @@ export default function LeadDetailPage() {
                     <span className="text-[10px] uppercase text-[#666E79] block">Calculated System Estimate</span>
                     <span className="text-sm font-semibold text-[#55B98A] tabular-nums">
                       {lead.packageDetail.quotedTotalPriceInr
-                        ? `₹${lead.packageDetail.quotedTotalPriceInr.toLocaleString('en-IN')}`
+                        ? `₹${(lead.packageDetail.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}`
                         : 'Custom Quotation Required'}
                     </span>
                   </div>
@@ -638,7 +638,7 @@ export default function LeadDetailPage() {
                     </span>
                   </div>
                   <div className="text-xs font-semibold text-[#55B98A] tabular-nums">
-                    ₹{q.finalPayableAmountInr.toLocaleString('en-IN')}
+                    ₹{(q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN')}
                   </div>
                   <div className="text-[10px] text-[#666E79]">
                     Valid till: {new Date(q.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

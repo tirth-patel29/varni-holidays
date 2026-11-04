@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default function QuotationPdfPreviewPage() {
       category: 'QUOTATION_PREPARED',
       templateTitle: `Official Quotation: ${data.quotation.title}`,
       recipientContact: data.customer.email,
-      content: `Dear ${data.customer.fullName},\n\nPlease review your customized travel quotation (${data.quotation.quotationNumber}) for "${data.quotation.title}".\n\nTotal Quoted Amount: ₹${data.quotation.totalAmountInr.toLocaleString('en-IN')}.\nValid Until: ${new Date(data.quotation.validUntil).toLocaleDateString('en-IN')}.\n\nTerms: ${data.quotation.terms}\n\nWarm regards,\nVarni Holidays Anand`,
+      content: `Dear ${data.customer.fullName},\n\nPlease review your customized travel quotation (${data.quotation.quotationNumber}) for "${data.quotation.title}".\n\nTotal Quoted Amount: ₹${(data?.quotation?.totalAmountInr ?? 0).toLocaleString('en-IN')}.\nValid Until: ${new Date(data.quotation.validUntil).toLocaleDateString('en-IN')}.\n\nTerms: ${data.quotation.terms}\n\nWarm regards,\nVarni Holidays Anand`,
     });
 
     if (res.success) {
@@ -92,7 +92,7 @@ export default function QuotationPdfPreviewPage() {
       category: 'QUOTATION_PREPARED',
       templateTitle: `Quotation ${data.quotation.quotationNumber}`,
       recipientContact: phone,
-      content: `Namaste ${data.customer.fullName}! Greetings from Varni Holidays Anand.\n\nYour travel quotation (${data.quotation.quotationNumber}) for "${data.quotation.title}" is ready.\nTotal: ₹${data.quotation.totalAmountInr.toLocaleString('en-IN')}.\nValid until: ${new Date(data.quotation.validUntil).toLocaleDateString('en-IN')}.\n\nPlease review and let us know if you wish to confirm!`,
+      content: `Namaste ${data.customer.fullName}! Greetings from Varni Holidays Anand.\n\nYour travel quotation (${data.quotation.quotationNumber}) for "${data.quotation.title}" is ready.\nTotal: ₹${(data?.quotation?.totalAmountInr ?? 0).toLocaleString('en-IN')}.\nValid until: ${new Date(data.quotation.validUntil).toLocaleDateString('en-IN')}.\n\nPlease review and let us know if you wish to confirm!`,
     });
 
     if (res.clickToChatUrl) {
@@ -238,10 +238,10 @@ export default function QuotationPdfPreviewPage() {
                     <td className="py-3 uppercase text-[10px] text-[#666E79]">{li.serviceCategory}</td>
                     <td className="py-3 text-center tabular-nums">{li.quantity}</td>
                     <td className="py-3 text-right font-mono tabular-nums">
-                      ₹{li.unitPriceInr.toLocaleString('en-IN')}
+                      ₹{(li?.unitPriceInr ?? 0).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 text-right font-mono font-medium text-[#F4F4F2] tabular-nums">
-                      ₹{li.totalPriceInr.toLocaleString('en-IN')}
+                      ₹{(li?.totalPriceInr ?? 0).toLocaleString('en-IN')}
                     </td>
                   </tr>
                 ))}

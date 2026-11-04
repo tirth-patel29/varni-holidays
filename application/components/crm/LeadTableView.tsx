@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -112,7 +112,7 @@ export default function LeadTableView({ leads, onRefresh }: LeadTableViewProps) 
                   <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums">
                     {lead.serviceType === 'PACKAGE' && lead.packageDetail?.quotedTotalPriceInr ? (
                       <span className="font-semibold text-[#55B98A]">
-                        ₹{lead.packageDetail.quotedTotalPriceInr.toLocaleString('en-IN')}
+                        ₹{(lead.packageDetail?.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}
                       </span>
                     ) : (
                       <span className="text-[#666E79]">—</span>

@@ -101,7 +101,7 @@
       },
       "isDeleted": false,
       "createdAt": "2026-11-04T11:48:41.896Z",
-      "updatedAt": "2026-11-04T11:48:52.095Z",
+      "updatedAt": "2026-11-04T15:57:15.686Z",
       "customer": {
         "id": "cust-101-chirag-patel",
         "fullName": "Chirag Patel",
@@ -116,13 +116,15 @@
         "createdAt": "2026-11-01T09:30:00.000Z",
         "updatedAt": "2026-11-01T09:30:00.000Z"
       },
-      "assigneeName": "Harshil Desai"
+      "assigneeName": "Priya Sharma",
+      "closedAt": "2026-11-04T15:57:07.752Z",
+      "closeReason": "Converted to Confirmed Booking"
     },
     {
       "id": "lead-001",
       "referenceId": "PKG-20261104-1011",
       "serviceType": "PACKAGE",
-      "stage": "REQUESTS",
+      "stage": "GENERAL",
       "priorityLevel": "HIGH",
       "source": "WEBSITE_CALCULATOR",
       "customerId": "cust-101-chirag-patel",
@@ -148,7 +150,22 @@
       },
       "isDeleted": false,
       "createdAt": "2026-11-04T08:30:00.000Z",
-      "updatedAt": "2026-11-04T08:30:00.000Z"
+      "updatedAt": "2026-11-04T15:57:02.183Z",
+      "customer": {
+        "id": "cust-101-chirag-patel",
+        "fullName": "Chirag Patel",
+        "email": "chirag.patel@charotar.in",
+        "phoneCountryCode": "+91",
+        "phoneNumber": "9825012345",
+        "normalizedPhone": "+919825012345",
+        "normalizedEmail": "chirag.patel@charotar.in",
+        "city": "Anand, Gujarat",
+        "duplicateWarning": false,
+        "isDeleted": false,
+        "createdAt": "2026-11-01T09:30:00.000Z",
+        "updatedAt": "2026-11-01T09:30:00.000Z"
+      },
+      "assigneeName": "Harshil Desai"
     },
     {
       "id": "lead-002",
@@ -233,6 +250,48 @@
     }
   ],
   "activities": [
+    {
+      "leadId": "lead-test-sync-101",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "STAGE_CHANGE",
+      "title": "Stage Changed: CLOSED → CONVERTED",
+      "description": "Transitioned from CLOSED to CONVERTED. Notes: Moved via Kanban by Neel Patel",
+      "metadata": {
+        "fromStage": "CLOSED",
+        "toStage": "CONVERTED"
+      },
+      "id": "act-1793807835688-640",
+      "createdAt": "2026-11-04T15:57:15.688Z"
+    },
+    {
+      "leadId": "lead-test-sync-101",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "STAGE_CHANGE",
+      "title": "Stage Changed: CONVERTED → CLOSED",
+      "description": "Transitioned from CONVERTED to CLOSED. Notes: Moved via Kanban by Neel Patel",
+      "metadata": {
+        "fromStage": "CONVERTED",
+        "toStage": "CLOSED"
+      },
+      "id": "act-1793807827756-330",
+      "createdAt": "2026-11-04T15:57:07.756Z"
+    },
+    {
+      "leadId": "lead-001",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "STAGE_CHANGE",
+      "title": "Stage Changed: REQUESTS → GENERAL",
+      "description": "Transitioned from REQUESTS to GENERAL. Notes: Moved via Kanban by Neel Patel",
+      "metadata": {
+        "fromStage": "REQUESTS",
+        "toStage": "GENERAL"
+      },
+      "id": "act-1793807822187-171",
+      "createdAt": "2026-11-04T15:57:02.187Z"
+    },
     {
       "leadId": "lead-test-sync-101",
       "userId": "usr-harshil-desai-packages",
@@ -391,8 +450,9 @@
       "userName": "Harshil Desai",
       "scheduledAt": "2026-11-05T11:48:41.868Z",
       "note": "Call Chirag Patel to discuss Innova luggage capacity for 6 adults + 1 child and confirm whether they want to upgrade to Tempo Traveller.",
-      "status": "PENDING",
-      "createdAt": "2026-11-04T08:35:00.000Z"
+      "status": "COMPLETED",
+      "createdAt": "2026-11-04T08:35:00.000Z",
+      "completedAt": "2026-11-04T15:56:17.771Z"
     },
     {
       "id": "flw-002",
@@ -401,8 +461,9 @@
       "userName": "Ananya Joshi",
       "scheduledAt": "2026-11-04T13:48:41.868Z",
       "note": "Urgent: Follow up on Dubai 30-day visa photograph specifications with white background.",
-      "status": "PENDING",
-      "createdAt": "2026-11-04T09:10:00.000Z"
+      "status": "COMPLETED",
+      "createdAt": "2026-11-04T09:10:00.000Z",
+      "completedAt": "2026-11-04T15:56:16.635Z"
     },
     {
       "leadId": "lead-test-sync-101",
@@ -574,6 +635,39 @@
     }
   ],
   "auditLogs": [
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "LEAD_STAGE_UPDATED",
+      "entityType": "LEAD",
+      "entityId": "lead-test-sync-101",
+      "details": "Updated stage from CLOSED to CONVERTED for reference PKG-20261104-9999.",
+      "ipAddress": "Internal Desk",
+      "id": "aud-1793807835691-494",
+      "createdAt": "2026-11-04T15:57:15.691Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "LEAD_STAGE_UPDATED",
+      "entityType": "LEAD",
+      "entityId": "lead-test-sync-101",
+      "details": "Updated stage from CONVERTED to CLOSED for reference PKG-20261104-9999.",
+      "ipAddress": "Internal Desk",
+      "id": "aud-1793807827758-653",
+      "createdAt": "2026-11-04T15:57:07.758Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "LEAD_STAGE_UPDATED",
+      "entityType": "LEAD",
+      "entityId": "lead-001",
+      "details": "Updated stage from REQUESTS to GENERAL for reference PKG-20261104-1011.",
+      "ipAddress": "Internal Desk",
+      "id": "aud-1793807822189-336",
+      "createdAt": "2026-11-04T15:57:02.189Z"
+    },
     {
       "userId": "usr-harshil-desai-packages",
       "userEmail": "Harshil Desai",
@@ -781,6 +875,187 @@
     }
   ],
   "syncJobs": [
+    {
+      "id": "sync-1793807835686-7477",
+      "eventType": "STAGE_CHANGED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "lead-test-sync-101",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:15.686Z",
+      "createdAt": "2026-11-04T15:57:15.686Z"
+    },
+    {
+      "id": "sync-1793807835686-124",
+      "eventType": "LEAD_UPDATED",
+      "targetTab": "ALL_LEADS",
+      "entityId": "lead-test-sync-101",
+      "payload": {
+        "leadId": "PKG-20261104-9999",
+        "enquiryDate": "4/11/2026",
+        "customerName": "Chirag Patel",
+        "phoneNumber": "+919825012345",
+        "email": "chirag.patel@charotar.in",
+        "serviceCategory": "PACKAGE",
+        "destinationOrPackage": "Scenic Kerala Grand Winter Tour",
+        "travelDate": "2026-12-15",
+        "stage": "CONVERTED",
+        "priority": "HIGH",
+        "assignedEmployee": "Priya Sharma",
+        "lastContactedDate": "4/11/2026",
+        "nextFollowUp": "None Scheduled",
+        "updatedAt": "2026-11-04T15:57:07.752Z"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:15.686Z",
+      "createdAt": "2026-11-04T15:57:15.686Z"
+    },
+    {
+      "id": "sync-1793807827754-100",
+      "eventType": "STAGE_CHANGED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "lead-test-sync-101",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:07.754Z",
+      "createdAt": "2026-11-04T15:57:07.754Z"
+    },
+    {
+      "id": "sync-1793807827753-624",
+      "eventType": "LEAD_UPDATED",
+      "targetTab": "ALL_LEADS",
+      "entityId": "lead-test-sync-101",
+      "payload": {
+        "leadId": "PKG-20261104-9999",
+        "enquiryDate": "4/11/2026",
+        "customerName": "Chirag Patel",
+        "phoneNumber": "+919825012345",
+        "email": "chirag.patel@charotar.in",
+        "serviceCategory": "PACKAGE",
+        "destinationOrPackage": "Scenic Kerala Grand Winter Tour",
+        "travelDate": "2026-12-15",
+        "stage": "CLOSED",
+        "priority": "HIGH",
+        "assignedEmployee": "Priya Sharma",
+        "lastContactedDate": "4/11/2026",
+        "nextFollowUp": "None Scheduled",
+        "updatedAt": "2026-11-04T11:48:52.095Z"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:07.754Z",
+      "createdAt": "2026-11-04T15:57:07.754Z"
+    },
+    {
+      "id": "sync-1793807822184-9450",
+      "eventType": "STAGE_CHANGED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "lead-001",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:02.184Z",
+      "createdAt": "2026-11-04T15:57:02.184Z"
+    },
+    {
+      "id": "sync-1793807822184-5613",
+      "eventType": "LEAD_UPDATED",
+      "targetTab": "ALL_LEADS",
+      "entityId": "lead-001",
+      "payload": {
+        "leadId": "PKG-20261104-1011",
+        "enquiryDate": "4/11/2026",
+        "customerName": "Chirag Patel",
+        "phoneNumber": "+919825012345",
+        "email": "chirag.patel@charotar.in",
+        "serviceCategory": "PACKAGE",
+        "destinationOrPackage": "Kerala 6N/7D Winter CPAI (Munnar-Thekkady-Alleppey-Kovalam)",
+        "travelDate": "2026-12-15",
+        "stage": "GENERAL",
+        "priority": "HIGH",
+        "assignedEmployee": "Harshil Desai",
+        "lastContactedDate": "4/11/2026",
+        "nextFollowUp": "None Scheduled",
+        "updatedAt": "2026-11-04T08:30:00.000Z"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:57:02.184Z",
+      "createdAt": "2026-11-04T15:57:02.184Z"
+    },
+    {
+      "id": "sync-1793807777772-9985",
+      "eventType": "FOLLOW_UP_UPDATED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "flw-001",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:56:17.772Z",
+      "createdAt": "2026-11-04T15:56:17.772Z"
+    },
+    {
+      "id": "sync-1793807777771-5975",
+      "eventType": "FOLLOW_UP_UPDATED",
+      "targetTab": "FOLLOW_UPS",
+      "entityId": "flw-001",
+      "payload": {
+        "followUpId": "flw-001",
+        "leadId": "PKG-20261104-1011",
+        "customer": "Chirag Patel",
+        "assignedEmployee": "Harshil Desai",
+        "dueDate": "5/11/2026, 5:18:41 pm",
+        "status": "COMPLETED",
+        "completionTimestamp": "4/11/2026, 9:26:17 pm"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:56:17.771Z",
+      "createdAt": "2026-11-04T15:56:17.772Z"
+    },
+    {
+      "id": "sync-1793807776638-8364",
+      "eventType": "FOLLOW_UP_UPDATED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "flw-002",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:56:16.638Z",
+      "createdAt": "2026-11-04T15:56:16.638Z"
+    },
+    {
+      "id": "sync-1793807776638-8018",
+      "eventType": "FOLLOW_UP_UPDATED",
+      "targetTab": "FOLLOW_UPS",
+      "entityId": "flw-002",
+      "payload": {
+        "followUpId": "flw-002",
+        "leadId": "VIS-20261102-3012",
+        "customer": "Rakesh Amin",
+        "assignedEmployee": "Ananya Joshi",
+        "dueDate": "4/11/2026, 7:18:41 pm",
+        "status": "COMPLETED",
+        "completionTimestamp": "4/11/2026, 9:26:16 pm"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T15:56:16.638Z",
+      "createdAt": "2026-11-04T15:56:16.638Z"
+    },
     {
       "id": "sync-1793792932102-8420",
       "eventType": "BOOKING_STATUS_CHANGED",

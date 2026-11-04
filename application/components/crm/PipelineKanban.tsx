@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -171,7 +171,7 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
                               </div>
                               <div className="text-[11px] font-semibold text-[#55B98A] tabular-nums">
                                 {lead.packageDetail.quotedTotalPriceInr
-                                  ? `₹${lead.packageDetail.quotedTotalPriceInr.toLocaleString('en-IN')}`
+                                  ? `₹${(lead.packageDetail?.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}`
                                   : 'Custom Quote'}
                               </div>
                             </>
