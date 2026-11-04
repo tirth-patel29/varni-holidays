@@ -70,9 +70,53 @@
       "isDeleted": false,
       "createdAt": "2026-11-04T08:20:00.000Z",
       "updatedAt": "2026-11-04T08:20:00.000Z"
+    },
+    {
+      "id": "cust-1793810319692-440",
+      "fullName": "Nileshbhai Shah",
+      "email": "nilesh.shah@gmail.com",
+      "phoneCountryCode": "+91",
+      "phoneNumber": "9825098765",
+      "normalizedPhone": "+919825098765",
+      "normalizedEmail": "nilesh.shah@gmail.com",
+      "duplicateWarning": false,
+      "isDeleted": false,
+      "createdAt": "2026-11-04T16:38:39.692Z",
+      "updatedAt": "2026-11-04T16:38:39.692Z"
     }
   ],
   "leads": [
+    {
+      "id": "lead-1793810319693-552",
+      "referenceId": "PKG-20261104-8943",
+      "serviceType": "PACKAGE",
+      "stage": "REQUESTS",
+      "priorityLevel": "HIGH",
+      "source": "WEBSITE_PACKAGE_PAGE",
+      "customerId": "cust-1793810319692-440",
+      "assignedUserId": "usr-harshil-desai-packages",
+      "packageDetail": {
+        "packageSlug": "kerala-6n7d-winter",
+        "packageName": "Kerala 6N/7D Winter CPAI",
+        "hotelTier": "DELUXE",
+        "adultsCount": 2,
+        "childrenWithBedCount": 0,
+        "childrenNoBedCount": 0,
+        "roomsCount": 1,
+        "preferredTravelDate": null,
+        "includeHouseboatUpgrade": false,
+        "includeMealPlan": false,
+        "includeAthirapillyTrip": false,
+        "includeKanyakumariTrip": false,
+        "pricingStatus": "EXACT_MATCH",
+        "quotedUnitPriceInr": 29400,
+        "quotedTotalPriceInr": 58800,
+        "vehicleAssigned": "AC Sedan (Dzire / Etios)"
+      },
+      "isDeleted": false,
+      "createdAt": "2026-11-04T16:38:39.693Z",
+      "updatedAt": "2026-11-04T16:38:39.693Z"
+    },
     {
       "id": "lead-test-sync-101",
       "referenceId": "PKG-20261104-9999",
@@ -250,6 +294,16 @@
     }
   ],
   "activities": [
+    {
+      "leadId": "lead-1793810319693-552",
+      "userId": "usr-harshil-desai-packages",
+      "userName": "System Dispatcher",
+      "type": "NOTE",
+      "title": "New Kerala Package Enquiry Received",
+      "description": "Customer submitted website package request: DELUXE tier, 2 Adults, Quoted: ₹58,800.",
+      "id": "act-1793810319698-907",
+      "createdAt": "2026-11-04T16:38:39.698Z"
+    },
     {
       "leadId": "lead-test-sync-101",
       "userId": "usr-neel-patel-superadmin",
@@ -875,6 +929,45 @@
     }
   ],
   "syncJobs": [
+    {
+      "id": "sync-1793810319697-7067",
+      "eventType": "LEAD_CREATED",
+      "targetTab": "BUSINESS_SUMMARY",
+      "entityId": "lead-1793810319693-552",
+      "payload": {},
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T16:38:39.697Z",
+      "createdAt": "2026-11-04T16:38:39.697Z"
+    },
+    {
+      "id": "sync-1793810319697-6861",
+      "eventType": "LEAD_CREATED",
+      "targetTab": "ALL_LEADS",
+      "entityId": "lead-1793810319693-552",
+      "payload": {
+        "leadId": "PKG-20261104-8943",
+        "enquiryDate": "4/11/2026",
+        "customerName": "Nileshbhai Shah",
+        "phoneNumber": "+919825098765",
+        "email": "nilesh.shah@gmail.com",
+        "serviceCategory": "PACKAGE",
+        "destinationOrPackage": "Kerala 6N/7D Winter CPAI",
+        "travelDate": "Winter 2026",
+        "stage": "REQUESTS",
+        "priority": "HIGH",
+        "assignedEmployee": "Harshil Desai",
+        "lastContactedDate": "New Lead",
+        "nextFollowUp": "None Scheduled",
+        "updatedAt": "2026-11-04T16:38:39.693Z"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-04T16:38:39.697Z",
+      "createdAt": "2026-11-04T16:38:39.697Z"
+    },
     {
       "id": "sync-1793807835686-7477",
       "eventType": "STAGE_CHANGED",

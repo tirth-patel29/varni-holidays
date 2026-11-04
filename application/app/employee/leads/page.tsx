@@ -1,7 +1,6 @@
-'use client';
-
+﻿'use client';
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import CrmHeader from '@/components/crm/CrmHeader';
 import PipelineKanban from '@/components/crm/PipelineKanban';
 import LeadTableView from '@/components/crm/LeadTableView';
@@ -14,29 +13,23 @@ import {
   Search,
   Filter,
 } from 'lucide-react';
-
 export default function LeadsPage() {
-  const searchParams = useSearchParams();
-  const initialStage = searchParams?.get('stage') || 'ALL';
-
   const { allUsers } = useCrm();
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
-
   // Filters
   const [search, setSearch] = useState('');
   const [serviceFilter, setServiceFilter] = useState('ALL');
-  const [stageFilter, setStageFilter] = useState(initialStage);
+  const [stageFilter, setStageFilter] = useState('ALL');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [assigneeFilter, setAssigneeFilter] = useState('ALL');
-
   useEffect(() => {
-    if (searchParams?.get('stage')) {
-      setStageFilter(searchParams.get('stage') as string);
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('stage')) setStageFilter(sp.get('stage') as string);
     }
-  }, [searchParams]);
-
+  }, []);
   const loadLeads = async () => {
     setLoading(true);
     const data = await getLeadsAction({
@@ -49,16 +42,13 @@ export default function LeadsPage() {
     setLeads(data || []);
     setLoading(false);
   };
-
   useEffect(() => {
     loadLeads();
   }, [serviceFilter, stageFilter, priorityFilter, assigneeFilter]);
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loadLeads();
   };
-
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
@@ -83,7 +73,6 @@ export default function LeadsPage() {
           </div>
         }
       />
-
       <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5">
         {/* Filter Controls Bar */}
         <div className="bg-[#17191D] rounded-lg p-3 flex flex-wrap items-center gap-3 border border-[#2A2E34]">
@@ -98,7 +87,6 @@ export default function LeadsPage() {
             />
             <Search size={14} className="text-[#666E79] absolute left-2.5 top-2.5" />
           </form>
-
           {/* Service Dropdown */}
           <div className="w-36">
             <select
@@ -112,7 +100,6 @@ export default function LeadsPage() {
               <option value="VISA">Visa Desk</option>
             </select>
           </div>
-
           {/* Stage Dropdown */}
           <div className="w-36">
             <select
@@ -128,7 +115,6 @@ export default function LeadsPage() {
               <option value="CLOSED">Lost / Closed</option>
             </select>
           </div>
-
           {/* Priority Dropdown */}
           <div className="w-32">
             <select
@@ -143,7 +129,6 @@ export default function LeadsPage() {
               <option value="LOW">Low</option>
             </select>
           </div>
-
           {/* Specialist Assignee Dropdown */}
           <div className="w-40">
             <select
@@ -160,7 +145,6 @@ export default function LeadsPage() {
             </select>
           </div>
         </div>
-
         {/* Content Area: Kanban Board or Table View */}
         {loading ? (
           <div className="py-24 text-center text-[#969CA5]">

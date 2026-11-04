@@ -1,5 +1,4 @@
 ﻿'use client';
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,17 +18,14 @@ import {
   Trash2,
   ExternalLink,
 } from 'lucide-react';
-
 export default function QuotationsPage() {
   const router = useRouter();
   const { currentUser, isSuperAdmin } = useCrm();
-
   const [quotations, setQuotations] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
-
   // New Quotation Modal State
   const [showModal, setShowModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState('');
@@ -41,7 +37,6 @@ export default function QuotationsPage() {
   const [termsText, setTermsText] = useState('50% advance deposit required upon acceptance. Balance due 7 days prior to departure.');
   const [creating, setCreating] = useState(false);
   const [actionMsg, setActionMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-
   const loadData = async () => {
     setLoading(true);
     const [quotesData, leadsData, custsData] = await Promise.all([
@@ -54,18 +49,15 @@ export default function QuotationsPage() {
     setCustomers(custsData || []);
     setLoading(false);
   };
-
   useEffect(() => {
     loadData();
   }, []);
-
   const handleStatusChange = async (quotationId: string, newStatus: any) => {
     const res = await updateQuotationStatusAction(quotationId, newStatus, currentUser.id);
     if (res.success) {
       await loadData();
     }
   };
-
   const handleConvertBooking = async (quotationId: string) => {
     const res = await convertQuotationToBookingAction(quotationId, currentUser.id);
     if (res.success && res.booking) {
@@ -74,26 +66,22 @@ export default function QuotationsPage() {
       setActionMsg({ text: res.error || 'Failed to convert to booking', type: 'error' });
     }
   };
-
   const addLineItem = () => {
     setLineItems([
       ...lineItems,
       { description: 'Additional Tour Service / Addon', serviceCategory: 'HOTEL', quantity: 1, unitPriceInr: 5000, supplierCostInr: 4000 },
     ]);
   };
-
   const removeLineItem = (index: number) => {
     if (lineItems.length > 1) {
       setLineItems(lineItems.filter((_, i) => i !== index));
     }
   };
-
   const updateLineItem = (index: number, field: string, val: any) => {
     const copy = [...lineItems];
     (copy[index] as any)[field] = val;
     setLineItems(copy);
   };
-
   const calculateTotals = () => {
     let subtotal = 0;
     let netCost = 0;
@@ -103,37 +91,40 @@ export default function QuotationsPage() {
     });
     return { subtotal, netCost, total: subtotal };
   };
-
   const handleCreateQuotation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedLeadId || !quoteTitle) {
       setActionMsg({ text: 'Please select a lead and provide a quotation title', type: 'error' });
       return;
     }
-
     setCreating(true);
     const validUntil = new Date(Date.now() + validDays * 24 * 60 * 60 * 1000).toISOString();
     const totals = calculateTotals();
-
+    const targetLead = leads.find((l) => l.id === selectedLeadId);
+    const customerId = targetLead?.customerId || 'cust-101-chirag-patel';
     const res = await createQuotationAction({
       leadId: selectedLeadId,
+      customerId,
       title: quoteTitle,
-      lineItems: lineItems.map((li) => ({
-        description: li.description,
-        serviceCategory: li.serviceCategory,
-        quantity: Number(li.quantity),
-        unitPriceInr: Number(li.unitPriceInr),
-        totalPriceInr: Number(li.unitPriceInr) * Number(li.quantity),
-        supplierCostInr: Number(li.supplierCostInr),
-      })),
+      subtotalInr: totals.subtotal,
+      taxesInr: 0,
+      discountInr: 0,
+      supplierNetCostInr: totals.netCost,
       totalAmountInr: totals.total,
-      currency: 'INR',
       terms: termsText,
       validUntil,
       createdByUserId: currentUser.id,
       createdByName: currentUser.fullName,
+      lineItems: lineItems.map((li, idx) => ({
+        itemOrder: idx + 1,
+        description: li.description,
+        serviceCategory: li.serviceCategory,
+        quantity: Number(li.quantity),
+        unitPriceInr: Number(li.unitPriceInr),
+        supplierCostInr: Number(li.supplierCostInr),
+        totalAmountInr: Number(li.unitPriceInr) * Number(li.quantity),
+      })),
     });
-
     setCreating(false);
     if (res.success && res.quotation) {
       setShowModal(false);
@@ -143,12 +134,10 @@ export default function QuotationsPage() {
       setActionMsg({ text: res.error || 'Failed to create quotation', type: 'error' });
     }
   };
-
   const filteredQuotes = quotations.filter((q) => {
     if (filterStatus === 'ALL') return true;
     return q.status === filterStatus;
   });
-
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
       <CrmHeader
@@ -164,7 +153,6 @@ export default function QuotationsPage() {
           </button>
         }
       />
-
       <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
         {actionMsg && (
           <div
@@ -180,7 +168,6 @@ export default function QuotationsPage() {
             </button>
           </div>
         )}
-
         {/* Filter Bar */}
         <div className="bg-[#17191D] rounded-lg p-3 flex items-center justify-between gap-3 border border-[#2A2E34]">
           <div className="flex items-center gap-2">
@@ -202,7 +189,6 @@ export default function QuotationsPage() {
             {filteredQuotes.length} Records
           </span>
         </div>
-
         {/* Quotations Data Table */}
         <div className="bg-[#17191D] rounded-lg overflow-hidden border border-[#2A2E34]">
           <div className="overflow-x-auto">
@@ -242,20 +228,16 @@ export default function QuotationsPage() {
                           {new Date(q.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                       </td>
-
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className="font-medium text-[#F4F4F2] block">{q.customerName || 'Customer'}</span>
                         <span className="text-[10px] text-[#666E79] font-mono">{q.leadReference || q.leadId}</span>
                       </td>
-
                       <td className="px-4 py-3 max-w-xs truncate text-[#F4F4F2]">
                         {q.title}
                       </td>
-
                       <td className="px-4 py-3 whitespace-nowrap font-mono tabular-nums font-semibold text-[#55B98A]">
                         ₹{(q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN')}
                       </td>
-
                       <td className="px-4 py-3 whitespace-nowrap">
                         <select
                           value={q.status}
@@ -269,11 +251,9 @@ export default function QuotationsPage() {
                           <option value="EXPIRED">EXPIRED</option>
                         </select>
                       </td>
-
                       <td className="px-4 py-3 whitespace-nowrap text-[#666E79] font-mono text-[11px]">
                         {new Date(q.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </td>
-
                       <td className="px-4 py-3 whitespace-nowrap text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {q.status === 'ACCEPTED' && (
@@ -301,7 +281,6 @@ export default function QuotationsPage() {
           </div>
         </div>
       </main>
-
       {/* New Quotation Builder Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
@@ -315,7 +294,6 @@ export default function QuotationsPage() {
                 <X size={16} />
               </button>
             </div>
-
             <form onSubmit={handleCreateQuotation} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -334,7 +312,6 @@ export default function QuotationsPage() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-[10px] text-[#666E79] uppercase mb-1">Quotation Title</label>
                   <input
@@ -347,7 +324,6 @@ export default function QuotationsPage() {
                   />
                 </div>
               </div>
-
               {/* Line Items */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -360,7 +336,6 @@ export default function QuotationsPage() {
                     + Add Item
                   </button>
                 </div>
-
                 {lineItems.map((item, idx) => (
                   <div key={idx} className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-2">
                     <div className="grid grid-cols-12 gap-2">
@@ -407,7 +382,6 @@ export default function QuotationsPage() {
                   </div>
                 ))}
               </div>
-
               {/* Totals Preview */}
               <div className="p-3 rounded bg-[#1D2025] border border-[#2A2E34] flex items-center justify-between text-xs">
                 <span className="text-[#969CA5]">Quoted Customer Total:</span>
@@ -415,7 +389,6 @@ export default function QuotationsPage() {
                   ₹{calculateTotals().total.toLocaleString('en-IN')}
                 </span>
               </div>
-
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2E34]">
                 <button
                   type="button"

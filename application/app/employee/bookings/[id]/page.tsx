@@ -118,7 +118,6 @@ export default function BookingDetailPage() {
       upiRef: payRef,
       internalNotes: payNotes,
       recordedByUserId: currentUser.id,
-      recordedByName: currentUser.fullName,
     });
     setRecordingPay(false);
 
@@ -126,7 +125,7 @@ export default function BookingDetailPage() {
       setShowPayModal(false);
       setPayNotes('');
       setPayRef('');
-      setActionMsg({ text: `Payment recorded successfully! New Balance: ₹${res.booking?.balanceAmountInr?.toLocaleString('en-IN')}`, type: 'success' });
+      setActionMsg({ text: 'Payment recorded successfully!', type: 'success' });
       await loadData();
     } else {
       setActionMsg({ text: res.error || 'Failed to record payment', type: 'error' });

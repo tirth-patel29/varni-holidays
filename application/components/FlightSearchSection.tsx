@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
 import EnquirySuccessModal from "./EnquirySuccessModal";
-import { submitFlightEnquiry } from "@/app/actions/enquiries";
+import { safeSubmitFlightEnquiry } from "@/lib/enquirySubmitter";
 
 interface FlightSegmentInput {
   origin: string;
@@ -98,7 +98,7 @@ export default function FlightSearchSection() {
       specialRequirements,
     };
 
-    const res = await submitFlightEnquiry(payload);
+    const res = await safeSubmitFlightEnquiry(payload);
     setSubmitting(false);
 
     if (res.success && res.referenceId) {

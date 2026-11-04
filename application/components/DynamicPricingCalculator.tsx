@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
@@ -8,7 +8,7 @@ import {
   VEHICLE_PAX_OPTIONS,
   calculateKeralaPrice,
 } from "@/lib/pricing/kerala";
-import { submitPackageEnquiry } from "@/app/actions/enquiries";
+import { safeSubmitPackageEnquiry } from "@/lib/enquirySubmitter";
 
 export default function DynamicPricingCalculator() {
   const [selectedTier, setSelectedTier] = useState<"STANDARD" | "DELUXE" | "SUPER_DELUXE" | "PREMIUM" | "LUXURY">("DELUXE");
@@ -102,7 +102,7 @@ export default function DynamicPricingCalculator() {
       specialRequests,
     };
 
-    const res = await submitPackageEnquiry(payload);
+    const res = await safeSubmitPackageEnquiry(payload);
     setSubmitting(false);
 
     if (res.success && res.referenceId) {

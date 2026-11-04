@@ -137,13 +137,22 @@ export async function updateBookingServiceComponentAction(
 }
 
 export async function addBookingServiceComponentAction(
-  bookingId: string,
-  component: Omit<BookingServiceComponent, 'id' | 'createdAt' | 'updatedAt'>,
-  actorId: string
+  arg1: any,
+  arg2?: any,
+  arg3?: string
 ) {
   try {
-    const created = crmRepo.addBookingService({ ...component, bookingId });
-    revalidatePath(`/employee/bookings/${bookingId}`);
+    let bId: string;
+    let comp: any;
+    if (typeof arg1 === 'string') {
+      bId = arg1;
+      comp = arg2;
+    } else {
+      bId = arg1.bookingId;
+      comp = arg1;
+    }
+    const created = crmRepo.addBookingService({ ...comp, bookingId: bId });
+    revalidatePath(`/employee/bookings/${bId}`);
     return { success: true, component: created };
   } catch (err: any) {
     return { success: false, error: err.message };

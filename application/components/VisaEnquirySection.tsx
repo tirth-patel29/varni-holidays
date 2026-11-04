@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
 import EnquirySuccessModal from "./EnquirySuccessModal";
-import { submitVisaEnquiry } from "@/app/actions/enquiries";
+import { safeSubmitVisaEnquiry } from "@/lib/enquirySubmitter";
 
 export default function VisaEnquirySection() {
   const [destinationCountry, setDestinationCountry] = useState("Schengen (Europe)");
@@ -52,7 +52,7 @@ export default function VisaEnquirySection() {
       specialCircumstances,
     };
 
-    const res = await submitVisaEnquiry(payload);
+    const res = await safeSubmitVisaEnquiry(payload);
     setSubmitting(false);
 
     if (res.success && res.referenceId) {

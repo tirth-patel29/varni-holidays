@@ -1,4 +1,4 @@
-import fs from 'fs';
+﻿import fs from 'fs';
 import path from 'path';
 import {
   CustomerRecord,
@@ -35,7 +35,9 @@ interface CrmDatabaseState {
   communicationLogs: CommunicationLogRecord[];
 }
 
-const STORE_PATH = path.join(process.cwd(), 'data', 'crm_store.json');
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
+const STORE_DIR = isServerless ? '/tmp' : path.join(process.cwd(), 'data');
+const STORE_PATH = path.join(STORE_DIR, 'crm_store.json');
 
 // Initial seed data adhering strictly to the SRS and Phase 0/1 verified rules
 function generateInitialState(): CrmDatabaseState {
@@ -620,12 +622,25 @@ class CrmRepository {
   private loadState(): CrmDatabaseState {
     const seed = generateInitialState();
     try {
-      if (fs.existsSync(STORE_PATH)) {
-        const raw = fs.readFileSync(STORE_PATH, 'utf-8');
+      let candidatePath = STORE_PATH;
+      if (!fs.existsSync(candidatePath)) {
+        const bundledPath = path.join(process.cwd(), 'data', 'crm_store.json');
+        if (fs.existsSync(bundledPath)) {
+          candidatePath = bundledPath;
+        }
+      }
+
+      if (fs.existsSync(candidatePath)) {
+        const raw = fs.readFileSync(candidatePath, 'utf-8');
         const loaded = JSON.parse(raw);
-        return {
+        const merged = {
           ...seed,
           ...loaded,
+          leads: loaded.leads || seed.leads,
+          customers: loaded.customers || seed.customers,
+          activities: loaded.activities || seed.activities,
+          followUps: loaded.followUps || seed.followUps,
+          quotations: loaded.quotations || seed.quotations,
           bookings: loaded.bookings || seed.bookings,
           syncJobs: loaded.syncJobs || seed.syncJobs,
           sheetsConfig: loaded.sheetsConfig || seed.sheetsConfig,
@@ -633,6 +648,10 @@ class CrmRepository {
           payments: loaded.payments || seed.payments,
           communicationLogs: loaded.communicationLogs || seed.communicationLogs,
         };
+        if (candidatePath !== STORE_PATH) {
+          this.persist(merged);
+        }
+        return merged;
       }
     } catch (e) {
       console.warn('Error reading CRM store from disk, falling back to seed:', e);

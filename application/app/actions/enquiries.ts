@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { prisma } from "@/lib/prisma";
 import { crmRepo } from "@/lib/crm/store";
@@ -100,7 +100,7 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
           },
           activities: {
             create: {
-              userId: customer.id,
+              userId: 'usr-neel-patel-superadmin',
               activityType: "INTERNAL_NOTE",
               summary: "Flight Enquiry received via website",
               details: `Route: ${data.originAirport} → ${data.destinationAirport} (${data.tripType}). Passengers: ${data.adultsCount} Adults, ${data.childrenCount} Children, ${data.infantsCount} Infants.`,
@@ -286,7 +286,7 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
           },
           activities: {
             create: {
-              userId: customer.id,
+              userId: 'usr-neel-patel-superadmin',
               activityType: "INTERNAL_NOTE",
               summary: "Package Enquiry submitted",
               details: `Package: ${pkg.title} (${data.hotelTier}). Estimate: ₹${pricingResult.totalEstimate ? pricingResult.totalEstimate.toLocaleString("en-IN") : "Custom Quote Required"}.`,
@@ -438,7 +438,7 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
           },
           activities: {
             create: {
-              userId: customer.id,
+              userId: 'usr-neel-patel-superadmin',
               activityType: "INTERNAL_NOTE",
               summary: "Visa Assistance Request received",
               details: `Destination: ${data.destinationCountry} (${data.visaCategory} Visa) for ${data.applicantCount} applicants.`,

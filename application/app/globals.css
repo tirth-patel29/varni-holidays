@@ -58,26 +58,41 @@
 }
 
 /* Sleek Dark CRM Scrollbars */
-.crm-scrollbar {
+.crm-scrollbar,
+[class*="bg-[#101113]"],
+[class*="bg-[#0B0D0F]"],
+[class*="bg-[#17191D]"] {
   scrollbar-width: thin;
-  scrollbar-color: #2A2E34 #101113;
+  scrollbar-color: #2A2E34 transparent;
 }
 
-.crm-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+.crm-scrollbar::-webkit-scrollbar,
+[class*="bg-[#101113]"]::-webkit-scrollbar,
+[class*="bg-[#0B0D0F]"]::-webkit-scrollbar,
+[class*="bg-[#17191D]"]::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.crm-scrollbar::-webkit-scrollbar-track {
-  background: #101113;
+.crm-scrollbar::-webkit-scrollbar-track,
+[class*="bg-[#101113]"]::-webkit-scrollbar-track,
+[class*="bg-[#0B0D0F]"]::-webkit-scrollbar-track,
+[class*="bg-[#17191D]"]::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.crm-scrollbar::-webkit-scrollbar-thumb {
+.crm-scrollbar::-webkit-scrollbar-thumb,
+[class*="bg-[#101113]"]::-webkit-scrollbar-thumb,
+[class*="bg-[#0B0D0F]"]::-webkit-scrollbar-thumb,
+[class*="bg-[#17191D]"]::-webkit-scrollbar-thumb {
   background: #2A2E34;
   border-radius: 9999px;
 }
 
-.crm-scrollbar::-webkit-scrollbar-thumb:hover {
+.crm-scrollbar::-webkit-scrollbar-thumb:hover,
+[class*="bg-[#101113]"]::-webkit-scrollbar-thumb:hover,
+[class*="bg-[#0B0D0F]"]::-webkit-scrollbar-thumb:hover,
+[class*="bg-[#17191D]"]::-webkit-scrollbar-thumb:hover {
   background: #3E444E;
 }
 
