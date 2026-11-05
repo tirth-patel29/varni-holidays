@@ -5,6 +5,7 @@ import { crmRepo } from '@/lib/crm/store';
 import { DEFAULT_USERS } from '@/lib/auth/session';
 import { PipelineStageCode, PriorityLevelCode, ServiceTypeCode } from '@/lib/auth/types';
 import { CustomerRecord, LeadRecord, PackageEnquiryData, FlightEnquiryData, VisaEnquiryData } from '@/lib/crm/types';
+import { processSyncQueueAction } from '@/app/actions/google-sheets';
 
 // Helper to resolve current user name
 function getUserName(userId: string): string {
@@ -343,6 +344,7 @@ export async function updateLeadStageAction(
     }
 
     crmRepo.saveLead(lead);
+    processSyncQueueAction().catch((e) => console.warn('Stage change Sheets sync err:', e));
 
     crmRepo.addActivity({
       leadId,
@@ -399,6 +401,7 @@ export async function assignLeadAction(
 
     lead.assignedUserId = newAssigneeId === 'UNASSIGNED' ? null : newAssigneeId;
     crmRepo.saveLead(lead);
+    processSyncQueueAction().catch((e) => console.warn('Stage change Sheets sync err:', e));
 
     crmRepo.addActivity({
       leadId,
@@ -440,6 +443,7 @@ export async function updateLeadPriorityAction(
     const oldPriority = lead.priorityLevel;
     lead.priorityLevel = newPriority;
     crmRepo.saveLead(lead);
+    processSyncQueueAction().catch((e) => console.warn('Stage change Sheets sync err:', e));
 
     crmRepo.addActivity({
       leadId,
@@ -743,6 +747,7 @@ export async function updateQuotationStatusAction(
 
   quote.status = newStatus;
   crmRepo.saveQuotation(quote);
+  processSyncQueueAction().catch((e) => console.warn('Quotation status Sheets sync err:', e));
 
   if (newStatus === 'ACCEPTED') {
     await updateLeadStageAction(quote.leadId, 'CONVERTED', `Quotation ${quote.quotationNumber} accepted by customer.`, currentUserId);

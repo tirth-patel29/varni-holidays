@@ -21,6 +21,19 @@ export const ALL_LEADS_HEADERS = [
   'Updated Timestamp',
 ];
 
+export const QUOTATIONS_HEADERS = [
+  'Quotation Reference',
+  'Lead Reference',
+  'Customer Name',
+  'Phone Number',
+  'Proposal Title',
+  'Total Amount (INR)',
+  'Status',
+  'Valid Until',
+  'Created By',
+  'Created Date',
+];
+
 export const FOLLOW_UPS_HEADERS = [
   'Follow-up ID',
   'Lead ID',
@@ -51,11 +64,13 @@ interface SimulatedSheet {
 class SimulatedGoogleSheetsStore {
   public tabs: {
     ALL_LEADS: SimulatedSheet;
+    QUOTATIONS: SimulatedSheet;
     FOLLOW_UPS: SimulatedSheet;
     BOOKINGS: SimulatedSheet;
     BUSINESS_SUMMARY: Array<Array<string | number>>;
   } = {
     ALL_LEADS: { headers: ALL_LEADS_HEADERS, rows: [] },
+    QUOTATIONS: { headers: QUOTATIONS_HEADERS, rows: [] },
     FOLLOW_UPS: { headers: FOLLOW_UPS_HEADERS, rows: [] },
     BOOKINGS: { headers: BOOKINGS_HEADERS, rows: [] },
     BUSINESS_SUMMARY: [],
@@ -63,6 +78,7 @@ class SimulatedGoogleSheetsStore {
 
   public reset() {
     this.tabs.ALL_LEADS.rows = [];
+    this.tabs.QUOTATIONS.rows = [];
     this.tabs.FOLLOW_UPS.rows = [];
     this.tabs.BOOKINGS.rows = [];
     this.tabs.BUSINESS_SUMMARY = [];
@@ -99,26 +115,126 @@ export class GoogleSheetsSyncEngine {
   }
 
   public isLiveCredentialsConfigured(): boolean {
-    return !!(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY);
+    const config = crmRepo.getGoogleSheetsConfig();
+    return !!(
+      (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) ||
+      process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
+      config.webhookUrl
+    );
+  }
+
+  private async sendWebhookRequest(payload: any): Promise<boolean> {
+    const config = crmRepo.getGoogleSheetsConfig();
+    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || config.webhookUrl;
+    if (!webhookUrl) return false;
+    try {
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      return res.ok;
+    } catch (e: any) {
+      console.warn('Google Sheets Webhook sync error:', e.message);
+      return false;
+    }
   }
 
   /**
-   * Reconciles all four tabs from the database in a full batch sync.
+   * Reconciles all tabs from the database in a full batch sync.
    */
   public async reconcileFullWorkbook(): Promise<{
     success: boolean;
     syncedLeads: number;
+    syncedQuotations: number;
     syncedFollowUps: number;
     syncedBookings: number;
     error?: string;
   }> {
     const config = crmRepo.getGoogleSheetsConfig();
     const leads = crmRepo.getLeads();
+    const quotations = crmRepo.getQuotations();
     const followUps = crmRepo.getFollowUps();
     const bookings = crmRepo.getBookings();
     const summary = this.computeBusinessSummary();
 
-    // 1. Live Google Sheets API sync if credentials configured
+    // Prepare rows for all tabs
+    const leadsRows = [
+      ALL_LEADS_HEADERS,
+      ...leads.map((l) => {
+        const row = crmRepo.formatLeadForSync(l);
+        return [
+          row.leadId,
+          row.enquiryDate,
+          row.customerName,
+          row.phoneNumber,
+          row.email,
+          row.serviceCategory,
+          row.destinationOrPackage,
+          row.travelDate,
+          row.stage,
+          row.priority,
+          row.assignedEmployee,
+          row.lastContactedDate,
+          row.nextFollowUp,
+          row.updatedAt,
+        ];
+      }),
+    ];
+
+    const quotationRows = [
+      QUOTATIONS_HEADERS,
+      ...quotations.map((q) => {
+        const row = crmRepo.formatQuotationForSync(q);
+        return [
+          row.quotationReference,
+          row.leadReference,
+          row.customerName,
+          row.customerPhone,
+          row.title,
+          row.totalAmount,
+          row.status,
+          row.validUntil,
+          row.createdBy,
+          row.createdAt,
+        ];
+      }),
+    ];
+
+    const followUpRows = [
+      FOLLOW_UPS_HEADERS,
+      ...followUps.map((f) => {
+        const row = crmRepo.formatFollowUpForSync(f);
+        return [
+          row.followUpId,
+          row.leadId,
+          row.customer,
+          row.assignedEmployee,
+          row.dueDate,
+          row.status,
+          row.completionTimestamp,
+        ];
+      }),
+    ];
+
+    const bookingRows = [
+      BOOKINGS_HEADERS,
+      ...bookings.map((b) => {
+        const row = crmRepo.formatBookingForSync(b);
+        return [
+          row.bookingReference,
+          row.customer,
+          row.serviceCategory,
+          row.relatedLeadId,
+          row.assignedEmployee,
+          row.travelDates,
+          row.bookingStatus,
+          row.bookingCreationDate,
+        ];
+      }),
+    ];
+
+    // 1. Live Google Sheets API sync if service account credentials configured
     const auth = this.getAuthClient();
     if (auth && config.spreadsheetId) {
       try {
@@ -128,29 +244,6 @@ export class GoogleSheetsSyncEngine {
         await this.ensureSheetTabsExist(sheets, config.spreadsheetId);
 
         // A. ALL_LEADS
-        const leadsRows = [
-          ALL_LEADS_HEADERS,
-          ...leads.map((l) => {
-            const row = crmRepo.formatLeadForSync(l);
-            return [
-              row.leadId,
-              row.enquiryDate,
-              row.customerName,
-              row.phoneNumber,
-              row.email,
-              row.serviceCategory,
-              row.destinationOrPackage,
-              row.travelDate,
-              row.stage,
-              row.priority,
-              row.assignedEmployee,
-              row.lastContactedDate,
-              row.nextFollowUp,
-              row.updatedAt,
-            ];
-          }),
-        ];
-
         await sheets.spreadsheets.values.update({
           spreadsheetId: config.spreadsheetId,
           range: 'ALL_LEADS!A1:N',
@@ -158,23 +251,15 @@ export class GoogleSheetsSyncEngine {
           requestBody: { values: leadsRows },
         });
 
-        // B. FOLLOW_UPS
-        const followUpRows = [
-          FOLLOW_UPS_HEADERS,
-          ...followUps.map((f) => {
-            const row = crmRepo.formatFollowUpForSync(f);
-            return [
-              row.followUpId,
-              row.leadId,
-              row.customer,
-              row.assignedEmployee,
-              row.dueDate,
-              row.status,
-              row.completionTimestamp,
-            ];
-          }),
-        ];
+        // B. QUOTATIONS
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: config.spreadsheetId,
+          range: 'QUOTATIONS!A1:J',
+          valueInputOption: 'USER_ENTERED',
+          requestBody: { values: quotationRows },
+        });
 
+        // C. FOLLOW_UPS
         await sheets.spreadsheets.values.update({
           spreadsheetId: config.spreadsheetId,
           range: 'FOLLOW_UPS!A1:G',
@@ -182,24 +267,7 @@ export class GoogleSheetsSyncEngine {
           requestBody: { values: followUpRows },
         });
 
-        // C. BOOKINGS
-        const bookingRows = [
-          BOOKINGS_HEADERS,
-          ...bookings.map((b) => {
-            const row = crmRepo.formatBookingForSync(b);
-            return [
-              row.bookingReference,
-              row.customer,
-              row.serviceCategory,
-              row.relatedLeadId,
-              row.assignedEmployee,
-              row.travelDates,
-              row.bookingStatus,
-              row.bookingCreationDate,
-            ];
-          }),
-        ];
-
+        // D. BOOKINGS
         await sheets.spreadsheets.values.update({
           spreadsheetId: config.spreadsheetId,
           range: 'BOOKINGS!A1:H',
@@ -207,7 +275,7 @@ export class GoogleSheetsSyncEngine {
           requestBody: { values: bookingRows },
         });
 
-        // D. BUSINESS_SUMMARY
+        // E. BUSINESS_SUMMARY
         await sheets.spreadsheets.values.update({
           spreadsheetId: config.spreadsheetId,
           range: 'BUSINESS_SUMMARY!A1:E',
@@ -225,6 +293,7 @@ export class GoogleSheetsSyncEngine {
         return {
           success: true,
           syncedLeads: leads.length,
+          syncedQuotations: quotations.length,
           syncedFollowUps: followUps.length,
           syncedBookings: bookings.length,
         };
@@ -233,10 +302,10 @@ export class GoogleSheetsSyncEngine {
         crmRepo.updateGoogleSheetsConfig({
           lastSyncError: `Google Sheets API Error: ${err.message}`,
         });
-        // We do not throw to prevent crashing caller
         return {
           success: false,
           syncedLeads: 0,
+          syncedQuotations: 0,
           syncedFollowUps: 0,
           syncedBookings: 0,
           error: err.message,
@@ -244,8 +313,22 @@ export class GoogleSheetsSyncEngine {
       }
     }
 
-    // 2. Simulated Offline Mirror (when credentials not present, for local dev/testing)
+    // 2. Google Apps Script Webhook support if configured
+    await this.sendWebhookRequest({
+      action: 'FULL_RECONCILE',
+      spreadsheetId: config.spreadsheetId,
+      tabs: {
+        ALL_LEADS: leadsRows,
+        QUOTATIONS: quotationRows,
+        FOLLOW_UPS: followUpRows,
+        BOOKINGS: bookingRows,
+        BUSINESS_SUMMARY: summary,
+      },
+    });
+
+    // 3. Simulated Offline Mirror (for local dev/testing)
     simulatedSheets.tabs.ALL_LEADS.rows = leads.map((l) => crmRepo.formatLeadForSync(l));
+    simulatedSheets.tabs.QUOTATIONS.rows = quotations.map((q) => crmRepo.formatQuotationForSync(q));
     simulatedSheets.tabs.FOLLOW_UPS.rows = followUps.map((f) => crmRepo.formatFollowUpForSync(f));
     simulatedSheets.tabs.BOOKINGS.rows = bookings.map((b) => crmRepo.formatBookingForSync(b));
     simulatedSheets.tabs.BUSINESS_SUMMARY = summary;
@@ -259,6 +342,7 @@ export class GoogleSheetsSyncEngine {
     return {
       success: true,
       syncedLeads: leads.length,
+      syncedQuotations: quotations.length,
       syncedFollowUps: followUps.length,
       syncedBookings: bookings.length,
     };
@@ -303,6 +387,29 @@ export class GoogleSheetsSyncEngine {
             ]
           );
         } else {
+          await this.sendWebhookRequest({
+            action: 'UPSERT_ROW',
+            spreadsheetId: config.spreadsheetId,
+            tabName: 'ALL_LEADS',
+            primaryKey: row.leadId,
+            rowValues: [
+              row.leadId,
+              row.enquiryDate,
+              row.customerName,
+              row.phoneNumber,
+              row.email,
+              row.serviceCategory,
+              row.destinationOrPackage,
+              row.travelDate,
+              row.stage,
+              row.priority,
+              row.assignedEmployee,
+              row.lastContactedDate,
+              row.nextFollowUp,
+              row.updatedAt,
+            ],
+          });
+
           // Update simulated mirror
           const existingIdx = simulatedSheets.tabs.ALL_LEADS.rows.findIndex(
             (r) => r.leadId === row.leadId
@@ -313,12 +420,66 @@ export class GoogleSheetsSyncEngine {
             simulatedSheets.tabs.ALL_LEADS.rows.push(row);
           }
         }
+      } else if (job.targetTab === 'QUOTATIONS') {
+        const quotation = crmRepo.getQuotationById(job.entityId);
+        if (!quotation) return { success: true };
+
+        const row = crmRepo.formatQuotationForSync(quotation);
+        const rowValues = [
+          row.quotationReference,
+          row.leadReference,
+          row.customerName,
+          row.customerPhone,
+          row.title,
+          row.totalAmount,
+          row.status,
+          row.validUntil,
+          row.createdBy,
+          row.createdAt,
+        ];
+
+        if (auth && config.spreadsheetId) {
+          const sheets = google.sheets({ version: 'v4', auth });
+          await this.upsertGoogleSheetsRow(
+            sheets,
+            config.spreadsheetId,
+            'QUOTATIONS',
+            row.quotationReference,
+            rowValues
+          );
+        } else {
+          await this.sendWebhookRequest({
+            action: 'UPSERT_ROW',
+            spreadsheetId: config.spreadsheetId,
+            tabName: 'QUOTATIONS',
+            primaryKey: row.quotationReference,
+            rowValues,
+          });
+
+          const existingIdx = simulatedSheets.tabs.QUOTATIONS.rows.findIndex(
+            (r) => r.quotationReference === row.quotationReference
+          );
+          if (existingIdx >= 0) {
+            simulatedSheets.tabs.QUOTATIONS.rows[existingIdx] = row;
+          } else {
+            simulatedSheets.tabs.QUOTATIONS.rows.push(row);
+          }
+        }
       } else if (job.targetTab === 'FOLLOW_UPS') {
         const followUps = crmRepo.getFollowUps();
         const f = followUps.find((item) => item.id === job.entityId);
         if (!f) return { success: true };
 
         const row = crmRepo.formatFollowUpForSync(f);
+        const rowValues = [
+          row.followUpId,
+          row.leadId,
+          row.customer,
+          row.assignedEmployee,
+          row.dueDate,
+          row.status,
+          row.completionTimestamp,
+        ];
 
         if (auth && config.spreadsheetId) {
           const sheets = google.sheets({ version: 'v4', auth });
@@ -327,17 +488,17 @@ export class GoogleSheetsSyncEngine {
             config.spreadsheetId,
             'FOLLOW_UPS',
             row.followUpId,
-            [
-              row.followUpId,
-              row.leadId,
-              row.customer,
-              row.assignedEmployee,
-              row.dueDate,
-              row.status,
-              row.completionTimestamp,
-            ]
+            rowValues
           );
         } else {
+          await this.sendWebhookRequest({
+            action: 'UPSERT_ROW',
+            spreadsheetId: config.spreadsheetId,
+            tabName: 'FOLLOW_UPS',
+            primaryKey: row.followUpId,
+            rowValues,
+          });
+
           const existingIdx = simulatedSheets.tabs.FOLLOW_UPS.rows.findIndex(
             (r) => r.followUpId === row.followUpId
           );
@@ -352,6 +513,16 @@ export class GoogleSheetsSyncEngine {
         if (!booking) return { success: true };
 
         const row = crmRepo.formatBookingForSync(booking);
+        const rowValues = [
+          row.bookingReference,
+          row.customer,
+          row.serviceCategory,
+          row.relatedLeadId,
+          row.assignedEmployee,
+          row.travelDates,
+          row.bookingStatus,
+          row.bookingCreationDate,
+        ];
 
         if (auth && config.spreadsheetId) {
           const sheets = google.sheets({ version: 'v4', auth });
@@ -360,18 +531,17 @@ export class GoogleSheetsSyncEngine {
             config.spreadsheetId,
             'BOOKINGS',
             row.bookingReference,
-            [
-              row.bookingReference,
-              row.customer,
-              row.serviceCategory,
-              row.relatedLeadId,
-              row.assignedEmployee,
-              row.travelDates,
-              row.bookingStatus,
-              row.bookingCreationDate,
-            ]
+            rowValues
           );
         } else {
+          await this.sendWebhookRequest({
+            action: 'UPSERT_ROW',
+            spreadsheetId: config.spreadsheetId,
+            tabName: 'BOOKINGS',
+            primaryKey: row.bookingReference,
+            rowValues,
+          });
+
           const existingIdx = simulatedSheets.tabs.BOOKINGS.rows.findIndex(
             (r) => r.bookingReference === row.bookingReference
           );
@@ -458,7 +628,7 @@ export class GoogleSheetsSyncEngine {
   }
 
   private async ensureSheetTabsExist(sheets: any, spreadsheetId: string) {
-    const requiredTabs = ['ALL_LEADS', 'FOLLOW_UPS', 'BOOKINGS', 'BUSINESS_SUMMARY'];
+    const requiredTabs = ['ALL_LEADS', 'QUOTATIONS', 'FOLLOW_UPS', 'BOOKINGS', 'BUSINESS_SUMMARY'];
     try {
       const meta = await sheets.spreadsheets.get({ spreadsheetId });
       const currentTitles = (meta.data.sheets || []).map((s: any) => s.properties?.title);

@@ -373,9 +373,11 @@ export type SyncEventType =
   | 'FOLLOW_UP_UPDATED'
   | 'BOOKING_CREATED'
   | 'BOOKING_STATUS_CHANGED'
+  | 'QUOTATION_CREATED'
+  | 'QUOTATION_UPDATED'
   | 'RECONCILIATION_FULL';
 
-export type SyncTargetTab = 'ALL_LEADS' | 'FOLLOW_UPS' | 'BOOKINGS' | 'BUSINESS_SUMMARY';
+export type SyncTargetTab = 'ALL_LEADS' | 'QUOTATIONS' | 'FOLLOW_UPS' | 'BOOKINGS' | 'BUSINESS_SUMMARY';
 
 export interface SyncJobRecord {
   id: string;
@@ -402,5 +404,6 @@ export interface GoogleSheetsConfig {
   lastSyncError: string | null;
   totalSyncedEvents: number;
   activeViewerEmail: string; // "neel@varniholidays.com"
+  webhookUrl?: string | null;
 }
 

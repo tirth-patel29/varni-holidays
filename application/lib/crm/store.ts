@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import {
   CustomerRecord,
@@ -41,7 +41,7 @@ const STORE_PATH = path.join(STORE_DIR, 'crm_store.json');
 
 // Initial seed data adhering strictly to the SRS and Phase 0/1 verified rules
 function generateInitialState(): CrmDatabaseState {
-  const defaultSpreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms';
+  const defaultSpreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A';
   const sheetsConfig: GoogleSheetsConfig = {
     spreadsheetId: defaultSpreadsheetId,
     spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/' + defaultSpreadsheetId + '/edit',
@@ -615,6 +615,23 @@ class CrmRepository {
     };
   }
 
+  public formatQuotationForSync(quote: QuotationRecord): Record<string, any> {
+    const customer = this.getCustomerById(quote.customerId);
+    const lead = this.state.leads.find((l) => l.id === quote.leadId);
+    return {
+      quotationReference: quote.quotationNumber || (quote as any).quotationReference || quote.id,
+      leadReference: lead ? lead.referenceId : (quote.leadId || 'N/A'),
+      customerName: customer ? customer.fullName : ((quote as any).customerName || 'Customer'),
+      customerPhone: customer ? `${customer.phoneCountryCode || '+91'} ${customer.phoneNumber}` : ((quote as any).customerPhone || ''),
+      title: quote.title,
+      totalAmount: quote.totalAmountInr ?? (quote as any).finalPayableAmountInr ?? 0,
+      status: quote.status,
+      validUntil: quote.validUntil ? new Date(quote.validUntil).toLocaleDateString('en-IN') : '',
+      createdBy: quote.createdByName || 'Neel Patel',
+      createdAt: quote.createdAt ? new Date(quote.createdAt).toLocaleDateString('en-IN') : '',
+    };
+  }
+
   // --- Quotations (Phase 3) ---
   public getQuotations(leadId?: string): QuotationRecord[] {
     if (leadId) {
@@ -634,6 +651,14 @@ class CrmRepository {
     } else {
       this.state.quotations.unshift(quote);
     }
+
+    this.enqueueSyncJob(
+      'QUOTATION_CREATED',
+      'QUOTATIONS',
+      quote.id,
+      this.formatQuotationForSync(quote)
+    );
+
     this.persist(this.state);
     return quote;
   }
@@ -718,6 +743,13 @@ class CrmRepository {
       ipAddress: '127.0.0.1 (Internal CRM)',
     });
 
+    this.enqueueSyncJob(
+      'QUOTATION_CREATED',
+      'QUOTATIONS',
+      quote.id,
+      this.formatQuotationForSync(quote)
+    );
+
     this.persist(this.state);
     return quote;
   }
@@ -761,6 +793,13 @@ class CrmRepository {
       details: `Quotation ${quote.quotationNumber} transitioned to ${status}. Notes: ${notes || 'N/A'}`,
       ipAddress: '127.0.0.1 (Internal CRM)',
     });
+
+    this.enqueueSyncJob(
+      'QUOTATION_UPDATED',
+      'QUOTATIONS',
+      quote.id,
+      this.formatQuotationForSync(quote)
+    );
 
     this.persist(this.state);
     return quote;

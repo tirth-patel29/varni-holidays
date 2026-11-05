@@ -24,6 +24,7 @@ export async function getGoogleSheetsStatusAction() {
     recentJobs: allJobs.slice(0, 20),
     simulatedStats: {
       leadsCount: simulatedSheets.tabs.ALL_LEADS.rows.length,
+      quotationsCount: simulatedSheets.tabs.QUOTATIONS.rows.length,
       followUpsCount: simulatedSheets.tabs.FOLLOW_UPS.rows.length,
       bookingsCount: simulatedSheets.tabs.BOOKINGS.rows.length,
     },
@@ -65,6 +66,14 @@ export async function processSyncQueueAction() {
     successCount,
     failCount,
   };
+}
+
+export async function triggerImmediateBackgroundSync() {
+  try {
+    await processSyncQueueAction();
+  } catch (err: any) {
+    console.warn('Background Google Sheets sync execution notice:', err.message);
+  }
 }
 
 export async function triggerManualSyncAction() {

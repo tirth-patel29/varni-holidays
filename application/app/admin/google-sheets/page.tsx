@@ -33,12 +33,15 @@ export default function GoogleSheetsAdminPage() {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
   const [spreadsheetIdInput, setSpreadsheetIdInput] = useState('');
+  const [webhookUrlInput, setWebhookUrlInput] = useState('');
+  const [showAppsScript, setShowAppsScript] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
     const res = await getGoogleSheetsStatusAction();
     setData(res);
     setSpreadsheetIdInput(res.config.spreadsheetId);
+    setWebhookUrlInput(res.config.webhookUrl || '');
     setLoading(false);
   };
 
@@ -91,7 +94,7 @@ export default function GoogleSheetsAdminPage() {
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setActionLoading(true);
-    await updateGoogleSheetsSettingsAction({ spreadsheetId: spreadsheetIdInput });
+    await updateGoogleSheetsSettingsAction({ spreadsheetId: spreadsheetIdInput, webhookUrl: webhookUrlInput });
     setFeedback({ type: 'success', text: 'Spreadsheet configuration successfully updated.' });
     await loadData();
     setActionLoading(false);
@@ -275,9 +278,46 @@ export default function GoogleSheetsAdminPage() {
                 type="text"
                 value={spreadsheetIdInput}
                 onChange={(e) => setSpreadsheetIdInput(e.target.value)}
-                placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+                placeholder="1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A"
                 className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs font-mono text-[#F4F4F2] focus:outline-none focus:border-[#E9B95E]"
               />
+              <p className="mt-1 text-[10px] text-[#969CA5]">
+                Active Sheet: <a href={'https://docs.google.com/spreadsheets/d/' + spreadsheetIdInput + '/edit'} target="_blank" rel="noopener noreferrer" className="text-[#E9B95E] hover:underline font-mono">https://docs.google.com/spreadsheets/d/{spreadsheetIdInput}/edit</a>
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[10px] text-[#666E79] uppercase">
+                  Google Apps Script Webhook URL (Optional for Direct Live Sync)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAppsScript(!showAppsScript)}
+                  className="text-[10px] text-[#E9B95E] hover:underline"
+                >
+                  {showAppsScript ? 'Hide Instructions' : 'View 1-Click Apps Script Setup'}
+                </button>
+              </div>
+              <input
+                type="text"
+                value={webhookUrlInput}
+                onChange={(e) => setWebhookUrlInput(e.target.value)}
+                placeholder="https://script.google.com/macros/s/.../exec"
+                className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs font-mono text-[#F4F4F2] focus:outline-none focus:border-[#E9B95E]"
+              />
+              {showAppsScript && (
+                <div className="mt-2 p-3 rounded bg-[#101113] border border-[#2A2E34] text-[11px] text-[#969CA5] space-y-2">
+                  <div className="font-semibold text-[#F4F4F2]">How to connect in 1 minute without Google Cloud:</div>
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Open your Google Sheet: <a href={'https://docs.google.com/spreadsheets/d/' + spreadsheetIdInput + '/edit'} target="_blank" rel="noopener noreferrer" className="text-[#E9B95E] underline">Click here</a></li>
+                    <li>Click <strong>Extensions &gt; Apps Script</strong> in the menu.</li>
+                    <li>Paste the webhook code and click <strong>Deploy &gt; New deployment &gt; Web app</strong>.</li>
+                    <li>Set <em>Execute as: Me</em> and <em>Who has access: Anyone</em>.</li>
+                    <li>Copy the resulting Web App URL and paste it above!</li>
+                  </ol>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between pt-2">

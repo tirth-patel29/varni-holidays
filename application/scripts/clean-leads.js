@@ -74,8 +74,8 @@ async function cleanAllLeadsAndData() {
     packageCosts: [],
     syncJobs: [],
     sheetsConfig: {
-      spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-      spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'}/edit`,
+      spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A',
+      spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A'}/edit`,
       clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || 'varni-sheets-sync@varni-holidays-crm.iam.gserviceaccount.com',
       hasPrivateKey: !!process.env.GOOGLE_PRIVATE_KEY,
       status: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_PRIVATE_KEY ? 'CONNECTED' : 'DISCONNECTED',
@@ -96,3 +96,4 @@ async function cleanAllLeadsAndData() {
 cleanAllLeadsAndData()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

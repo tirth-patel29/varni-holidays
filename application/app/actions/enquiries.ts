@@ -10,6 +10,7 @@ import {
 } from "@/lib/validation/schemas";
 import { calculateKeralaPrice } from "@/lib/pricing/kerala";
 import { sendEnquiryConfirmationEmail } from "@/lib/integrations/email-service";
+import { processSyncQueueAction } from "@/app/actions/google-sheets";
 
 function generateReference(prefix: "FLT" | "PKG" | "VIS"): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -173,6 +174,9 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
         title: 'New Flight Enquiry Received',
         description: `Customer submitted website flight request: ${data.originAirport} → ${data.destinationAirport} (${data.tripType}) for ${data.adultsCount} Adults, ${data.childrenCount} Children.`,
       });
+
+      // Trigger instant background sync to Google Sheets
+      processSyncQueueAction().catch((e) => console.warn('Flight Sheets sync err:', e));
     } catch (crmErr) {
       console.warn("CRM store sync failed:", crmErr);
     }
@@ -395,6 +399,9 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
         title: 'New Kerala Package Enquiry Received',
         description: `Customer submitted website package request: ${data.hotelTier} tier, ${data.adultsCount} Adults, Quoted: ${pricingResult.totalEstimate ? `₹${pricingResult.totalEstimate.toLocaleString('en-IN')}` : 'Custom Quotation Required'}.`,
       });
+
+      // Trigger instant background sync to Google Sheets
+      processSyncQueueAction().catch((e) => console.warn('Package Sheets sync err:', e));
     } catch (crmErr) {
       console.warn("CRM store sync failed:", crmErr);
     }
@@ -568,6 +575,9 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
         title: 'New Visa Consultation Request Received',
         description: `Customer submitted website visa request for ${data.destinationCountry} (${data.visaCategory} Visa) for ${data.applicantCount} applicants.`,
       });
+
+      // Trigger instant background sync to Google Sheets
+      processSyncQueueAction().catch((e) => console.warn('Visa Sheets sync err:', e));
     } catch (crmErr) {
       console.warn("CRM store sync failed:", crmErr);
     }

@@ -250,15 +250,15 @@ Warm regards,
                     <tr key={q.id} className="hover:bg-[#1D2025]/60 transition-colors">
                       <td className="px-4 py-3 font-mono font-medium text-[#F4F4F2] whitespace-nowrap">
                         <Link href={`/employee/quotations/${q.id}`} className="hover:text-[#E9B95E] transition-colors">
-                          {q.quotationReference}
+                          {q.quotationReference || q.quotationNumber || q.id}
                         </Link>
                         <span className="block text-[10px] text-[#666E79] font-sans">
-                          {new Date(q.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Today'}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="font-medium text-[#F4F4F2] block">{q.customerName || 'Customer'}</span>
-                        <span className="text-[10px] text-[#666E79] font-mono">{q.leadReference || q.leadId}</span>
+                        <span className="font-medium text-[#F4F4F2] block">{q.customerName || (q.customer?.fullName) || 'Customer'}</span>
+                        <span className="text-[10px] text-[#666E79] font-mono">{q.leadReference || (q.lead?.referenceId) || q.leadId}</span>
                       </td>
                       <td className="px-4 py-3 max-w-xs truncate text-[#F4F4F2]">
                         {q.title}
@@ -280,7 +280,7 @@ Warm regards,
                         </select>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-[#666E79] font-mono text-[11px]">
-                        {new Date(q.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        {q.validUntil ? new Date(q.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '7 days'}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
                         <div className="flex items-center justify-end gap-1.5">
