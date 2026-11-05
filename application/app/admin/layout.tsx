@@ -1,12 +1,11 @@
 import React from 'react';
-import CrmLayoutWrapper from '@/components/crm/CrmLayoutWrapper';
+import AdminLayoutWrapper from '@/components/admin/AdminLayoutWrapper';
 
 export const metadata = {
   title: 'Super Admin Portal | Varni Holidays',
-  description: 'Super Admin Management, Deduplication, Audit Trail, and Rate Governance for Varni Holidays.',
+  description: 'Executive Management, Rate Governance, Deduplication, and Operations Audit for Varni Holidays.',
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <CrmLayoutWrapper>{children}</CrmLayoutWrapper>;
+  return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>;
 }
-

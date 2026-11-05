@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import CrmHeader from '@/components/crm/CrmHeader';
 import { useCrm } from '@/components/crm/CrmContext';
 import {
   getGoogleSheetsStatusAction,
@@ -23,6 +22,8 @@ import {
   History,
   Layers,
   Link as LinkIcon,
+  Check,
+  Play,
 } from 'lucide-react';
 
 export default function GoogleSheetsAdminPage() {
@@ -38,11 +39,16 @@ export default function GoogleSheetsAdminPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const res = await getGoogleSheetsStatusAction();
-    setData(res);
-    setSpreadsheetIdInput(res.config.spreadsheetId);
-    setWebhookUrlInput(res.config.webhookUrl || '');
-    setLoading(false);
+    try {
+      const res = await getGoogleSheetsStatusAction();
+      setData(res);
+      setSpreadsheetIdInput(res.config.spreadsheetId);
+      setWebhookUrlInput(res.config.webhookUrl || '');
+    } catch (err) {
+      console.error('Failed to load Google Sheets config:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -112,233 +118,232 @@ export default function GoogleSheetsAdminPage() {
   const cfg = data?.config;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#101113] text-[#F4F4F2]">
-      <CrmHeader
-        title="Google Sheets Executive Reporting"
-        subtitle="One-way transactional outbox synchronization: PostgreSQL → Google Sheets (Read-only for Neel Patel)."
-        actions={
-          cfg && (
-            <a
-              href={cfg.spreadsheetUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3.5 py-1.5 rounded-md bg-[#E9B95E] hover:bg-[#F0C878] text-[#101113] font-semibold text-xs inline-flex items-center gap-1.5 transition-colors"
-            >
-              <Table size={14} />
-              <span>Open Google Sheet</span>
-            </a>
-          )
-        }
-      />
+    <div className="flex-1 flex flex-col min-w-0 bg-[#F7F8FA] text-[#172B45]">
+      <main className="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col min-w-0 space-y-6 max-w-7xl mx-auto w-full">
+        
+        {/* Page Title & Context Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E8ED]">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-1.5 h-1.5 bg-[#168653] inline-block" />
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#718096] font-bold">
+                External Sync & Reporting
+              </span>
+            </div>
+            <h1 className="font-headline text-2xl font-bold text-[#153650] leading-tight">
+              Google Sheets Live Sync
+            </h1>
+            <p className="text-xs text-[#718096] mt-1">
+              Transactional outbox synchronization: PostgreSQL → Google Sheets (Read-only executive replica for Neel Patel).
+            </p>
+          </div>
 
-      <main className="p-6 flex-1 flex flex-col min-w-0 space-y-5 max-w-7xl">
+          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+            {cfg?.spreadsheetUrl && (
+              <a
+                href={cfg.spreadsheetUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none inline-flex items-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Table size={13} className="text-[#E9B95E]" />
+                <span>Open Google Sheet</span>
+                <ExternalLink size={11} />
+              </a>
+            )}
+
+            <button
+              onClick={handleManualSync}
+              disabled={actionLoading}
+              className="px-3.5 py-1.5 bg-[#FFFFFF] hover:bg-[#F4F6F9] text-[#153650] border border-[#E5E8ED] text-xs font-bold rounded-none inline-flex items-center gap-1.5 transition-colors shadow-xs"
+            >
+              <RotateCw size={13} className={actionLoading ? 'animate-spin text-[#24689B]' : 'text-[#718096]'} />
+              <span>Sync Now</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Feedback Alert Banner */}
         {feedback && (
           <div
-            className={`p-3 rounded-lg text-xs flex items-center justify-between border ${
+            className={`p-3.5 rounded-none border text-xs font-medium flex items-center justify-between gap-3 ${
               feedback.type === 'success'
-                ? 'bg-[#55B98A]/10 text-[#55B98A] border-[#55B98A]/30'
+                ? 'bg-[#F0FDF4] border-[#D1F0E0] text-[#168653]'
                 : feedback.type === 'error'
-                ? 'bg-[#DF7373]/10 text-[#DF7373] border-[#DF7373]/30'
-                : 'bg-[#6FA9D8]/10 text-[#6FA9D8] border-[#6FA9D8]/30'
+                ? 'bg-[#FEF2F2] border-[#FCDAD7] text-[#D54747]'
+                : 'bg-[#EFF6FF] border-[#BFDBFE] text-[#1E40AF]'
             }`}
           >
             <span>{feedback.text}</span>
-            <button onClick={() => setFeedback(null)} className="text-[#969CA5] hover:text-[#F4F4F2]">
+            <button onClick={() => setFeedback(null)} className="hover:opacity-75">
               <X size={14} />
             </button>
           </div>
         )}
 
-        {/* Governance & Privacy Notice */}
-        <div className="rounded-lg p-4 bg-[#17191D] border border-[#2A2E34] text-xs text-[#969CA5] space-y-1.5">
-          <div className="flex items-center gap-2 font-medium text-[#F4F4F2]">
-            <ShieldCheck size={16} className="text-[#E9B95E]" />
-            <span>Strict One-Way Synchronization Governance</span>
-          </div>
-          <p className="leading-relaxed text-[11px]">
-            • <strong>Sole Source of Truth:</strong> PostgreSQL remains the only system of record. Changes made inside Google Sheets are never imported back into the CRM.<br />
-            • <strong>Viewer Privilege:</strong> Neel Patel has read-only Viewer access to the workbook. Operational records are managed exclusively through the CRM desk.<br />
-            • <strong>Zero Sensitive Leakage:</strong> Passport details, DOB, confidential supplier net rates, and margins are strictly stripped from all outbound sheet payloads.<br />
-            • <strong>Outbox Resilience:</strong> Google API outages or rate limits are captured in the outbox queue and will never interrupt CRM desk operations.
-          </p>
-        </div>
+        {/* 4 Status KPI Cards */}
+        {data && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] p-4 rounded-none shadow-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#718096] block">
+                Connection Status
+              </span>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className={`w-2 h-2 ${cfg?.enabled ? 'bg-[#168653]' : 'bg-[#D54747]'}`} />
+                <span className="text-sm font-bold text-[#153650] font-mono">
+                  {cfg?.enabled ? 'CONNECTED' : 'DISCONNECTED'}
+                </span>
+              </div>
+              <span className="text-[10px] text-[#718096] mt-1 block">Mode: {cfg?.mode || 'Apps Script Webhook'}</span>
+            </div>
 
-        {/* Status KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="rounded-lg p-4 border border-[#2A2E34] bg-[#17191D] space-y-1">
-            <div className="flex items-center justify-between text-[11px] text-[#666E79] uppercase">
-              <span>Sync Status</span>
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  cfg?.status === 'CONNECTED' ? 'bg-[#55B98A]' : 'bg-[#E8B65E]'
-                }`}
-              />
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] p-4 rounded-none shadow-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#718096] block">
+                Pending Outbox
+              </span>
+              <div className="text-xl font-bold text-[#153650] mt-1.5 font-headline tabular-nums">
+                {data.outbox.pending} jobs
+              </div>
+              <span className="text-[10px] text-[#718096] mt-1 block">Awaiting batch delivery</span>
             </div>
-            <div className="text-xl font-semibold text-[#F4F4F2]">
-              {loading ? '...' : cfg?.status || 'DISCONNECTED'}
-            </div>
-            <div className="text-[11px] text-[#969CA5]">
-              {data?.isLive ? 'Live GCP Service Account' : 'Development Simulation Mirror'}
-            </div>
-          </div>
 
-          <div className="rounded-lg p-4 border border-[#2A2E34] bg-[#17191D] space-y-1">
-            <div className="flex items-center justify-between text-[11px] text-[#666E79] uppercase">
-              <span>Last Sync</span>
-              <History size={14} className="text-[#666E79]" />
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] p-4 rounded-none shadow-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#718096] block">
+                Synced Records
+              </span>
+              <div className="text-xl font-bold text-[#168653] mt-1.5 font-headline tabular-nums">
+                {data.outbox.completed} jobs
+              </div>
+              <span className="text-[10px] text-[#168653] font-semibold mt-1 block">Successfully reconciled</span>
             </div>
-            <div className="font-mono text-sm font-semibold text-[#F4F4F2]">
-              {loading
-                ? '...'
-                : cfg?.lastSuccessfulSyncAt
-                ? new Date(cfg.lastSuccessfulSyncAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })
-                : 'Never'}
-            </div>
-            <div className="text-[11px] text-[#969CA5]">
-              {cfg?.lastSuccessfulSyncAt
-                ? new Date(cfg.lastSuccessfulSyncAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                : 'Pending initial sync'}
-            </div>
-          </div>
 
-          <div className="rounded-lg p-4 border border-[#2A2E34] bg-[#17191D] space-y-1">
-            <div className="flex items-center justify-between text-[11px] text-[#666E79] uppercase">
-              <span>Outbox Queue</span>
-              <Layers size={14} className="text-[#666E79]" />
-            </div>
-            <div className="text-xl font-semibold text-[#F4F4F2] tabular-nums">
-              {loading ? '...' : data?.counts.pending || 0} Pending
-            </div>
-            <div className="text-[11px] text-[#55B98A]">
-              {data?.counts.completed || 0} Successfully Synced
-            </div>
-          </div>
-
-          <div className="rounded-lg p-4 border border-[#2A2E34] bg-[#17191D] space-y-1">
-            <div className="flex items-center justify-between text-[11px] text-[#666E79] uppercase">
-              <span>Failed Jobs</span>
-              <AlertTriangle size={14} className={data?.counts.failed > 0 ? 'text-[#DF7373]' : 'text-[#666E79]'} />
-            </div>
-            <div className={`text-xl font-semibold tabular-nums ${data?.counts.failed > 0 ? 'text-[#DF7373]' : 'text-[#F4F4F2]'}`}>
-              {loading ? '...' : data?.counts.failed || 0}
-            </div>
-            <div className="text-[11px] text-[#969CA5]">
-              {data?.counts.failed > 0 ? (
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] p-4 rounded-none shadow-xs">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#718096] block">
+                Failed Attempts
+              </span>
+              <div className="text-xl font-bold text-[#D54747] mt-1.5 font-headline tabular-nums">
+                {data.outbox.failed} jobs
+              </div>
+              {data.outbox.failed > 0 ? (
                 <button
                   onClick={handleRetryFailed}
-                  disabled={actionLoading}
-                  className="text-[#DF7373] hover:underline"
+                  className="text-[10px] font-bold text-[#D54747] hover:underline mt-1 block"
                 >
-                  Retry Failed Jobs Now
+                  Retry All Failed
                 </button>
               ) : (
-                'Queue healthy'
+                <span className="text-[10px] text-[#718096] mt-1 block">Zero sync errors</span>
               )}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Operational Actions */}
-        <div className="rounded-lg p-5 border border-[#2A2E34] bg-[#17191D] space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-[#2A2E34]">
+        {/* Configuration Form Card */}
+        <div className="bg-[#FFFFFF] border border-[#E5E8ED] rounded-none p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="border-b border-[#E5E8ED] pb-3 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-[#F4F4F2]">Outbox Operations & Governance</h3>
-              <p className="text-xs text-[#969CA5]">Trigger live reconciliation, test connectivity, or retry outbox queue</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleManualSync}
-                disabled={actionLoading}
-                className="px-3.5 py-1.5 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-[#F4F4F2] border border-[#2A2E34] text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
-              >
-                <RotateCw size={13} className={actionLoading ? 'animate-spin' : ''} />
-                <span>{actionLoading ? 'Syncing...' : 'Sync Outbox Now'}</span>
-              </button>
-              <button
-                onClick={handleTestConnection}
-                disabled={actionLoading}
-                className="px-3 py-1.5 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-xs font-medium text-[#969CA5] hover:text-[#F4F4F2] border border-[#2A2E34] transition-colors"
-              >
-                Test Connectivity
-              </button>
-            </div>
-          </div>
-
-          {/* Configuration Form */}
-          <form onSubmit={handleSaveSettings} className="space-y-3">
-            <div>
-              <label className="block text-[10px] text-[#666E79] uppercase mb-1">
-                Target Google Spreadsheet ID
-              </label>
-              <input
-                type="text"
-                value={spreadsheetIdInput}
-                onChange={(e) => setSpreadsheetIdInput(e.target.value)}
-                placeholder="1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A"
-                className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs font-mono text-[#F4F4F2] focus:outline-none focus:border-[#E9B95E]"
-              />
-              <p className="mt-1 text-[10px] text-[#969CA5]">
-                Active Sheet: <a href={'https://docs.google.com/spreadsheets/d/' + spreadsheetIdInput + '/edit'} target="_blank" rel="noopener noreferrer" className="text-[#E9B95E] hover:underline font-mono">https://docs.google.com/spreadsheets/d/{spreadsheetIdInput}/edit</a>
+              <h2 className="text-sm font-bold text-[#153650] uppercase tracking-wider font-mono">
+                Spreadsheet Integration Settings
+              </h2>
+              <p className="text-xs text-[#718096] mt-0.5">
+                Target Google Sheet ID and Google Apps Script deployment URL
               </p>
             </div>
+            <button
+              type="button"
+              onClick={handleTestConnection}
+              disabled={actionLoading}
+              className="px-3 py-1 bg-[#F7F8FA] hover:bg-[#E5E8ED] text-[#153650] border border-[#CBD5E1] text-xs font-semibold rounded-none transition-colors"
+            >
+              Test Webhook Ping
+            </button>
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-[10px] text-[#666E79] uppercase">
-                  Google Apps Script Webhook URL (Optional for Direct Live Sync)
+          <form onSubmit={handleSaveSettings} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
+                  Google Spreadsheet ID
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setShowAppsScript(!showAppsScript)}
-                  className="text-[10px] text-[#E9B95E] hover:underline"
-                >
-                  {showAppsScript ? 'Hide Instructions' : 'View 1-Click Apps Script Setup'}
-                </button>
+                <input
+                  type="text"
+                  required
+                  value={spreadsheetIdInput}
+                  onChange={(e) => setSpreadsheetIdInput(e.target.value)}
+                  className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-mono rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
+                  placeholder="1abcXYZ..."
+                />
               </div>
-              <input
-                type="text"
-                value={webhookUrlInput}
-                onChange={(e) => setWebhookUrlInput(e.target.value)}
-                placeholder="https://script.google.com/macros/s/.../exec"
-                className="w-full p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-xs font-mono text-[#F4F4F2] focus:outline-none focus:border-[#E9B95E]"
-              />
-              {showAppsScript && (
-                <div className="mt-2 p-3 rounded bg-[#101113] border border-[#2A2E34] text-[11px] text-[#969CA5] space-y-2">
-                  <div className="font-semibold text-[#F4F4F2]">How to connect in 1 minute without Google Cloud:</div>
-                  <ol className="list-decimal pl-4 space-y-1">
-                    <li>Open your Google Sheet: <a href={'https://docs.google.com/spreadsheets/d/' + spreadsheetIdInput + '/edit'} target="_blank" rel="noopener noreferrer" className="text-[#E9B95E] underline">Click here</a></li>
-                    <li>Click <strong>Extensions &gt; Apps Script</strong> in the menu.</li>
-                    <li>Paste the webhook code and click <strong>Deploy &gt; New deployment &gt; Web app</strong>.</li>
-                    <li>Set <em>Execute as: Me</em> and <em>Who has access: Anyone</em>.</li>
-                    <li>Copy the resulting Web App URL and paste it above!</li>
-                  </ol>
-                </div>
-              )}
+
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
+                  Google Apps Script Webhook URL
+                </label>
+                <input
+                  type="url"
+                  value={webhookUrlInput}
+                  onChange={(e) => setWebhookUrlInput(e.target.value)}
+                  className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-mono rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
+                  placeholder="https://script.google.com/macros/s/.../exec"
+                />
+              </div>
             </div>
 
             <div className="flex items-center justify-between pt-2">
               <button
                 type="button"
-                onClick={handleDisconnect}
-                disabled={actionLoading}
-                className="text-xs text-[#DF7373] hover:underline"
+                onClick={() => setShowAppsScript(!showAppsScript)}
+                className="text-xs font-bold text-[#24689B] hover:text-[#153650] hover:underline"
               >
-                Disconnect Synchronization
+                {showAppsScript ? 'Hide Apps Script Code' : 'View Embedded Apps Script Handler'}
               </button>
+
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="px-4 py-1.5 rounded bg-[#E9B95E] hover:bg-[#F0C878] text-[#101113] text-xs font-semibold transition-colors"
+                className="px-4 py-2 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none transition-colors shadow-xs"
               >
-                Save Settings
+                Save Configuration
               </button>
             </div>
           </form>
+
+          {showAppsScript && (
+            <div className="mt-4 p-4 bg-[#F8FAFC] border border-[#E5E8ED] rounded-none">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#153650] block font-mono mb-2">
+                Google Apps Script Webhook Handler (Code.gs)
+              </span>
+              <pre className="text-[10px] font-mono text-[#172B45] bg-[#FFFFFF] p-3 border border-[#E5E8ED] overflow-x-auto crm-scrollbar max-h-48 leading-relaxed">
+{`function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("All Leads");
+    if (!sheet) {
+      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("All Leads");
+    }
+    // Append sanitized row
+    sheet.appendRow([
+      data.referenceId,
+      data.createdAt,
+      data.customerName,
+      data.phone,
+      data.email,
+      data.serviceType,
+      data.stage,
+      data.quotedPrice || "-"
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`}
+              </pre>
+            </div>
+          )}
         </div>
+
       </main>
     </div>
   );
