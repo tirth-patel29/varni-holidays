@@ -446,11 +446,15 @@ export default function DynamicPricingCalculator() {
             </div>
 
             <div>
+              <label className="block text-[11px] font-bold text-primary uppercase tracking-wider mb-1">
+                Email Address <span className="text-error">*</span>
+              </label>
               <input
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email Address (Optional)"
+                placeholder="e.g. nilesh@example.com"
                 className="w-full h-11 bg-surface-cream-subtle px-4 rounded-xl text-xs font-medium text-primary focus:outline-none focus:ring-2 focus:ring-secondary shadow-clay-inset"
               />
             </div>

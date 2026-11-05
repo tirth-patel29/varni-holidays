@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const FlightEnquirySchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
+  email: z
+    .string({ required_error: "Please enter your email address." })
+    .min(1, "Please enter your email address.")
+    .email("Please enter a valid email address.")
+    .trim(),
   phoneCountryCode: z.string().min(1, "Country code is required"),
   phoneNumber: z.string().min(5, "Phone number is required"),
   tripType: z.enum(["ONE_WAY", "ROUND_TRIP", "MULTI_CITY"]),
@@ -19,7 +23,11 @@ export const FlightEnquirySchema = z.object({
 
 export const PackageEnquirySchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
+  email: z
+    .string({ required_error: "Please enter your email address." })
+    .min(1, "Please enter your email address.")
+    .email("Please enter a valid email address.")
+    .trim(),
   phoneCountryCode: z.string().min(1, "Country code is required"),
   phoneNumber: z.string().min(5, "Phone number is required"),
   packageSlug: z.string().default("kerala-6n7d-winter"),
@@ -40,7 +48,11 @@ export const PackageEnquirySchema = z.object({
 
 export const VisaEnquirySchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
+  email: z
+    .string({ required_error: "Please enter your email address." })
+    .min(1, "Please enter your email address.")
+    .email("Please enter a valid email address.")
+    .trim(),
   phoneCountryCode: z.string().min(1, "Country code is required"),
   phoneNumber: z.string().min(5, "Phone number is required"),
   destinationCountry: z.string().min(2, "Destination country is required"),
@@ -54,3 +66,24 @@ export const VisaEnquirySchema = z.object({
   specialCircumstances: z.string().max(500).optional(),
 });
 
+export const ContactFormSchema = z.object({
+  fullName: z.string().min(2, "Please enter your full name").max(100),
+  email: z
+    .string({ required_error: "Please enter your email address." })
+    .min(1, "Please enter your email address.")
+    .email("Please enter a valid email address.")
+    .trim(),
+  phoneCountryCode: z.string().min(1, "Country code is required"),
+  phoneNumber: z.string().min(5, "Phone number is required"),
+  subject: z.string().min(2, "Subject is required").max(150),
+  message: z.string().min(5, "Message must be at least 5 characters").max(2000),
+});
+
+export const NewsletterSubscriptionSchema = z.object({
+  email: z
+    .string({ required_error: "Please enter your email address." })
+    .min(1, "Please enter your email address.")
+    .email("Please enter a valid email address.")
+    .trim()
+    .toLowerCase(),
+});

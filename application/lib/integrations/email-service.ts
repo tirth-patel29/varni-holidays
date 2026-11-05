@@ -1,7 +1,14 @@
 /**
  * VARNI HOLIDAYS - Customer Email Integration Service
- * Powered by Resend with Branded Responsive HTML Templates
- * Fallback to simulation mode when RESEND_API_KEY is not configured
+ * Powered by Resend with Branded Responsive LIGHT HTML Templates
+ * Color Palette:
+ * - Outer Background: #F8F6F0
+ * - Content Card: #FFFFFF
+ * - Heading: #153650
+ * - Body Text: #35475C
+ * - Accent Gold: #E9B95E
+ * - Secondary Background: #F1EEE5
+ * - Subtle Borders: #E8E3D8
  */
 
 import { UpdateCategory } from '../crm/types';
@@ -36,7 +43,7 @@ export interface EnquiryConfirmationParams {
   to: string;
   customerName: string;
   referenceId: string;
-  serviceType: 'PACKAGE' | 'FLIGHT' | 'VISA';
+  serviceType: 'PACKAGE' | 'FLIGHT' | 'VISA' | 'CONTACT';
   details: {
     packageName?: string;
     hotelTier?: string;
@@ -58,10 +65,14 @@ export interface EnquiryConfirmationParams {
     applicantCount?: number;
     stayDurationDays?: number | null;
     specialRequirements?: string | null;
+    subject?: string;
+    message?: string;
   };
 }
 
-// Warm Tactile Voyage Branded Email HTML Wrapper
+/**
+ * Standard Light-Themed Branded Email HTML Wrapper
+ */
 export function buildVarniEmailHtml(options: EmailSendOptions): string {
   const { toName, headline, bodyHtml, ctaText, ctaUrl, bookingRef, quotationRef } = options;
 
@@ -71,60 +82,91 @@ export function buildVarniEmailHtml(options: EmailSendOptions): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>${options.subject}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #0B0D0F; color: #1E293B; }
-    .wrapper { max-width: 600px; margin: 24px auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #2A2E34; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25); }
-    .header { background: #101113; padding: 28px 32px; text-align: left; border-bottom: 2px solid #E9B95E; }
-    .brand-title { color: #F4F4F2; font-size: 20px; font-weight: 800; letter-spacing: 1px; margin: 0; font-family: Georgia, serif; }
-    .brand-subtitle { color: #E9B95E; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
-    .content { padding: 32px; line-height: 1.6; }
-    .greeting { font-size: 15px; font-weight: 600; color: #0F172A; margin-bottom: 14px; }
-    .headline { font-size: 19px; font-weight: 700; color: #0F172A; margin: 0 0 16px 0; font-family: Georgia, serif; }
-    .body-text { font-size: 14px; color: #334155; line-height: 1.65; }
-    .card-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; background: #FEF3C7; color: #92400E; }
-    .btn-container { text-align: center; margin: 28px 0 12px 0; }
-    .btn { display: inline-block; background: #E9B95E; color: #101113 !important; font-size: 13px; font-weight: 700; padding: 12px 24px; border-radius: 6px; text-decoration: none; }
-    .footer { background: #17191D; padding: 24px 32px; text-align: center; font-size: 12px; color: #969CA5; border-top: 1px solid #2A2E34; }
-    .footer strong { color: #F4F4F2; }
-    .footer a { color: #E9B95E; text-decoration: none; font-weight: 600; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C; -webkit-font-smoothing: antialiased; }
+    table { border-collapse: collapse; }
+    .email-container { max-width: 600px; width: 100%; margin: 30px auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8; box-shadow: 0 4px 20px rgba(21, 54, 80, 0.06); }
+    .header-table { width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E; }
+    .content-table { width: 100%; padding: 32px 32px 24px 32px; }
+    .footer-table { width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 24px 32px; text-align: center; }
+    @media only screen and (max-width: 620px) {
+      .email-container { margin: 0 auto !important; border-radius: 0 !important; border: none !important; }
+      .content-table { padding: 24px 18px !important; }
+      .footer-table { padding: 20px 18px !important; }
+    }
   </style>
 </head>
-<body>
-  <div class="wrapper">
-    <!-- Header -->
-    <div class="header">
-      <div class="brand-title">VARNI HOLIDAYS</div>
-      <div class="brand-subtitle">Anand, Gujarat • Premium Travel & Bespoke Hospitality</div>
+<body style="margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C;">
+  <center style="width: 100%; background-color: #F8F6F0; padding: 20px 0;">
+    <div class="email-container" style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8;">
+      
+      <!-- Brand Header -->
+      <table class="header-table" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
+        <tr>
+          <td style="padding: 26px 32px;">
+            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Main Content -->
+      <table class="content-table" cellpadding="0" cellspacing="0" style="width: 100%; padding: 32px 32px 24px 32px;">
+        <tr>
+          <td style="font-size: 14px; line-height: 1.65; color: #35475C;">
+            <div style="font-size: 15px; font-weight: 600; color: #153650; margin-bottom: 14px;">Dear ${toName},</div>
+            
+            ${headline ? `<h1 style="font-family: Georgia, serif; font-size: 20px; font-weight: 700; color: #153650; margin: 0 0 16px 0; line-height: 1.35;">${headline}</h1>` : ''}
+
+            ${bookingRef ? `
+              <div style="background-color: #F1EEE5; border-left: 4px solid #E9B95E; border-radius: 0 8px 8px 0; padding: 12px 18px; margin-bottom: 20px;">
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #C28B2B;">Booking Reference</span>
+                <div style="font-family: monospace; font-size: 17px; font-weight: 800; color: #153650; margin-top: 2px;">${bookingRef}</div>
+              </div>
+            ` : ''}
+
+            ${quotationRef ? `
+              <div style="background-color: #F1EEE5; border-left: 4px solid #E9B95E; border-radius: 0 8px 8px 0; padding: 12px 18px; margin-bottom: 20px;">
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #C28B2B;">Official Proposal Reference</span>
+                <div style="font-family: monospace; font-size: 17px; font-weight: 800; color: #153650; margin-top: 2px;">${quotationRef}</div>
+              </div>
+            ` : ''}
+
+            <div style="font-size: 14px; color: #35475C; line-height: 1.65;">
+              ${bodyHtml || ''}
+            </div>
+
+            ${ctaText && ctaUrl ? `
+              <div style="text-align: center; margin: 28px 0 16px 0;">
+                <a href="${ctaUrl}" target="_blank" style="display: inline-block; background-color: #153650; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 12px rgba(21, 54, 80, 0.15);">
+                  ${ctaText}
+                </a>
+              </div>
+            ` : ''}
+          </td>
+        </tr>
+      </table>
+
+      <!-- Branded Footer -->
+      <table class="footer-table" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 22px 32px; text-align: center;">
+        <tr>
+          <td style="font-size: 11px; color: #666E79; line-height: 1.6;">
+            <div style="font-weight: 700; color: #153650; margin-bottom: 4px; font-size: 12px;">VARNI HOLIDAYS • ANAND HEADQUARTERS</div>
+            <div>${COMPANY_CONTACT.address.full}</div>
+            <div style="margin-top: 4px;">
+              Phone: <a href="${COMPANY_CONTACT.phone.tel}" style="color: #153650; font-weight: 600; text-decoration: none;">${COMPANY_CONTACT.phone.display}</a> | 
+              Email: <a href="${COMPANY_CONTACT.email.mailto}" style="color: #153650; font-weight: 600; text-decoration: none;">${COMPANY_CONTACT.email.primary}</a>
+            </div>
+            <div style="margin-top: 8px; color: #969CA5; font-size: 10px;">© ${new Date().getFullYear()} Varni Holidays. All rights reserved.</div>
+          </td>
+        </tr>
+      </table>
+
     </div>
-
-    <!-- Content Area -->
-    <div class="content">
-      <div class="greeting">Dear ${toName},</div>
-      ${headline ? `<h1 class="headline">${headline}</h1>` : ''}
-
-      ${bookingRef ? `<div class="card-box" style="margin-top: 0; margin-bottom: 20px;"><span class="badge">Booking Reference</span><div style="font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 6px;">${bookingRef}</div></div>` : ''}
-      ${quotationRef ? `<div class="card-box" style="margin-top: 0; margin-bottom: 20px;"><span class="badge">Quotation Reference</span><div style="font-size: 16px; font-weight: 800; color: #0F172A; margin-top: 6px;">${quotationRef}</div></div>` : ''}
-
-      <div class="body-text">
-        ${bodyHtml || ''}
-      </div>
-
-      ${ctaText && ctaUrl ? `
-        <div class="btn-container">
-          <a href="${ctaUrl}" class="btn" target="_blank">${ctaText}</a>
-        </div>
-      ` : ''}
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <p style="margin: 0 0 6px 0; font-weight: 600;">${COMPANY_CONTACT.businessName} ANAND</p>
-      <p style="margin: 0 0 6px 0; font-size: 11px;">${COMPANY_CONTACT.address.full} | Phone / WhatsApp: <a href="${COMPANY_CONTACT.phone.tel}">${COMPANY_CONTACT.phone.display}</a></p>
-      <p style="margin: 0; font-size: 11px;">Inquiries: <a href="${COMPANY_CONTACT.email.mailto}">${COMPANY_CONTACT.email.primary}</a> | Flights • Tour Packages • Visas • Hotels</p>
-    </div>
-  </div>
+  </center>
 </body>
 </html>
   `.trim();
@@ -132,6 +174,7 @@ export function buildVarniEmailHtml(options: EmailSendOptions): string {
 
 /**
  * Builds the instant acknowledgement email sent to customers when they submit an enquiry
+ * Uses strict Light Theme palette (No pure black sections).
  */
 export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationParams): string {
   const { customerName, referenceId, serviceType, details } = params;
@@ -142,32 +185,38 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
   if (serviceType === 'PACKAGE') {
     serviceTitle = 'Kerala Holiday Package Enquiry';
     detailsRowsHtml = `
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9; width: 38%;">Package</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.packageName || 'Kerala 6N/7D Winter CPAI'}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Hotel Tier</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.hotelTier || 'Deluxe'}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Travelers</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.adultsCount || 2} Adults${details.childrenCount ? `, ${details.childrenCount} Children` : ''}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Rooms</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.roomsCount || 1} Room(s)</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Dedicated Vehicle</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.vehicleType || 'AC Sedan (Dzire / Etios)'}</td></tr>
-      ${details.travelDates ? `<tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Travel Date</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.travelDates}</td></tr>` : ''}
-      ${details.totalEstimate ? `<tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Initial Estimate</td><td style="padding: 8px 12px; color: #16A34A; font-weight: 700; font-size: 14px; border-bottom: 1px solid #F1F5F9;">₹${details.totalEstimate.toLocaleString('en-IN')} (All Taxes Incl.)</td></tr>` : ''}
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Package</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.packageName || 'Kerala 6N/7D Winter CPAI'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Hotel Tier</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.hotelTier || 'Deluxe'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Travelers</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.adultsCount || 2} Adults${details.childrenCount ? `, ${details.childrenCount} Children` : ''}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Rooms</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.roomsCount || 1} Room(s)</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Dedicated Vehicle</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.vehicleType || 'AC Sedan (Dzire / Etios)'}</td></tr>
+      ${details.travelDates ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Travel Date</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.travelDates}</td></tr>` : ''}
+      ${details.totalEstimate ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Initial Estimate</td><td style="padding: 9px 12px; color: #16A34A; font-weight: 700; font-size: 14px; border-bottom: 1px solid #E8E3D8;">₹${details.totalEstimate.toLocaleString('en-IN')} (All Taxes Incl.)</td></tr>` : ''}
     `;
   } else if (serviceType === 'FLIGHT') {
     serviceTitle = 'Flight Booking Enquiry';
     detailsRowsHtml = `
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9; width: 38%;">Routing</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.originAirport} ✈ ${details.destinationAirport}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Trip Type</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.tripType || 'One Way'}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Departure Date</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.departureDate}</td></tr>
-      ${details.returnDate ? `<tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Return Date</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.returnDate}</td></tr>` : ''}
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Passengers</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.adultsCount || 1} Adult(s)${details.childrenCount ? `, ${details.childrenCount} Child` : ''}${details.infantsCount ? `, ${details.infantsCount} Infant` : ''}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Cabin Class</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.cabinClass || 'Economy'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Routing</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.originAirport} ✈ ${details.destinationAirport}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Trip Type</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.tripType || 'One Way'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Departure Date</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.departureDate}</td></tr>
+      ${details.returnDate ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Return Date</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.returnDate}</td></tr>` : ''}
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Passengers</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.adultsCount || 1} Adult(s)${details.childrenCount ? `, ${details.childrenCount} Child` : ''}${details.infantsCount ? `, ${details.infantsCount} Infant` : ''}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Cabin Class</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.cabinClass || 'Economy'}</td></tr>
     `;
   } else if (serviceType === 'VISA') {
     serviceTitle = 'Visa Assistance Enquiry';
     detailsRowsHtml = `
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9; width: 38%;">Country</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.destinationCountry}</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Visa Type</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.visaCategory || 'Tourist'} Visa</td></tr>
-      <tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Applicants</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.applicantCount || 1} Person(s)</td></tr>
-      ${details.departureDate ? `<tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Planned Travel</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.departureDate}</td></tr>` : ''}
-      ${details.stayDurationDays ? `<tr><td style="padding: 8px 12px; color: #64748B; font-size: 13px; border-bottom: 1px solid #F1F5F9;">Duration</td><td style="padding: 8px 12px; color: #0F172A; font-weight: 600; font-size: 13px; border-bottom: 1px solid #F1F5F9;">${details.stayDurationDays} Days</td></tr>` : ''}
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Country</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.destinationCountry}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Visa Type</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.visaCategory || 'Tourist'} Visa</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Applicants</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.applicantCount || 1} Person(s)</td></tr>
+      ${details.departureDate ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Planned Travel</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.departureDate}</td></tr>` : ''}
+      ${details.stayDurationDays ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Duration</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.stayDurationDays} Days</td></tr>` : ''}
+    `;
+  } else if (serviceType === 'CONTACT') {
+    serviceTitle = 'General Enquiry / Office Consultation';
+    detailsRowsHtml = `
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Subject</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.subject || 'Travel Enquiry'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Message</td><td style="padding: 9px 12px; color: #153650; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.message || 'Consultation request'}</td></tr>
     `;
   }
 
@@ -181,92 +230,243 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>Thank You for Your Enquiry – Varni Holidays</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C; -webkit-font-smoothing: antialiased; }
+    .email-container { max-width: 600px; width: 100%; margin: 30px auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8; box-shadow: 0 4px 20px rgba(21, 54, 80, 0.06); }
+    .content-table { width: 100%; padding: 32px 32px 24px 32px; }
+    .footer-table { width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 22px 32px; text-align: center; }
+    @media only screen and (max-width: 620px) {
+      .email-container { margin: 0 auto !important; border-radius: 0 !important; border: none !important; }
+      .content-table { padding: 24px 18px !important; }
+      .footer-table { padding: 20px 18px !important; }
+    }
+  </style>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #0B0D0F; color: #1E293B;">
-  <div style="max-width: 600px; margin: 24px auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #2A2E34; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-    <!-- Brand Header -->
-    <div style="background: #101113; padding: 26px 32px; text-align: left; border-bottom: 2px solid #E9B95E;">
-      <div style="color: #F4F4F2; font-size: 20px; font-weight: 800; letter-spacing: 1px; font-family: Georgia, serif; margin: 0;">VARNI HOLIDAYS</div>
-      <div style="color: #E9B95E; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
+<body style="margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C;">
+  <center style="width: 100%; background-color: #F8F6F0; padding: 20px 0;">
+    <div class="email-container" style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8;">
+      
+      <!-- Brand Header (Light Theme) -->
+      <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
+        <tr>
+          <td style="padding: 26px 32px;">
+            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Main Body -->
+      <table class="content-table" cellpadding="0" cellspacing="0" style="width: 100%; padding: 32px 32px 24px 32px;">
+        <tr>
+          <td style="font-size: 14px; line-height: 1.65; color: #35475C;">
+            <div style="font-size: 15px; font-weight: 600; color: #153650; margin-bottom: 12px;">Dear ${customerName},</div>
+
+            <h1 style="font-family: Georgia, serif; font-size: 21px; font-weight: 700; color: #153650; margin: 0 0 14px 0; line-height: 1.35;">
+              Thank You for Choosing Varni Holidays!
+            </h1>
+
+            <p style="margin: 0 0 20px 0; font-size: 14px; color: #35475C; line-height: 1.65;">
+              We have received your enquiry for <strong>${serviceTitle}</strong>. Our dedicated travel desk in Anand is already reviewing your details to ensure the highest standards of comfort, transparency, and value.
+            </p>
+
+            <!-- Reference ID Highlight Pill -->
+            <div style="background-color: #F1EEE5; border: 1px solid #E8E3D8; border-left: 4px solid #E9B95E; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+              <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #C28B2B;">Your Official Reference ID</span>
+              <div style="font-family: monospace; font-size: 18px; font-weight: 800; color: #153650; margin-top: 4px; letter-spacing: 0.5px;">${referenceId}</div>
+              <p style="margin: 4px 0 0 0; font-size: 11px; color: #666E79;">Please quote this reference ID for all upcoming inquiries or communication.</p>
+            </div>
+
+            <!-- Itemized Summary Table -->
+            <div style="background-color: #FFFFFF; border: 1px solid #E8E3D8; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+              <div style="background-color: #F1EEE5; padding: 10px 14px; font-size: 12px; font-weight: 700; color: #153650; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #E8E3D8;">
+                Summary of Your Request
+              </div>
+              <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <tbody>
+                  ${detailsRowsHtml}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- What Happens Next -->
+            <div style="background-color: #F4FAF7; border: 1px solid #D1EAD9; border-radius: 8px; padding: 16px 18px; margin-bottom: 24px;">
+              <div style="font-size: 13px; font-weight: 700; color: #166534; margin-bottom: 6px;">What Happens Next?</div>
+              <p style="font-size: 13px; color: #2D6A4F; margin: 0; line-height: 1.55;">
+                Our destination specialist is personally reviewing your requirements. We will contact you shortly via <strong>Phone</strong> or <strong>WhatsApp</strong> to discuss custom flight timings, hotel choices, or visa document checklists.
+              </p>
+            </div>
+
+            <!-- CTA WhatsApp Button -->
+            <div style="text-align: center; margin: 28px 0 16px 0;">
+              <a href="${COMPANY_CONTACT.whatsapp.url}?text=${waMessage}" target="_blank" style="display: inline-block; background-color: #25D366; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 13px 26px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);">
+                Chat Directly on WhatsApp (${COMPANY_CONTACT.whatsapp.display})
+              </a>
+            </div>
+
+            <!-- Contact Details Block -->
+            <div style="border-top: 1px solid #E8E3D8; padding-top: 18px; margin-top: 24px; font-size: 12px; color: #666E79; line-height: 1.6;">
+              <strong style="color: #153650; display: block; margin-bottom: 4px;">Need Immediate Assistance?</strong>
+              <div>📍 <strong>Head Office:</strong> ${COMPANY_CONTACT.address.full}</div>
+              <div>📞 <strong>Phone:</strong> <a href="${COMPANY_CONTACT.phone.tel}" style="color: #153650; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.phone.display}</a></div>
+              <div>✉️ <strong>Email:</strong> <a href="${COMPANY_CONTACT.email.mailto}" style="color: #153650; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.email.primary}</a></div>
+              <div>⏰ <strong>Office Hours:</strong> ${COMPANY_CONTACT.hours.detailed}</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Footer (Light Theme) -->
+      <table class="footer-table" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 22px 32px; text-align: center;">
+        <tr>
+          <td style="font-size: 11px; color: #666E79; line-height: 1.6;">
+            <div style="font-weight: 700; color: #153650; margin-bottom: 4px;">VARNI HOLIDAYS • ANAND</div>
+            <div>Bespoke Tours • Worldwide Flights • Express Visa Assistance • Luxury Hotels</div>
+            <div style="margin-top: 8px; color: #969CA5; font-size: 10px;">© ${new Date().getFullYear()} Varni Holidays. All rights reserved.</div>
+          </td>
+        </tr>
+      </table>
+
     </div>
-
-    <!-- Main Body -->
-    <div style="padding: 32px 32px 24px 32px; line-height: 1.6;">
-      <div style="font-size: 15px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Dear ${customerName},</div>
-
-      <h1 style="font-size: 20px; font-weight: 700; color: #0F172A; margin: 0 0 14px 0; font-family: Georgia, serif;">
-        Thank You for Choosing Varni Holidays!
-      </h1>
-
-      <p style="font-size: 14px; color: #334155; line-height: 1.65; margin: 0 0 20px 0;">
-        We have received your request for <strong>${serviceTitle}</strong>. Our dedicated travel desk in Anand is already reviewing your details to ensure the highest standards of comfort, transparency, and value.
-      </p>
-
-      <!-- Reference ID Highlight Pill -->
-      <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
-        <span style="display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #B45309;">Your Official Reference ID</span>
-        <div style="font-family: monospace; font-size: 18px; font-weight: 800; color: #92400E; margin-top: 4px; letter-spacing: 0.5px;">${referenceId}</div>
-        <p style="margin: 4px 0 0 0; font-size: 11px; color: #78350F;">Please quote this reference ID for all upcoming inquiries or communication.</p>
-      </div>
-
-      <!-- Itemized Enquiry Summary -->
-      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
-        <div style="background: #F1F5F9; padding: 10px 14px; font-size: 12px; font-weight: 700; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px;">
-          Summary of Your Request
-        </div>
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-          <tbody>
-            ${detailsRowsHtml}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- What Happens Next -->
-      <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 16px 18px; margin-bottom: 24px;">
-        <div style="font-size: 13px; font-weight: 700; color: #166534; margin-bottom: 6px;">What Happens Next?</div>
-        <p style="font-size: 13px; color: #15803D; margin: 0; line-height: 1.55;">
-          Our destination specialist is personally reviewing your requirements. We will contact you shortly via <strong>Phone</strong> or <strong>WhatsApp</strong> to discuss custom flight timings, hotel choices, or visa document checklists.
-        </p>
-      </div>
-
-      <!-- CTA WhatsApp Button -->
-      <div style="text-align: center; margin: 28px 0 16px 0;">
-        <a href="${COMPANY_CONTACT.whatsapp.url}?text=${waMessage}" style="display: inline-block; background: #25D366; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 12px 26px; border-radius: 6px; text-decoration: none; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);" target="_blank">
-          Chat Directly on WhatsApp (${COMPANY_CONTACT.whatsapp.display})
-        </a>
-      </div>
-
-      <!-- Contact Details Block -->
-      <div style="border-top: 1px solid #E2E8F0; padding-top: 18px; margin-top: 24px; font-size: 12px; color: #475569; line-height: 1.6;">
-        <strong style="color: #0F172A; display: block; margin-bottom: 4px;">Need Immediate Assistance?</strong>
-        <div>📍 <strong>Head Office:</strong> ${COMPANY_CONTACT.address.full}</div>
-        <div>📞 <strong>Phone:</strong> <a href="${COMPANY_CONTACT.phone.tel}" style="color: #0F172A; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.phone.display}</a></div>
-        <div>✉️ <strong>Email:</strong> <a href="${COMPANY_CONTACT.email.mailto}" style="color: #0F172A; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.email.primary}</a></div>
-        <div>⏰ <strong>Office Hours:</strong> ${COMPANY_CONTACT.hours.detailed}</div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div style="background: #17191D; padding: 22px 32px; text-align: center; font-size: 11px; color: #969CA5; border-top: 1px solid #2A2E34;">
-      <div style="color: #F4F4F2; font-weight: 700; margin-bottom: 4px;">VARNI HOLIDAYS • ANAND</div>
-      <div>Bespoke Tours • Worldwide Flights • Express Visa Assistance • Luxury Hotels</div>
-      <div style="margin-top: 8px; color: #666E79;">© ${new Date().getFullYear()} Varni Holidays. All rights reserved.</div>
-    </div>
-  </div>
+  </center>
 </body>
 </html>
   `.trim();
 }
 
 /**
+ * Newsletter Welcome Email Template (Light Theme)
+ */
+export function buildNewsletterWelcomeEmailHtml(email: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Welcome to Varni Travel Gazette!</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C; -webkit-font-smoothing: antialiased; }
+    .email-container { max-width: 600px; width: 100%; margin: 30px auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8; box-shadow: 0 4px 20px rgba(21, 54, 80, 0.06); }
+    .content-table { width: 100%; padding: 32px 32px 24px 32px; }
+    .footer-table { width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 22px 32px; text-align: center; }
+    @media only screen and (max-width: 620px) {
+      .email-container { margin: 0 auto !important; border-radius: 0 !important; border: none !important; }
+      .content-table { padding: 24px 18px !important; }
+      .footer-table { padding: 20px 18px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F8F6F0; color: #35475C;">
+  <center style="width: 100%; background-color: #F8F6F0; padding: 20px 0;">
+    <div class="email-container" style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 14px; overflow: hidden; border: 1px solid #E8E3D8;">
+      
+      <!-- Brand Header -->
+      <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
+        <tr>
+          <td style="padding: 26px 32px;">
+            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Varni Travel Gazette • Anand, Gujarat</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Main Body -->
+      <table class="content-table" cellpadding="0" cellspacing="0" style="width: 100%; padding: 32px 32px 24px 32px;">
+        <tr>
+          <td style="font-size: 14px; line-height: 1.65; color: #35475C;">
+            <div style="font-size: 15px; font-weight: 600; color: #153650; margin-bottom: 12px;">Namaste Traveler,</div>
+
+            <h1 style="font-family: Georgia, serif; font-size: 21px; font-weight: 700; color: #153650; margin: 0 0 14px 0; line-height: 1.35;">
+              Welcome to Varni Travel Gazette!
+            </h1>
+
+            <p style="margin: 0 0 16px 0; font-size: 14px; color: #35475C; line-height: 1.65;">
+              Thank you for subscribing with <strong>${email}</strong>. You are now officially on our VIP dispatch list for handpicked travel experiences, seasonal flight bargains, and curated domestic & international packages.
+            </p>
+
+            <!-- Highlights Box -->
+            <div style="background-color: #F1EEE5; border: 1px solid #E8E3D8; border-radius: 10px; padding: 18px; margin: 20px 0;">
+              <div style="font-size: 13px; font-weight: 700; color: #153650; margin-bottom: 8px;">What to Expect in Your Inbox:</div>
+              <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #35475C; line-height: 1.7;">
+                <li>Exclusive Kerala & South India private tour departures</li>
+                <li>Group block fares on UK, USA, Dubai, & Singapore flights</li>
+                <li>Express visa regulation alerts & student travel checklists</li>
+                <li>Personalized festive vacation ideas from our Anand specialists</li>
+              </ul>
+            </div>
+
+            <p style="margin: 0 0 20px 0; font-size: 13px; color: #666E79;">
+              Have an upcoming travel plan in mind? You can always reach our Anand headquarters directly for immediate assistance.
+            </p>
+
+            <!-- CTA Button -->
+            <div style="text-align: center; margin: 26px 0 16px 0;">
+              <a href="https://varni-holidays.vercel.app/packages" target="_blank" style="display: inline-block; background-color: #153650; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 13px 28px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 12px rgba(21, 54, 80, 0.15);">
+                Explore Trending Packages
+              </a>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Footer -->
+      <table class="footer-table" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 22px 32px; text-align: center;">
+        <tr>
+          <td style="font-size: 11px; color: #666E79; line-height: 1.6;">
+            <div style="font-weight: 700; color: #153650; margin-bottom: 4px;">VARNI HOLIDAYS • ANAND</div>
+            <div>${COMPANY_CONTACT.address.full}</div>
+            <div style="margin-top: 4px;">
+              Phone: <a href="${COMPANY_CONTACT.phone.tel}" style="color: #153650; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.phone.display}</a> | 
+              Email: <a href="${COMPANY_CONTACT.email.mailto}" style="color: #153650; text-decoration: none; font-weight: 600;">${COMPANY_CONTACT.email.primary}</a>
+            </div>
+            <div style="margin-top: 8px; color: #969CA5; font-size: 10px;">© ${new Date().getFullYear()} Varni Holidays. All rights reserved.</div>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+  </center>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Helper to dispatch instant acknowledgement email to customer
+ */
+export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationParams): Promise<EmailSendResult> {
+  const serviceNames: Record<string, string> = {
+    PACKAGE: 'Kerala Holiday Package Enquiry',
+    FLIGHT: 'Flight Booking Enquiry',
+    VISA: 'Visa Assistance Enquiry',
+    CONTACT: 'Consultation Enquiry',
+  };
+  const serviceName = serviceNames[params.serviceType] || 'Travel Enquiry';
+
+  return sendCustomerEmail({
+    to: params.to,
+    toName: params.customerName,
+    subject: `Enquiry Received (${params.referenceId}) – ${serviceName} | Varni Holidays`,
+    customHtml: buildEnquiryConfirmationEmailHtml(params),
+  });
+}
+
+/**
  * Dispatches an email via Resend API or simulates if key is absent
+ * Gracefully handles domain verification 403 errors by falling back to onboarding@resend.dev
  */
 export async function sendCustomerEmail(options: EmailSendOptions): Promise<EmailSendResult> {
   const resendApiKey = process.env.RESEND_API_KEY;
   let fromEmail = process.env.RESEND_FROM_EMAIL || 'Varni Holidays <contact@varnitours.com>';
-  
-  // Resend verified domain is varnitours.com. If unverified varniholidays.com is present, automatically route through varnitours.com
+
+  // Resend verified domain is varnitours.com.
+  // Until varniholidays.com DNS records are added, automatically use verified varnitours.com to prevent 403 Forbidden errors
   if (fromEmail.includes('@varniholidays.com')) {
     fromEmail = fromEmail.replace('@varniholidays.com', '@varnitours.com');
   }
@@ -292,13 +492,13 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
         }),
       });
 
-      // If domain verification error, automatically fallback to onboarding@resend.dev or contact@varnitours.com
+      // If domain verification error (403), automatically fallback to verified onboarding@resend.dev
       if (!response.ok) {
         const errText = await response.text();
         console.warn(`[Resend Error with ${fromEmail}]:`, response.status, errText);
 
-        if (response.status === 403 && errText.includes('Domain not verified')) {
-          console.log('[Resend Fallback] Retrying with Varni Holidays <contact@varnitours.com>...');
+        if (response.status === 403 && (errText.includes('Domain not verified') || errText.includes('domain'))) {
+          console.log('[Resend Fallback] Retrying with Varni Holidays <onboarding@resend.dev>...');
           response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -306,7 +506,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'Varni Holidays <contact@varnitours.com>',
+              from: 'Varni Holidays <onboarding@resend.dev>',
               reply_to: COMPANY_CONTACT.email.primary,
               to: [options.to],
               subject: options.subject,
@@ -341,49 +541,27 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
         dispatchedAt: now,
       };
     } catch (err: any) {
-      console.error('[Resend Network Exception]', err);
+      console.error('[Resend Exception]', err);
       return {
         success: false,
-        messageId: `exc-${Date.now()}`,
+        messageId: `err-${Date.now()}`,
         providerStatus: 'FAILED',
         recipient: options.to,
         subject: options.subject,
         dispatchedAt: now,
-        error: err.message,
+        error: err.message || 'Unknown network error during email dispatch',
       };
     }
   }
 
-  // Resend API key not configured -> Simulation Mode with full fidelity logging
-  const simMessageId = `sim_resend_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  console.log(`[Email Service Simulation] Sent to: ${options.to} | Subject: "${options.subject}" | MessageID: ${simMessageId}`);
-
+  // Fallback simulation when no live Resend API key is configured
+  console.log(`[Email Simulation] Dispatching to ${options.to}: "${options.subject}"`);
   return {
     success: true,
-    messageId: simMessageId,
-    providerStatus: 'SENT',
+    messageId: `sim-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    providerStatus: 'SIMULATED',
     recipient: options.to,
     subject: options.subject,
     dispatchedAt: now,
   };
-}
-
-/**
- * Instant customer enquiry acknowledgement sender
- */
-export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationParams): Promise<EmailSendResult> {
-  const serviceNames = {
-    PACKAGE: 'Kerala Holiday Package',
-    FLIGHT: 'Flight Booking Request',
-    VISA: 'Visa Consultation',
-  };
-  const subject = `Enquiry Received: ${params.referenceId} – ${serviceNames[params.serviceType]} | Varni Holidays`;
-  const customHtml = buildEnquiryConfirmationEmailHtml(params);
-
-  return sendCustomerEmail({
-    to: params.to,
-    toName: params.customerName,
-    subject,
-    customHtml,
-  });
 }

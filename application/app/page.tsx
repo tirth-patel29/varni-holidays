@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import FlightSearchSection from "@/components/FlightSearchSection";
 import DynamicPricingCalculator from "@/components/DynamicPricingCalculator";
@@ -83,10 +84,13 @@ export default function HomePage() {
             <div className="relative bg-surface-container-lowest p-3 sm:p-5 rounded-[42px] shadow-clay-hero border border-white/90">
               <div className="relative h-[420px] sm:h-[480px] w-full rounded-[34px] overflow-hidden group">
                 {/* Visual Imagery */}
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1400&q=80"
                   alt="Scenic Kerala Backwaters Houseboat and lush tea hills in Munnar"
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
 
@@ -266,10 +270,13 @@ export default function HomePage() {
               className="group bg-surface-container-lowest rounded-[32px] overflow-hidden shadow-clay-card border border-white/80 hover:-translate-y-1 transition-all"
             >
               <div className="relative h-56 overflow-hidden">
-                <img
+                <Image
                   src={dest.image}
                   alt={dest.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
                 <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-xs font-bold text-primary shadow-sm">

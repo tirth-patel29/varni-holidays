@@ -877,3 +877,22 @@ model SystemSetting {
 
   @@map("system_settings")
 }
+
+// ====================================================
+// 11. MARKETING & NEWSLETTER SUBSCRIPTIONS
+// ====================================================
+
+model NewsletterSubscription {
+  id              String    @id @default(uuid())
+  email           String
+  normalizedEmail String    @unique
+  status          String    @default("SUBSCRIBED") // "SUBSCRIBED" | "UNSUBSCRIBED"
+  source          String    @default("WEBSITE_FOOTER")
+  consentAt       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  unsubscribedAt  DateTime?
+
+  @@index([status])
+  @@map("newsletter_subscriptions")
+}

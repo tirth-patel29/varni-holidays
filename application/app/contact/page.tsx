@@ -33,6 +33,9 @@ export default function ContactPage() {
       if (!formData.fullName.trim() || formData.fullName.length < 3) {
         throw new Error('Please enter your full name (minimum 3 characters).');
       }
+      if (!formData.email.trim() || !formData.email.includes('@')) {
+        throw new Error('Please enter a valid email address.');
+      }
       if (!formData.phoneNumber.trim() || formData.phoneNumber.length < 7) {
         throw new Error('Please enter a valid phone number.');
       }
@@ -231,10 +234,11 @@ export default function ContactPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-ocean mb-1.5 uppercase tracking-wider">
-                      Email Address (Optional)
+                      Email Address <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
+                      required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="rajesh@example.com"

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -147,63 +147,65 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
                           </span>
                         </div>
 
-                        {/* Customer Name */}
+                        {/* Clickable Card Body: Customer, Ref, and Service Details */}
                         <Link
-                          href={`/employee/leads/${lead.id}`}
-                          className="text-xs font-semibold text-[#F4F4F2] hover:text-[#E9B95E] transition-colors block leading-tight truncate"
+                          href={`/employee/leads/${lead.id || lead.referenceId}`}
+                          className="block group mb-3 text-left"
                         >
-                          {lead.customer?.fullName}
+                          <div className="text-xs font-semibold text-[#F4F4F2] group-hover:text-[#E9B95E] transition-colors leading-tight truncate">
+                            {lead.customer?.fullName}
+                          </div>
+                          <span className="text-[10px] text-[#666E79] font-mono block mb-2 group-hover:text-[#969CA5] transition-colors">
+                            {lead.referenceId}
+                          </span>
+
+                          {/* Destination / Service Summary */}
+                          <div className="text-xs text-[#969CA5] p-2 rounded bg-[#17191D] border border-[#2A2E34]/80 group-hover:border-[#E9B95E]/40 transition-colors space-y-1">
+                            {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
+                              <>
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                  <Compass size={12} className="text-[#E9B95E] shrink-0" />
+                                  {lead.packageDetail.packageName}
+                                </div>
+                                <div className="text-[10px] text-[#969CA5]">
+                                  {lead.packageDetail.adultsCount} Adults • {lead.packageDetail.hotelTier}
+                                </div>
+                                <div className="text-[11px] font-semibold text-[#55B98A] tabular-nums">
+                                  {lead.packageDetail.quotedTotalPriceInr
+                                    ? `₹${(lead.packageDetail?.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}`
+                                    : 'Custom Quote'}
+                                </div>
+                              </>
+                            )}
+
+                            {lead.serviceType === 'FLIGHT' && lead.flightDetail && (
+                              <>
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                  <Plane size={12} className="text-[#6FA9D8] shrink-0" />
+                                  {lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]}
+                                </div>
+                                <div className="text-[10px] text-[#969CA5]">
+                                  {lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Pax
+                                </div>
+                                <div className="text-[10px] text-[#666E79]">
+                                  Dep: {lead.flightDetail.departureDate}
+                                </div>
+                              </>
+                            )}
+
+                            {lead.serviceType === 'VISA' && lead.visaDetail && (
+                              <>
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
+                                  <Stamp size={12} className="text-[#55B98A] shrink-0" />
+                                  {lead.visaDetail.destinationCountry} Visa
+                                </div>
+                                <div className="text-[10px] text-[#969CA5]">
+                                  {lead.visaDetail.visaCategory} • {lead.visaDetail.applicantCount} Applicants
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </Link>
-                        <span className="text-[10px] text-[#666E79] font-mono block mb-2">
-                          {lead.referenceId}
-                        </span>
-
-                        {/* Destination / Service Summary */}
-                        <div className="text-xs text-[#969CA5] mb-3 p-2 rounded bg-[#17191D] border border-[#2A2E34]/80 space-y-1">
-                          {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
-                            <>
-                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
-                                <Compass size={12} className="text-[#E9B95E] shrink-0" />
-                                {lead.packageDetail.packageName}
-                              </div>
-                              <div className="text-[10px] text-[#969CA5]">
-                                {lead.packageDetail.adultsCount} Adults • {lead.packageDetail.hotelTier}
-                              </div>
-                              <div className="text-[11px] font-semibold text-[#55B98A] tabular-nums">
-                                {lead.packageDetail.quotedTotalPriceInr
-                                  ? `₹${(lead.packageDetail?.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}`
-                                  : 'Custom Quote'}
-                              </div>
-                            </>
-                          )}
-
-                          {lead.serviceType === 'FLIGHT' && lead.flightDetail && (
-                            <>
-                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
-                                <Plane size={12} className="text-[#6FA9D8] shrink-0" />
-                                {lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]}
-                              </div>
-                              <div className="text-[10px] text-[#969CA5]">
-                                {lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Pax
-                              </div>
-                              <div className="text-[10px] text-[#666E79]">
-                                Dep: {lead.flightDetail.departureDate}
-                              </div>
-                            </>
-                          )}
-
-                          {lead.serviceType === 'VISA' && lead.visaDetail && (
-                            <>
-                              <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
-                                <Stamp size={12} className="text-[#55B98A] shrink-0" />
-                                {lead.visaDetail.destinationCountry} Visa
-                              </div>
-                              <div className="text-[10px] text-[#969CA5]">
-                                {lead.visaDetail.visaCategory} • {lead.visaDetail.applicantCount} Applicants
-                              </div>
-                            </>
-                          )}
-                        </div>
 
                         {/* Assignee & Dates */}
                         <div className="flex items-center justify-between text-[10px] text-[#666E79] mb-2.5">

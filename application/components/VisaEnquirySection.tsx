@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
@@ -288,10 +288,11 @@ export default function VisaEnquirySection() {
 
               <div>
                 <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-1">
-                  Email Address (Optional)
+                  Email Address <span className="text-error">*</span>
                 </label>
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. ankit@example.com"

@@ -222,9 +222,9 @@ export async function getLeadByIdAction(id: string) {
         const parts = id.split('-');
         if (parts.length >= 2 && !isNaN(Number(parts[1]))) {
           const ts = Number(parts[1]);
-          const minTime = new Date(ts - 3600000); // 1 hour before
-          const maxTime = new Date(ts + 3600000); // 1 hour after
-          dbLead = await prisma.lead.findFirst({
+          const minTime = new Date(ts - 1800000); // 30 min before
+          const maxTime = new Date(ts + 1800000); // 30 min after
+          const candidates = await prisma.lead.findMany({
             where: {
               createdAt: {
                 gte: minTime,
@@ -238,8 +238,11 @@ export async function getLeadByIdAction(id: string) {
               flightDetail: true,
               visaDetail: true,
             },
-            orderBy: { createdAt: 'desc' },
           });
+          if (candidates.length > 0) {
+            candidates.sort((a, b) => Math.abs(a.createdAt.getTime() - ts) - Math.abs(b.createdAt.getTime() - ts));
+            dbLead = candidates[0];
+          }
         }
       }
     }

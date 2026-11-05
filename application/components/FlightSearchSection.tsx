@@ -1,9 +1,18 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
 import EnquirySuccessModal from "./EnquirySuccessModal";
+import AirportAutocomplete from "./AirportAutocomplete";
 import { safeSubmitFlightEnquiry } from "@/lib/enquirySubmitter";
+
+function extractIata(str: string): string {
+  if (!str) return "";
+  const match = str.match(/\(([A-Z]{3})\)/i);
+  if (match) return match[1].toUpperCase();
+  if (str.trim().length === 3) return str.trim().toUpperCase();
+  return "";
+}
 
 interface FlightSegmentInput {
   origin: string;
@@ -157,41 +166,35 @@ export default function FlightSearchSection() {
               className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center bg-surface-container-low p-3 sm:p-4 rounded-2xl"
             >
               {/* Origin */}
-              <div className="md:col-span-4 bg-surface-cream-subtle px-4 py-2.5 rounded-xl shadow-clay-inset flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[20px] shrink-0">
+              <div className="md:col-span-4 bg-surface-cream-subtle px-3 py-2 rounded-xl shadow-clay-inset flex items-center gap-2">
+                <span className="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-3">
                   flight_takeoff
                 </span>
                 <div className="flex-1 min-w-0">
-                  <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    From {tripType === "MULTI_CITY" && `#${idx + 1}`}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={seg.origin}
-                    onChange={(e) => handleSegmentChange(idx, "origin", e.target.value)}
+                  <AirportAutocomplete
+                    label={`From ${tripType === "MULTI_CITY" ? `#${idx + 1}` : ""}`}
                     placeholder="e.g. Ahmedabad (AMD)"
-                    className="w-full bg-transparent text-sm font-semibold text-primary focus:outline-none"
+                    value={seg.origin}
+                    onChange={(val, item) => handleSegmentChange(idx, "origin", item ? `${item.city} (${item.iata})` : val)}
+                    excludeIata={extractIata(seg.destination)}
+                    required
                   />
                 </div>
               </div>
 
               {/* Destination */}
-              <div className="md:col-span-4 bg-surface-cream-subtle px-4 py-2.5 rounded-xl shadow-clay-inset flex items-center gap-2">
-                <span className="material-symbols-outlined text-gold-deep text-[20px] shrink-0">
+              <div className="md:col-span-4 bg-surface-cream-subtle px-3 py-2 rounded-xl shadow-clay-inset flex items-center gap-2">
+                <span className="material-symbols-outlined text-gold-deep text-[20px] shrink-0 mt-3">
                   flight_land
                 </span>
                 <div className="flex-1 min-w-0">
-                  <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
-                    To {tripType === "MULTI_CITY" && `#${idx + 1}`}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={seg.destination}
-                    onChange={(e) => handleSegmentChange(idx, "destination", e.target.value)}
+                  <AirportAutocomplete
+                    label={`To ${tripType === "MULTI_CITY" ? `#${idx + 1}` : ""}`}
                     placeholder="e.g. London Heathrow (LHR)"
-                    className="w-full bg-transparent text-sm font-semibold text-primary focus:outline-none"
+                    value={seg.destination}
+                    onChange={(val, item) => handleSegmentChange(idx, "destination", item ? `${item.city} (${item.iata})` : val)}
+                    excludeIata={extractIata(seg.origin)}
+                    required
                   />
                 </div>
               </div>
@@ -461,10 +464,11 @@ export default function FlightSearchSection() {
 
               <div>
                 <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-1">
-                  Email Address (Optional)
+                  Email Address <span className="text-error">*</span>
                 </label>
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. rajesh@example.com"

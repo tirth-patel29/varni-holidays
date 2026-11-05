@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -26,6 +26,7 @@ import {
   Settings,
   CreditCard,
   MapPin,
+  Mail,
 } from 'lucide-react';
 export default function CrmSidebar() {
   const pathname = usePathname();
@@ -45,6 +46,7 @@ export default function CrmSidebar() {
     { label: 'Bookings', href: '/employee/bookings', icon: BookmarkCheck },
     { label: 'Payments', href: '/employee/bookings?tab=payments', icon: CreditCard },
     { label: 'Google Sheets', href: '/admin/google-sheets', icon: Table },
+    { label: 'Subscribers', href: '/admin/subscribers', icon: Mail },
     { label: 'Communications', href: '/employee/communications', icon: MessageSquare },
     { label: 'Audit Logs', href: '/admin/audit-logs', icon: Shield, requiredPermission: currentUser.canViewAuditLogs },
   ].filter((item) => item.requiredPermission === undefined || item.requiredPermission === true);

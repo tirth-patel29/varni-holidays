@@ -92,22 +92,30 @@ export default function PublicQuotationViewPage() {
     <div className="min-h-screen bg-slate-100 text-slate-900 py-6 md:py-10 px-4 flex flex-col items-center">
       <style jsx global>{`
         @media print {
-          body, html {
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+          }
+          body, html, #__next, div {
             background: #ffffff !important;
+            background-color: #ffffff !important;
             padding: 0 !important;
             margin: 0 !important;
+            box-shadow: none !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          .no-print {
+          .no-print, header, nav, aside {
             display: none !important;
           }
           .print-card {
             box-shadow: none !important;
             border: none !important;
             padding: 0 !important;
+            margin: 0 !important;
             width: 100% !important;
             max-width: 100% !important;
+            background: #ffffff !important;
           }
         }
       `}</style>
