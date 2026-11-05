@@ -111,3 +111,4 @@ rl.on('close', () => {
     console.log('Removed temporary raw CSV file.');
   } catch (e) {}
 });
+
