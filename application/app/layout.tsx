@@ -47,7 +47,7 @@ export default function RootLayout({
   const jsonLd = getTravelAgencyJsonLd();
 
   return (
-    <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${jakarta.variable} overflow-x-hidden`}>
       <head>
         <link
           rel="stylesheet"
@@ -58,7 +58,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
+      <body className="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
         <LayoutShell>{children}</LayoutShell>
       </body>
     </html>

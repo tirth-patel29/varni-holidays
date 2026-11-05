@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Clock,
   X,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface LeadWithCustomer extends LeadRecord {
@@ -163,9 +164,14 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
                           <div className="text-xs text-[#969CA5] p-2 rounded bg-[#17191D] border border-[#2A2E34]/80 group-hover:border-[#E9B95E]/40 transition-colors space-y-1">
                             {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
                               <>
-                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
-                                  <Compass size={12} className="text-[#E9B95E] shrink-0" />
-                                  {lead.packageDetail.packageName}
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center justify-between gap-1.5">
+                                  <div className="flex items-center gap-1.5 truncate">
+                                    <Compass size={12} className="text-[#E9B95E] shrink-0" />
+                                    <span className="truncate">{lead.packageDetail.packageName}</span>
+                                  </div>
+                                  <span className="text-[9px] px-1 py-0.2 rounded bg-[#2A2E34] text-[#E9B95E] font-bold shrink-0">
+                                    {lead.packageDetail.duration || '6N/7D'}
+                                  </span>
                                 </div>
                                 <div className="text-[10px] text-[#969CA5]">
                                   {lead.packageDetail.adultsCount} Adults • {lead.packageDetail.hotelTier}
@@ -184,23 +190,59 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
                                   <Plane size={12} className="text-[#6FA9D8] shrink-0" />
                                   {lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]}
                                 </div>
-                                <div className="text-[10px] text-[#969CA5]">
-                                  {lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Pax
+                                <div className="text-[10px] text-[#969CA5] flex items-center justify-between">
+                                  <span>{lead.flightDetail.tripType} • {lead.flightDetail.adultsCount} Pax</span>
+                                  {lead.flightDetail.mealPreferenceCode && lead.flightDetail.mealPreferenceCode !== 'NO_PREFERENCE' && (
+                                    <span className="px-1 py-0.2 bg-[#E9B95E]/20 text-[#E9B95E] rounded text-[9px] font-bold">
+                                      {lead.flightDetail.mealPreferenceCode}
+                                    </span>
+                                  )}
                                 </div>
-                                <div className="text-[10px] text-[#666E79]">
-                                  Dep: {lead.flightDetail.departureDate}
+                                <div className="text-[10px] text-[#666E79] flex items-center justify-between">
+                                  <span>Dep: {lead.flightDetail.departureDate}</span>
+                                  {lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NO_ASSISTANCE' && (
+                                    <span className="px-1 py-0.2 bg-red-950/60 text-red-400 rounded text-[9px] font-bold">
+                                      ♿ {lead.flightDetail.wheelchairAssistanceCode}
+                                    </span>
+                                  )}
                                 </div>
                               </>
                             )}
 
                             {lead.serviceType === 'VISA' && lead.visaDetail && (
                               <>
-                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center gap-1.5">
-                                  <Stamp size={12} className="text-[#55B98A] shrink-0" />
-                                  {lead.visaDetail.destinationCountry} Visa
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center justify-between gap-1">
+                                  <div className="flex items-center gap-1.5 truncate">
+                                    <Stamp size={12} className="text-[#55B98A] shrink-0" />
+                                    <span className="truncate">{lead.visaDetail.destinationCountry} Visa</span>
+                                  </div>
+                                  {lead.visaDetail.visaType && (
+                                    <span className="text-[9px] px-1 py-0.2 rounded bg-[#2A2E34] text-[#E9B95E] font-medium shrink-0 truncate max-w-[100px]">
+                                      {lead.visaDetail.visaType}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="text-[10px] text-[#969CA5]">
                                   {lead.visaDetail.visaCategory} • {lead.visaDetail.applicantCount} Applicants
+                                </div>
+                              </>
+                            )}
+
+                            {lead.serviceType === 'TRAVEL_INSURANCE' && lead.insuranceDetail && (
+                              <>
+                                <div className="text-[#F4F4F2] font-medium text-[11px] truncate flex items-center justify-between gap-1">
+                                  <div className="flex items-center gap-1.5 truncate">
+                                    <ShieldCheck size={12} className="text-[#55B98A] shrink-0" />
+                                    <span className="truncate">{lead.insuranceDetail.destinationCountry}</span>
+                                  </div>
+                                  {lead.insuranceDetail.hasPreExistingDisease && (
+                                    <span className="text-[9px] px-1 py-0.2 rounded bg-amber-950/60 text-amber-400 font-bold shrink-0">
+                                      PED
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[10px] text-[#969CA5]">
+                                  Travel: {lead.insuranceDetail.departureDate}
                                 </div>
                               </>
                             )}

@@ -16,7 +16,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   return (
     <>
       <Header />
-      <main className="flex-1 w-full pt-24">{children}</main>
+      <main className="flex-1 w-full min-w-0 overflow-x-clip pt-20 sm:pt-24">{children}</main>
       <Footer />
     </>
   );

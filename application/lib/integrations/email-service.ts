@@ -43,10 +43,11 @@ export interface EnquiryConfirmationParams {
   to: string;
   customerName: string;
   referenceId: string;
-  serviceType: 'PACKAGE' | 'FLIGHT' | 'VISA' | 'CONTACT';
+  serviceType: 'PACKAGE' | 'FLIGHT' | 'VISA' | 'CONTACT' | 'CUSTOM_HOLIDAY' | 'TRAVEL_INSURANCE';
   details: {
     packageName?: string;
     hotelTier?: string;
+    duration?: string;
     travelDates?: string;
     adultsCount?: number;
     childrenCount?: number;
@@ -60,6 +61,8 @@ export interface EnquiryConfirmationParams {
     departureDate?: string;
     returnDate?: string | null;
     cabinClass?: string;
+    mealPreference?: string;
+    wheelchairAssistance?: string;
     destinationCountry?: string;
     visaCategory?: string;
     applicantCount?: number;
@@ -185,7 +188,8 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
   if (serviceType === 'PACKAGE') {
     serviceTitle = 'Kerala Holiday Package Enquiry';
     detailsRowsHtml = `
-      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Package</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.packageName || 'Kerala 6N/7D Winter CPAI'}</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Package</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.packageName || 'Kerala Winter Tour'}</td></tr>
+      ${details.duration ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Duration</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.duration}</td></tr>` : ''}
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Hotel Tier</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.hotelTier || 'Deluxe'}</td></tr>
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Travelers</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.adultsCount || 2} Adults${details.childrenCount ? `, ${details.childrenCount} Children` : ''}</td></tr>
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Rooms</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.roomsCount || 1} Room(s)</td></tr>
@@ -202,15 +206,25 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
       ${details.returnDate ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Return Date</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.returnDate}</td></tr>` : ''}
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Passengers</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.adultsCount || 1} Adult(s)${details.childrenCount ? `, ${details.childrenCount} Child` : ''}${details.infantsCount ? `, ${details.infantsCount} Infant` : ''}</td></tr>
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Cabin Class</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.cabinClass || 'Economy'}</td></tr>
+      ${details.mealPreference ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Meal Preference</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.mealPreference}</td></tr>` : ''}
+      ${details.wheelchairAssistance ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Wheelchair Assistance</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.wheelchairAssistance}</td></tr>` : ''}
     `;
   } else if (serviceType === 'VISA') {
     serviceTitle = 'Visa Assistance Enquiry';
     detailsRowsHtml = `
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Country</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.destinationCountry}</td></tr>
-      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Visa Type</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.visaCategory || 'Tourist'} Visa</td></tr>
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Visa Category</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.visaCategory || 'Tourist'} Visa</td></tr>
+      ${details.packageName ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Visa Subtype</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.packageName}</td></tr>` : ''}
       <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Applicants</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.applicantCount || 1} Person(s)</td></tr>
       ${details.departureDate ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Planned Travel</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.departureDate}</td></tr>` : ''}
       ${details.stayDurationDays ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Duration</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.stayDurationDays} Days</td></tr>` : ''}
+    `;
+  } else if (serviceType === 'TRAVEL_INSURANCE') {
+    serviceTitle = 'Travel Insurance Consultation Enquiry';
+    detailsRowsHtml = `
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8; width: 38%;">Destination Country</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.destinationCountry || 'International Travel'}</td></tr>
+      ${details.travelDates ? `<tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Travel Date</td><td style="padding: 9px 12px; color: #153650; font-weight: 600; font-size: 13px; border-bottom: 1px solid #E8E3D8;">${details.travelDates}</td></tr>` : ''}
+      <tr><td style="padding: 9px 12px; color: #666E79; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Notice</td><td style="padding: 9px 12px; color: #153650; font-size: 13px; border-bottom: 1px solid #E8E3D8;">Our travel insurance team will connect with you to review suitable policy plans. Please note this acknowledgement confirms an enquiry and does not issue an insurance policy.</td></tr>
     `;
   } else if (serviceType === 'CONTACT') {
     serviceTitle = 'General Enquiry / Office Consultation';
@@ -446,6 +460,8 @@ export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationPa
     FLIGHT: 'Flight Booking Enquiry',
     VISA: 'Visa Assistance Enquiry',
     CONTACT: 'Consultation Enquiry',
+    CUSTOM_HOLIDAY: 'Custom Holiday Itinerary Request',
+    TRAVEL_INSURANCE: 'Travel Insurance Consultation',
   };
   const serviceName = serviceNames[params.serviceType] || 'Travel Enquiry';
 
@@ -463,12 +479,14 @@ export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationPa
  */
 export async function sendCustomerEmail(options: EmailSendOptions): Promise<EmailSendResult> {
   const resendApiKey = process.env.RESEND_API_KEY;
-  // Unless domain is verified in Resend DNS (flagged via RESEND_DOMAIN_VERIFIED=true),
-  // default to Resend-provided verified sandbox 'onboarding@resend.dev' to prevent 403 Domain Not Verified errors
-  const isDomainVerified = process.env.RESEND_DOMAIN_VERIFIED === 'true';
-  let fromEmail = isDomainVerified
-    ? (process.env.RESEND_FROM_EMAIL || 'Varni Holidays <noreply@varniholidays.com>')
-    : 'Varni Holidays <onboarding@resend.dev>';
+  // Resend verified domain is 'varnitours.com' (Status: verified, Sending: enabled in ap-northeast-1).
+  // 'varniholidays.com' domain DNS records are not yet verified in Resend.
+  // We send from verified 'Varni Holidays <noreply@varnitours.com>' (or process.env.RESEND_FROM_EMAIL sanitized to @varnitours.com)
+  // with reply_to set to official Anand HQ inbox: 'varniinternational7@gmail.com'.
+  let fromEmail = process.env.RESEND_FROM_EMAIL || 'Varni Holidays <noreply@varnitours.com>';
+  if (fromEmail.includes('@varniholidays.com')) {
+    fromEmail = fromEmail.replace('@varniholidays.com', '@varnitours.com');
+  }
 
   const now = new Date().toISOString();
   const renderedHtml = options.customHtml || buildVarniEmailHtml(options);
@@ -491,13 +509,13 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
         }),
       });
 
-      // If domain verification error (403), automatically fallback to verified onboarding@resend.dev
+      // If domain verification error (403), automatically fallback to verified noreply@varnitours.com
       if (!response.ok) {
         const errText = await response.text();
         console.warn(`[Resend Error with ${fromEmail}]:`, response.status, errText);
 
         if (response.status === 403 && (errText.includes('Domain not verified') || errText.includes('domain'))) {
-          console.log('[Resend Fallback] Retrying with Varni Holidays <onboarding@resend.dev>...');
+          console.log('[Resend Fallback] Retrying with verified Varni Holidays <noreply@varnitours.com>...');
           response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -505,7 +523,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'Varni Holidays <onboarding@resend.dev>',
+              from: 'Varni Holidays <noreply@varnitours.com>',
               reply_to: COMPANY_CONTACT.email.primary,
               to: [options.to],
               subject: options.subject,

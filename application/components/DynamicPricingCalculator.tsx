@@ -4,14 +4,27 @@ import React, { useState, useMemo } from "react";
 import CountryPhoneInput from "./CountryPhoneInput";
 import EnquirySuccessModal from "./EnquirySuccessModal";
 import {
+  HOTEL_TIERS_5N6D,
+  HOTEL_TIERS_6N7D,
   HOTEL_TIERS,
   VEHICLE_PAX_OPTIONS,
+  KERALA_DURATION_OPTIONS,
+  KeralaDuration,
   calculateKeralaPrice,
 } from "@/lib/pricing/kerala";
 import { safeSubmitPackageEnquiry } from "@/lib/enquirySubmitter";
 import { COMPANY_CONTACT } from "@/lib/config/contact";
 
-export default function DynamicPricingCalculator() {
+interface DynamicPricingCalculatorProps {
+  initialDuration?: KeralaDuration;
+  onDurationChange?: (dur: KeralaDuration) => void;
+}
+
+export default function DynamicPricingCalculator({
+  initialDuration = "6N7D",
+  onDurationChange,
+}: DynamicPricingCalculatorProps) {
+  const [selectedDuration, setSelectedDuration] = useState<KeralaDuration>(initialDuration);
   const [selectedTier, setSelectedTier] = useState<"STANDARD" | "DELUXE" | "SUPER_DELUXE" | "PREMIUM" | "LUXURY">("DELUXE");
   const [selectedConfigCode, setSelectedConfigCode] = useState<string>("2PAX_SEDAN");
   const [isCustomPax, setIsCustomPax] = useState(false);
@@ -38,10 +51,21 @@ export default function DynamicPricingCalculator() {
 
   const activeConfig = VEHICLE_PAX_OPTIONS.find((c) => c.code === selectedConfigCode);
 
-  // Compute live price
+  const handleDurationSelect = (dur: KeralaDuration) => {
+    setSelectedDuration(dur);
+    if (dur === "5N6D") {
+      setKanyakumariTrip(false); // Kanyakumari is ex-Kovalam (only on 6N/7D)
+    }
+    if (onDurationChange) {
+      onDurationChange(dur);
+    }
+  };
+
+  // Compute live price using authoritative DOCX rate logic
   const calculationResult = useMemo(() => {
     if (isCustomPax) {
       return calculateKeralaPrice({
+        duration: selectedDuration,
         hotelTier: selectedTier,
         adultsCount: customPaxCount,
         childrenWithBedCount: childrenWithBed,
@@ -49,11 +73,12 @@ export default function DynamicPricingCalculator() {
         includeHouseboatUpgrade: houseboatUpgrade,
         includeMealPlan: mealPlan,
         includeAthirapillyTrip: athirapillyTrip,
-        includeKanyakumariTrip: kanyakumariTrip,
+        includeKanyakumariTrip: selectedDuration === "6N7D" && kanyakumariTrip,
       });
     }
 
     return calculateKeralaPrice({
+      duration: selectedDuration,
       hotelTier: selectedTier,
       configCode: selectedConfigCode,
       adultsCount: activeConfig ? activeConfig.paxCount : 2,
@@ -62,9 +87,10 @@ export default function DynamicPricingCalculator() {
       includeHouseboatUpgrade: houseboatUpgrade,
       includeMealPlan: mealPlan,
       includeAthirapillyTrip: athirapillyTrip,
-      includeKanyakumariTrip: kanyakumariTrip,
+      includeKanyakumariTrip: selectedDuration === "6N7D" && kanyakumariTrip,
     });
   }, [
+    selectedDuration,
     selectedTier,
     selectedConfigCode,
     isCustomPax,
@@ -88,7 +114,8 @@ export default function DynamicPricingCalculator() {
       email,
       phoneCountryCode,
       phoneNumber,
-      packageSlug: "kerala-6n7d-winter",
+      packageSlug: selectedDuration === "5N6D" ? "kerala-5n6d-winter" : "kerala-6n7d-winter",
+      duration: selectedDuration,
       hotelTier: selectedTier,
       configCode: isCustomPax ? undefined : selectedConfigCode,
       adultsCount: isCustomPax ? customPaxCount : activeConfig?.paxCount || 2,
@@ -99,7 +126,7 @@ export default function DynamicPricingCalculator() {
       includeHouseboatUpgrade: houseboatUpgrade,
       includeMealPlan: mealPlan,
       includeAthirapillyTrip: athirapillyTrip,
-      includeKanyakumariTrip: kanyakumariTrip,
+      includeKanyakumariTrip: selectedDuration === "6N7D" && kanyakumariTrip,
       specialRequests,
     };
 
@@ -113,10 +140,13 @@ export default function DynamicPricingCalculator() {
     }
   };
 
-  const currentHotels = HOTEL_TIERS[selectedTier].hotels;
+  const currentHotels =
+    selectedDuration === "5N6D"
+      ? HOTEL_TIERS_5N6D[selectedTier].hotels
+      : HOTEL_TIERS_6N7D[selectedTier].hotels;
 
   return (
-    <div className="w-full bg-surface-container-low p-6 sm:p-8 rounded-[36px] shadow-clay-card border border-white/80">
+    <div id="calculator" className="w-full bg-surface-container-low p-6 sm:p-8 rounded-[36px] shadow-clay-card border border-white/80">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* LEFT COLUMN: Interactive Dynamic Selectors (7 Cols) */}
@@ -125,21 +155,69 @@ export default function DynamicPricingCalculator() {
           {/* Header Tag */}
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-cream-subtle text-xs font-bold text-secondary uppercase tracking-wider mb-2">
-              <span className="material-symbols-outlined text-[16px]">calculate</span>
-              <span>Dynamic Matrix Engine</span>
+              <span className="material-symbols-outlined text-[16px]">verified</span>
+              <span>Verified Winter Package Pricing (Oct 2026 – Mar 2027)</span>
             </div>
             <h3 className="font-headline text-2xl font-bold text-primary">
-              Configure Your Kerala 6N/7D Package
+              Configure Your Kerala Holiday Experience
             </h3>
             <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
-              Select accommodation standard, group vehicle allocation, and custom excursion add-ons.
+              Select duration, accommodation tier, dedicated vehicle allocation, and custom excursion add-ons.
             </p>
+          </div>
+
+          {/* Step 0: Duration Selector */}
+          <div>
+            <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-2">
+              1. Choose Tour Duration
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {KERALA_DURATION_OPTIONS.map((dur) => (
+                <button
+                  key={dur.code}
+                  type="button"
+                  onClick={() => handleDurationSelect(dur.code)}
+                  className={`p-4 rounded-2xl text-left transition-all border ${
+                    selectedDuration === dur.code
+                      ? "bg-primary text-white shadow-clay-button border-primary ring-2 ring-secondary"
+                      : "bg-surface-cream-subtle text-primary hover:bg-surface-container border-transparent shadow-clay-inset"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold">{dur.label}</span>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                        selectedDuration === dur.code
+                          ? "bg-gold-deep text-white"
+                          : "bg-gold-light text-primary"
+                      }`}
+                    >
+                      {dur.nights} Nights / {dur.days} Days
+                    </span>
+                  </div>
+                  <span
+                    className={`text-xs block mt-1.5 font-medium ${
+                      selectedDuration === dur.code ? "text-tertiary-fixed" : "text-secondary"
+                    }`}
+                  >
+                    {dur.routeStays}
+                  </span>
+                  <span
+                    className={`text-[11px] block mt-1 line-clamp-1 ${
+                      selectedDuration === dur.code ? "text-surface-sand-tint" : "text-on-surface-variant"
+                    }`}
+                  >
+                    {dur.tagline}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Step 1: Accommodation Standard / Hotel Tier */}
           <div>
             <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-2">
-              1. Select Hotel Category (5 Tiers)
+              2. Select Hotel Category (5 Tiers)
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {Object.values(HOTEL_TIERS).map((tier) => (
@@ -172,16 +250,21 @@ export default function DynamicPricingCalculator() {
               ))}
             </div>
 
-            {/* Display Hotels for Selected Tier */}
+            {/* Display Hotels for Selected Tier & Duration */}
             <div className="mt-3 p-3.5 bg-surface-container rounded-2xl shadow-clay-inset text-xs text-on-surface-variant">
               <span className="font-bold text-primary block mb-1">
-                Included Hotels for {HOTEL_TIERS[selectedTier].name} Category:
+                Included Hotels for {HOTEL_TIERS[selectedTier].name} Category ({selectedDuration === "5N6D" ? "5N/6D" : "6N/7D"}):
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                {selectedDuration === "5N6D" && currentHotels.cochin && (
+                  <div><span className="font-semibold text-secondary">1N Cochin:</span> {currentHotels.cochin}</div>
+                )}
                 <div><span className="font-semibold text-secondary">2N Munnar:</span> {currentHotels.munnar}</div>
                 <div><span className="font-semibold text-secondary">1N Thekkady:</span> {currentHotels.thekkady}</div>
                 <div><span className="font-semibold text-secondary">1N Alleppey:</span> {currentHotels.alleppey}</div>
-                <div><span className="font-semibold text-secondary">2N Kovalam:</span> {currentHotels.kovalam}</div>
+                {selectedDuration === "6N7D" && currentHotels.kovalam && (
+                  <div><span className="font-semibold text-secondary">2N Kovalam / Poovar:</span> {currentHotels.kovalam}</div>
+                )}
               </div>
             </div>
           </div>
@@ -190,52 +273,61 @@ export default function DynamicPricingCalculator() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold text-primary uppercase tracking-wider">
-                2. Group Size & Dedicated Vehicle
+                3. Group Size & Dedicated Vehicle
               </label>
               <button
                 type="button"
                 onClick={() => setIsCustomPax(!isCustomPax)}
                 className="text-xs text-secondary font-semibold hover:underline"
               >
-                {isCustomPax ? "Switch to Standard Matrices" : "Custom / Odd Party Size?"}
+                {isCustomPax ? "Switch to Standard Configurations" : "Custom / Non-Standard Group Size?"}
               </button>
             </div>
 
             {!isCustomPax ? (
               <div className="space-y-2">
-                {VEHICLE_PAX_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.code}
-                    type="button"
-                    onClick={() => setSelectedConfigCode(opt.code)}
-                    className={`w-full p-3.5 rounded-2xl text-left transition-all flex items-center justify-between border ${
-                      selectedConfigCode === opt.code
-                        ? "bg-surface-container-lowest border-secondary shadow-md ring-1 ring-secondary"
-                        : "bg-surface-cream-subtle border-transparent shadow-clay-inset hover:bg-surface-container"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        selectedConfigCode === opt.code ? "bg-secondary text-white" : "bg-surface-container text-primary"
-                      }`}>
-                        <span className="material-symbols-outlined text-[18px]">
-                          {opt.vehicleType.includes("Sedan") ? "directions_car" : "airport_shuttle"}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-primary block">{opt.label}</span>
-                        <span className="text-[11px] text-on-surface-variant">{opt.description}</span>
-                      </div>
-                    </div>
+                {VEHICLE_PAX_OPTIONS.map((opt) => {
+                  const optPrice = calculateKeralaPrice({
+                    duration: selectedDuration,
+                    hotelTier: selectedTier,
+                    configCode: opt.code,
+                    adultsCount: opt.paxCount,
+                  });
 
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-secondary block">
-                        ₹{calculateKeralaPrice({ hotelTier: selectedTier, configCode: opt.code, adultsCount: opt.paxCount }).unitPricePerAdult?.toLocaleString("en-IN")}
-                      </span>
-                      <span className="text-[10px] text-on-surface-variant">/ person</span>
-                    </div>
-                  </button>
-                ))}
+                  return (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      onClick={() => setSelectedConfigCode(opt.code)}
+                      className={`w-full p-3.5 rounded-2xl text-left transition-all flex items-center justify-between border ${
+                        selectedConfigCode === opt.code
+                          ? "bg-surface-container-lowest border-secondary shadow-md ring-1 ring-secondary"
+                          : "bg-surface-cream-subtle border-transparent shadow-clay-inset hover:bg-surface-container"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          selectedConfigCode === opt.code ? "bg-secondary text-white" : "bg-surface-container text-primary"
+                        }`}>
+                          <span className="material-symbols-outlined text-[18px]">
+                            {opt.vehicleType.includes("Sedan") ? "directions_car" : "airport_shuttle"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-primary block">{opt.label}</span>
+                          <span className="text-[11px] text-on-surface-variant">{opt.description}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-secondary block">
+                          ₹{optPrice.unitPricePerAdult?.toLocaleString("en-IN")}
+                        </span>
+                        <span className="text-[10px] text-on-surface-variant">/ person</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             ) : (
               <div className="p-4 bg-surface-container rounded-2xl shadow-clay-inset space-y-3">
@@ -265,13 +357,13 @@ export default function DynamicPricingCalculator() {
           {/* Step 3: Children & Bed Options */}
           <div>
             <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-2">
-              3. Child Policy (5 Nights Munnar/Thekkady/Kovalam)
+              4. Child Policy ({selectedDuration === "5N6D" ? "4 Nights Hotels" : "5 Nights Hotels"})
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-surface-cream-subtle p-3 rounded-2xl shadow-clay-inset flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-primary block">Child With Bed (CWB)</span>
-                  <span className="text-[10px] text-on-surface-variant">Age 5-11 yrs with extra rollaway</span>
+                  <span className="text-[10px] text-on-surface-variant">Age 5-11 yrs with extra bed</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -321,7 +413,7 @@ export default function DynamicPricingCalculator() {
           {/* Step 4: Optional Add-ons & Excursions */}
           <div>
             <label className="block text-xs font-bold text-primary uppercase tracking-wider mb-2">
-              4. Optional Supplements & Sightseeing
+              5. Optional Supplements & Sightseeing
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface-cream-subtle shadow-clay-inset cursor-pointer">
@@ -332,7 +424,7 @@ export default function DynamicPricingCalculator() {
                   className="rounded accent-primary"
                 />
                 <span className="text-xs font-medium text-primary">
-                  Alleppey Houseboat Night (+Lunch/Dinner)
+                  Alleppey Houseboat Upgrade (+Meals)
                 </span>
               </label>
 
@@ -356,21 +448,28 @@ export default function DynamicPricingCalculator() {
                   className="rounded accent-primary"
                 />
                 <span className="text-xs font-medium text-primary">
-                  Athirapilly Waterfalls Day Excursion
+                  Athirapilly Waterfalls Day Trip
                 </span>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface-cream-subtle shadow-clay-inset cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={kanyakumariTrip}
-                  onChange={(e) => setKanyakumariTrip(e.target.checked)}
-                  className="rounded accent-primary"
-                />
-                <span className="text-xs font-medium text-primary">
-                  Kanyakumari Sunrise Day Excursion
-                </span>
-              </label>
+              {selectedDuration === "6N7D" ? (
+                <label className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface-cream-subtle shadow-clay-inset cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={kanyakumariTrip}
+                    onChange={(e) => setKanyakumariTrip(e.target.checked)}
+                    className="rounded accent-primary"
+                  />
+                  <span className="text-xs font-medium text-primary">
+                    Kanyakumari Sunrise Day Excursion
+                  </span>
+                </label>
+              ) : (
+                <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-surface-container opacity-60 text-on-surface-variant text-xs">
+                  <span className="material-symbols-outlined text-[16px]">info</span>
+                  <span>Kanyakumari: Available on 6N/7D (ex-Kovalam)</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -381,7 +480,7 @@ export default function DynamicPricingCalculator() {
           {/* Price Header */}
           <div className="pb-4 border-b border-surface-sand-tint">
             <span className="text-[10px] font-bold uppercase tracking-wider text-secondary block">
-              Estimated Tour Price
+              Estimated Tour Price ({selectedDuration === "5N6D" ? "5 Nights / 6 Days" : "6 Nights / 7 Days"})
             </span>
             
             {calculationResult.pricingStatus === "EXACT_MATCH" ? (
@@ -400,11 +499,11 @@ export default function DynamicPricingCalculator() {
               </div>
             ) : (
               <div className="mt-1 p-3 bg-amber-50 rounded-2xl border border-amber-200">
-                <span className="font-headline text-xl font-bold text-amber-900 block">
-                  Tailor-Made Quotation Required
+                <span className="font-headline text-lg font-bold text-amber-900 block">
+                  Custom Quotation Required
                 </span>
                 <span className="text-xs text-amber-800">
-                  Custom group sizes require dedicated vehicle allocation and rooming.
+                  Custom group sizes require dedicated vehicle allocation and rooming. Our team will prepare your quote within 30 minutes.
                 </span>
               </div>
             )}
@@ -414,7 +513,9 @@ export default function DynamicPricingCalculator() {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="bg-surface-cream-subtle p-2.5 rounded-xl shadow-clay-inset">
               <span className="text-[10px] text-on-surface-variant block font-bold">Duration</span>
-              <span className="font-bold text-primary">6 Nights / 7 Days</span>
+              <span className="font-bold text-primary">
+                {selectedDuration === "5N6D" ? "5 Nights / 6 Days" : "6 Nights / 7 Days"}
+              </span>
             </div>
             <div className="bg-surface-cream-subtle p-2.5 rounded-xl shadow-clay-inset">
               <span className="text-[10px] text-on-surface-variant block font-bold">Standard</span>
@@ -425,7 +526,7 @@ export default function DynamicPricingCalculator() {
           {/* Enquiry Submission Form */}
           <form onSubmit={handleSubmit} className="space-y-3 pt-2">
             <span className="text-xs font-bold text-primary uppercase tracking-wider block">
-              Request Confirmed Proposal
+              Request Confirmed Quotation & Proposal
             </span>
 
             {errorMessage && (
@@ -454,74 +555,82 @@ export default function DynamicPricingCalculator() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. nilesh@example.com"
+                placeholder="Email Address (e.g. nilesh@example.com)"
                 className="w-full h-11 bg-surface-cream-subtle px-4 rounded-xl text-xs font-medium text-primary focus:outline-none focus:ring-2 focus:ring-secondary shadow-clay-inset"
               />
             </div>
 
-            <CountryPhoneInput
-              countryCode={phoneCountryCode}
-              phoneNumber={phoneNumber}
-              onCountryCodeChange={setPhoneCountryCode}
-              onPhoneNumberChange={setPhoneNumber}
-              required
-            />
+            <div>
+              <label className="block text-[11px] font-bold text-primary uppercase tracking-wider mb-1">
+                Phone / WhatsApp <span className="text-error">*</span>
+              </label>
+              <CountryPhoneInput
+                countryCode={phoneCountryCode}
+                phoneNumber={phoneNumber}
+                onCountryCodeChange={setPhoneCountryCode}
+                onPhoneNumberChange={setPhoneNumber}
+                required
+              />
+            </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">
+              <label className="block text-[10px] text-on-surface-variant font-bold uppercase mb-1">
                 Preferred Travel Date
               </label>
               <input
                 type="date"
                 value={preferredDate}
                 onChange={(e) => setPreferredDate(e.target.value)}
-                className="w-full h-11 bg-surface-cream-subtle px-4 rounded-xl text-xs font-medium text-primary focus:outline-none shadow-clay-inset"
+                className="w-full h-10 bg-surface-cream-subtle px-3 rounded-xl text-xs text-primary focus:outline-none shadow-clay-inset"
               />
             </div>
 
             <div>
-              <input
-                type="text"
+              <textarea
                 value={specialRequests}
                 onChange={(e) => setSpecialRequests(e.target.value)}
-                placeholder="Special Notes: Jain Meals, Pickup at Cochin Railway, etc."
-                className="w-full h-10 bg-surface-cream-subtle px-4 rounded-xl text-xs text-primary focus:outline-none shadow-clay-inset"
+                rows={2}
+                placeholder="Special notes (e.g. Jain food, senior citizen assistance, extra room)..."
+                className="w-full bg-surface-cream-subtle p-3 rounded-xl text-xs text-primary focus:outline-none shadow-clay-inset"
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 rounded-full bg-primary text-white font-bold text-xs sm:text-sm clay-pill-button flex items-center justify-center gap-2 hover:bg-primary-container disabled:opacity-50"
+              className="w-full py-3.5 rounded-full bg-primary text-white font-bold text-sm clay-pill-button flex items-center justify-center gap-2 hover:bg-primary-container disabled:opacity-50"
             >
               {submitting ? (
-                <span>Generating Proposal...</span>
+                <span>Locking Proposal...</span>
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[18px] text-tertiary-fixed-dim">
-                    send
+                    lock
                   </span>
                   <span>
                     {calculationResult.pricingStatus === "EXACT_MATCH"
-                      ? "Lock This Estimate & Enquire"
-                      : "Request Tailor-Made Quotation"}
+                      ? "Lock This Rate & Book Consultation"
+                      : "Request Custom Group Quotation"}
                   </span>
                 </>
               )}
             </button>
           </form>
 
-          {/* Anand Office Direct WhatsApp */}
-          <div className="pt-2 border-t border-surface-sand-tint text-center">
-            <a
-              href={COMPANY_CONTACT.whatsapp.buildUrl("Hi Varni Holidays, I am inquiring about Kerala 6N7D Tour")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-secondary font-bold inline-flex items-center gap-1 hover:underline"
-            >
-              <span className="material-symbols-outlined text-[16px] text-gold-deep">chat</span>
-              <span>Prefer instant discussion? Chat directly on WhatsApp</span>
-            </a>
+          {/* Trust Guarantees */}
+          <div className="pt-2 border-t border-surface-sand-tint space-y-1.5 text-[11px] text-on-surface-variant">
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-secondary text-[16px]">verified</span>
+              <span>100% Verified Published Source Rates</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-secondary text-[16px]">restaurant</span>
+              <span>Jain & Swaminarayan Dining Available</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-secondary text-[16px]">support_agent</span>
+              <span>Anand Travel Desk WhatsApp: +91 63570 50505</span>
+            </div>
           </div>
         </div>
       </div>
@@ -531,15 +640,11 @@ export default function DynamicPricingCalculator() {
         isOpen={!!successReference}
         onClose={() => setSuccessReference("")}
         referenceId={successReference}
+        customerName={fullName}
         serviceType="Package"
-        title="Kerala Package Enquiry Received"
-        message={
-          calculationResult.pricingStatus === "EXACT_MATCH"
-            ? `Your package enquiry has been placed in our priority queue with your estimated price of ₹${calculationResult.totalEstimate?.toLocaleString("en-IN")}. A Kerala coordinator from our Anand office will connect with you on WhatsApp with your day-wise itinerary proposal.`
-            : `Your custom itinerary request has been submitted. Our Anand tour desk will review your party size and prepare a tailored vehicle and rooming quote.`
-        }
+        title="Kerala Holiday Enquiry Confirmed"
+        message={`Your enquiry for ${selectedDuration === '5N6D' ? 'Kerala 5N/6D' : 'Kerala 6N/7D'} (${HOTEL_TIERS[selectedTier].name} Category) has been received. Our Anand Kerala specialist will connect with you via WhatsApp/Phone within 30 minutes.`}
       />
     </div>
   );
 }
-

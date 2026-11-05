@@ -7,15 +7,17 @@ interface EnquirySuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   referenceId: string;
+  customerName?: string;
   title?: string;
   message?: string;
-  serviceType: "Flight" | "Package" | "Visa" | "Contact";
+  serviceType: "Flight" | "Package" | "Visa" | "Contact" | "Hotel" | "Custom Holiday" | "Travel Insurance";
 }
 
 export default function EnquirySuccessModal({
   isOpen,
   onClose,
   referenceId,
+  customerName,
   title = "Enquiry Submitted Successfully",
   message,
   serviceType,

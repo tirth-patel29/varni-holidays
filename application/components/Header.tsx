@@ -11,29 +11,29 @@ export default function Header() {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Flights", href: "/#flights" },
+    { label: "Flight", href: "/#flights" },
+    { label: "Hotel", href: "/hotels" },
+    { label: "Visa", href: "/visa" },
     { label: "Tour Packages", href: "/packages" },
-    { label: "Visa Assistance", href: "/visa" },
-    { label: "Destinations", href: "/destinations" },
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pt-3 px-4 md:px-8 pointer-events-none">
-      <div className="max-w-[1380px] mx-auto">
-        <div className="pointer-events-auto h-20 bg-surface-container-lowest/95 backdrop-blur-xl rounded-full px-4 sm:px-6 md:px-8 flex items-center justify-between shadow-clay-card border border-white/60">
+    <header className="fixed top-0 left-0 right-0 z-50 pt-2 sm:pt-3 px-3 sm:px-6 md:px-8 pointer-events-none">
+      <div className="max-w-[1380px] mx-auto w-full">
+        <div className="pointer-events-auto h-16 sm:h-20 bg-surface-container-lowest/95 backdrop-blur-xl rounded-full px-3.5 sm:px-6 md:px-8 flex items-center justify-between shadow-clay-card border border-white/60">
           
           {/* Brand Identity */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-gold-deep shadow-sm">
-              <span className="material-symbols-outlined text-[24px]">travel_explore</span>
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary-container flex items-center justify-center text-gold-deep shadow-sm shrink-0">
+              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">travel_explore</span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-headline text-lg sm:text-xl font-bold text-primary leading-none tracking-tight">
+            <div className="flex flex-col min-w-0">
+              <span className="font-headline text-base sm:text-lg md:text-xl font-bold text-primary leading-none tracking-tight truncate">
                 VARNI HOLIDAYS
               </span>
-              <span className="text-[10px] sm:text-[11px] font-semibold text-gold-deep tracking-wider uppercase mt-1">
+              <span className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-gold-deep tracking-wider uppercase mt-0.5 truncate">
                 Your Gateway to Joyful Holidays
               </span>
             </div>

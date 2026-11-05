@@ -94,17 +94,46 @@ export default function LeadTableView({ leads, onRefresh }: LeadTableViewProps) 
                   <td className="px-4 py-3 max-w-xs truncate text-[#F4F4F2]">
                     {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
                       <span className="truncate block font-medium">
-                        {lead.packageDetail.packageName} ({lead.packageDetail.adultsCount} Pax)
+                        {lead.packageDetail.packageName} ({lead.packageDetail.duration || '6N/7D'} • {lead.packageDetail.adultsCount} Pax)
                       </span>
                     )}
                     {lead.serviceType === 'FLIGHT' && lead.flightDetail && (
-                      <span className="truncate block font-medium">
-                        {lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]} ({lead.flightDetail.tripType})
+                      <span className="truncate block font-medium flex items-center gap-1.5">
+                        <span>{lead.flightDetail.originAirport.split('-')[0]} ✈ {lead.flightDetail.destinationAirport.split('-')[0]} ({lead.flightDetail.tripType})</span>
+                        {lead.flightDetail.mealPreferenceCode && lead.flightDetail.mealPreferenceCode !== 'NO_PREFERENCE' && (
+                          <span className="px-1 bg-[#E9B95E]/20 text-[#E9B95E] rounded text-[9px] font-bold">
+                            {lead.flightDetail.mealPreferenceCode}
+                          </span>
+                        )}
+                        {lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NO_ASSISTANCE' && (
+                          <span className="px-1 bg-red-950/60 text-red-400 rounded text-[9px] font-bold">
+                            ♿ {lead.flightDetail.wheelchairAssistanceCode}
+                          </span>
+                        )}
                       </span>
                     )}
                     {lead.serviceType === 'VISA' && lead.visaDetail && (
-                      <span className="truncate block font-medium">
-                        {lead.visaDetail.destinationCountry} Visa ({lead.visaDetail.visaCategory})
+                      <span className="truncate block font-medium flex items-center gap-1.5">
+                        <span>
+                          {lead.visaDetail.destinationCountry === 'OTHER' || lead.visaDetail.destinationCountry === 'Other'
+                            ? (lead.visaDetail.otherCountryName || 'Other Country')
+                            : lead.visaDetail.destinationCountry} Visa ({lead.visaDetail.visaCategory})
+                        </span>
+                        {lead.visaDetail.visaType && (
+                          <span className="px-1.5 py-0.5 bg-[#24689B]/20 text-[#60A5FA] border border-[#24689B]/30 rounded text-[9px] font-medium">
+                            {lead.visaDetail.visaType}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    {lead.serviceType === 'TRAVEL_INSURANCE' && (
+                      <span className="truncate block font-medium flex items-center gap-1.5">
+                        <span>🛡️ {lead.insuranceDetail?.destinationCountry || 'International'} Travel Insurance</span>
+                        {lead.insuranceDetail?.hasPreExistingDisease && (
+                          <span className="px-1.5 py-0.2 bg-amber-950/60 text-amber-300 border border-amber-800/40 rounded text-[9px] font-bold">
+                            PED
+                          </span>
+                        )}
                       </span>
                     )}
                   </td>

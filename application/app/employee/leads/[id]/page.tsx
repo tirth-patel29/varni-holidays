@@ -363,8 +363,13 @@ export default function LeadDetailPage() {
               {lead.serviceType === 'PACKAGE' && lead.packageDetail && (
                 <div className="space-y-3 text-xs">
                   <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
-                    <span className="font-medium text-[#F4F4F2] block">{lead.packageDetail.packageName}</span>
-                    <span className="text-[11px] text-[#969CA5]">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-[#F4F4F2] block">{lead.packageDetail.packageName}</span>
+                      <span className="px-2 py-0.5 rounded bg-[#2A2E34] text-[10px] text-[#E9B95E] font-bold">
+                        {lead.packageDetail.duration || (lead.packageDetail.packageName.includes('5N/6D') ? '5N / 6D' : '6N / 7D')}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-[#969CA5] block mt-1">
                       Hotel Tier: <strong className="text-[#F4F4F2]">{lead.packageDetail.hotelTier}</strong>
                     </span>
                   </div>
@@ -385,12 +390,18 @@ export default function LeadDetailPage() {
                       <span className="font-medium text-[#F4F4F2]">{lead.packageDetail.roomsCount} Rooms</span>
                     </div>
                     <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34]">
-                      <span className="text-[#666E79] block">Vehicle</span>
-                      <span className="font-medium text-[#F4F4F2] truncate">{lead.packageDetail.vehicleAssigned || 'Standard'}</span>
+                      <span className="text-[#666E79] block">Transport</span>
+                      <span className="font-medium text-[#F4F4F2] truncate">{lead.packageDetail.vehicleAssigned || 'Standard Vehicle'}</span>
                     </div>
                   </div>
 
                   <div className="pt-2 border-t border-[#2A2E34] space-y-1 text-[11px] text-[#969CA5]">
+                    <div className="flex items-center justify-between">
+                      <span>Meal Plan:</span>
+                      <span className="text-[#F4F4F2] font-medium">
+                        {lead.packageDetail.includeMealPlan ? 'CPAI + Dinner (MAP)' : 'CPAI (Breakfast Included)'}
+                      </span>
+                    </div>
                     <div className="flex items-center justify-between">
                       <span>Houseboat Upgrade:</span>
                       <span className="text-[#F4F4F2] font-medium">{lead.packageDetail.includeHouseboatUpgrade ? 'Yes' : 'No'}</span>
@@ -406,8 +417,17 @@ export default function LeadDetailPage() {
                   </div>
 
                   <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] text-xs">
-                    <span className="text-[10px] uppercase text-[#666E79] block">Calculated System Estimate</span>
-                    <span className="text-sm font-semibold text-[#55B98A] tabular-nums">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] uppercase text-[#666E79]">Pricing Status</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                        lead.packageDetail.pricingStatus === 'EXACT_MATCH'
+                          ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800'
+                          : 'bg-amber-950/80 text-amber-400 border border-amber-800'
+                      }`}>
+                        {lead.packageDetail.pricingStatus === 'EXACT_MATCH' ? 'EXACT MATCH' : 'CUSTOM QUOTATION'}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-[#55B98A] tabular-nums block">
                       {lead.packageDetail.quotedTotalPriceInr
                         ? `₹${(lead.packageDetail.quotedTotalPriceInr ?? 0).toLocaleString('en-IN')}`
                         : 'Custom Quotation Required'}
@@ -447,26 +467,35 @@ export default function LeadDetailPage() {
                     </div>
                   </div>
 
-                  {(lead.flightDetail.mealPreferenceCode || lead.flightDetail.wheelchairAssistanceCode) && (
-                    <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-1.5 text-[11px]">
-                      {lead.flightDetail.mealPreferenceCode && (
-                        <div>
-                          <span className="text-[#666E79] block text-[10px] uppercase">Meal Preference</span>
-                          <span className="font-medium text-[#E9B95E]">
-                            {lead.flightDetail.mealPreferenceCode} - {lead.flightDetail.mealPreferenceDescription || lead.flightDetail.mealPreferenceCode}
-                          </span>
-                        </div>
-                      )}
-                      {lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NONE' && (
-                        <div>
-                          <span className="text-[#666E79] block text-[10px] uppercase">Special Assistance</span>
-                          <span className="font-medium text-[#DF7373]">
-                            ♿ {lead.flightDetail.wheelchairAssistanceCode} - {lead.flightDetail.wheelchairAssistanceDescription || 'Wheelchair Required'}
-                          </span>
-                        </div>
-                      )}
+                  <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-2 text-[11px]">
+                    <div>
+                      <span className="text-[#666E79] block text-[10px] uppercase">Meal Preference</span>
+                      <span className="font-medium text-[#E9B95E] flex items-center gap-1.5 mt-0.5">
+                        <span className="material-symbols-outlined text-[14px]">restaurant</span>
+                        <span>
+                          {lead.flightDetail.mealPreferenceCode && lead.flightDetail.mealPreferenceCode !== 'NO_PREFERENCE'
+                            ? `${lead.flightDetail.mealPreferenceCode} — ${lead.flightDetail.mealPreferenceDescription || lead.flightDetail.mealPreferenceCode}`
+                            : 'No special meal preference'}
+                        </span>
+                      </span>
                     </div>
-                  )}
+
+                    <div className="pt-1.5 border-t border-[#2A2E34]">
+                      <span className="text-[#666E79] block text-[10px] uppercase">Wheelchair / Special Assistance</span>
+                      <span className={`font-medium flex items-center gap-1.5 mt-0.5 ${
+                        lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NO_ASSISTANCE' && lead.flightDetail.wheelchairAssistanceCode !== 'NONE'
+                          ? 'text-[#DF7373]'
+                          : 'text-[#969CA5]'
+                      }`}>
+                        <span className="material-symbols-outlined text-[14px]">accessible</span>
+                        <span>
+                          {lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NO_ASSISTANCE' && lead.flightDetail.wheelchairAssistanceCode !== 'NONE'
+                            ? `${lead.flightDetail.wheelchairAssistanceCode} — ${lead.flightDetail.wheelchairAssistanceDescription || 'Wheelchair Required'}`
+                            : 'No Assistance Required'}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -573,9 +602,15 @@ export default function LeadDetailPage() {
                       </span>
                     </div>
                     {lead.insuranceDetail.hasPreExistingDisease && lead.insuranceDetail.preExistingDiseaseDetails && (
-                      <div className="p-2 rounded bg-[#DF7373]/10 border border-[#DF7373]/20 text-[#DF7373]">
-                        <span className="font-medium text-[10px] uppercase block">Declared Conditions:</span>
-                        <p className="text-[11px] text-[#F4F4F2] mt-0.5">{lead.insuranceDetail.preExistingDiseaseDetails}</p>
+                      <div className="p-2.5 rounded bg-[#DF7373]/10 border border-[#DF7373]/20 text-[#DF7373] space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-[10px] uppercase">Declared Conditions:</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-950/70 text-red-300 border border-red-800/40 font-mono">
+                            Confidential Medical Disclosure
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#F4F4F2] mt-0.5 font-medium">{lead.insuranceDetail.preExistingDiseaseDetails}</p>
+                        <span className="text-[9px] text-[#969CA5] block">Restricted to authorised insurance desk & policy underwriting.</span>
                       </div>
                     )}
                   </div>

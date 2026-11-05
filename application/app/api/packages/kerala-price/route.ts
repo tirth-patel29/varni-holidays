@@ -16,11 +16,13 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  const duration = searchParams.get("duration") || "6N7D";
   const hotelTier = (searchParams.get("tier") || "DELUXE") as any;
   const adultsCount = parseInt(searchParams.get("adults") || "2", 10);
   const configCode = searchParams.get("config") || undefined;
 
   const result = calculateKeralaPrice({
+    duration,
     hotelTier,
     adultsCount,
     configCode,

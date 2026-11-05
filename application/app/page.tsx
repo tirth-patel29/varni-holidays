@@ -13,7 +13,7 @@ export default function HomePage() {
       {/* ==================================================== */}
       {/* SECTION 1: HERO & TACTILE CLAY VISUAL SHOWCASE       */}
       {/* ==================================================== */}
-      <section className="relative w-full max-w-[1380px] mx-auto px-4 md:px-8 pt-4 pb-12">
+      <section className="relative w-full max-w-[1380px] mx-auto px-4 sm:px-6 md:px-8 pt-2 sm:pt-4 pb-12 overflow-x-clip">
         {/* Ambient atmospheric glows */}
         <div className="absolute -top-12 left-1/4 w-96 h-96 rounded-full bg-ocean-mist-soft/60 blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-1/3 right-10 w-80 h-80 rounded-full bg-gold-light/40 blur-3xl pointer-events-none -z-10" />
@@ -134,7 +134,7 @@ export default function HomePage() {
               </div>
 
               {/* Overlapping Floating Weather Badge */}
-              <div className="absolute -top-5 -right-3 sm:-right-4 bg-surface-container-lowest p-3 rounded-[24px] shadow-clay-floating border border-white/80 flex items-center gap-3">
+              <div className="absolute -top-5 right-2 sm:-right-4 bg-surface-container-lowest p-2.5 sm:p-3 rounded-[20px] sm:rounded-[24px] shadow-clay-floating border border-white/80 flex items-center gap-2 sm:gap-3">
                 <div className="w-10 h-10 rounded-xl bg-secondary-container/60 flex items-center justify-center text-secondary">
                   <span className="material-symbols-outlined text-[24px]">wb_sunny</span>
                 </div>

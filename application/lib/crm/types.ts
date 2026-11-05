@@ -45,6 +45,7 @@ export interface FlightEnquiryData {
 export interface PackageEnquiryData {
   packageSlug: string;
   packageName: string;
+  duration?: string;
   hotelTier: 'STANDARD' | 'DELUXE' | 'SUPER_DELUXE' | 'PREMIUM' | 'LUXURY';
   configCode?: string;
   adultsCount: number;

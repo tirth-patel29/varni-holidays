@@ -77,8 +77,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/packages" className="hover:text-primary transition-colors">
-                  Holiday Packages
+                <Link href="/hotels" className="hover:text-primary transition-colors">
+                  Hotel Reservations
                 </Link>
               </li>
               <li>
@@ -87,8 +87,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/destinations" className="hover:text-primary transition-colors">
-                  Destinations
+                <Link href="/packages" className="hover:text-primary transition-colors">
+                  Tour Packages
+                </Link>
+              </li>
+              <li>
+                <Link href="/travel-insurance" className="hover:text-primary transition-colors">
+                  Travel Insurance
                 </Link>
               </li>
               <li>

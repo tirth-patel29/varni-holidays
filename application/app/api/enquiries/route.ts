@@ -3,6 +3,7 @@ import {
   submitFlightEnquiry,
   submitPackageEnquiry,
   submitVisaEnquiry,
+  submitTravelInsuranceEnquiryAction,
 } from "@/app/actions/enquiries";
 
 export async function POST(req: NextRequest) {
@@ -15,6 +16,8 @@ export async function POST(req: NextRequest) {
       result = await submitFlightEnquiry(body);
     } else if (type === "VISA") {
       result = await submitVisaEnquiry(body);
+    } else if (type === "TRAVEL_INSURANCE") {
+      result = await submitTravelInsuranceEnquiryAction(body);
     } else {
       result = await submitPackageEnquiry(body);
     }
