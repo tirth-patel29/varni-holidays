@@ -149,7 +149,7 @@ export default function PipelineKanban({ leads, onRefresh }: PipelineKanbanProps
 
                         {/* Clickable Card Body: Customer, Ref, and Service Details */}
                         <Link
-                          href={`/employee/leads/${lead.id || lead.referenceId}`}
+                          href={`/employee/leads/${lead.referenceId || lead.id}`}
                           className="block group mb-3 text-left"
                         >
                           <div className="text-xs font-semibold text-[#F4F4F2] group-hover:text-[#E9B95E] transition-colors leading-tight truncate">

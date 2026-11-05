@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default function LeadTableView({ leads, onRefresh }: LeadTableViewProps) 
               leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-[#1D2025]/60 transition-colors">
                   <td className="px-4 py-3 font-mono font-medium text-[#F4F4F2] whitespace-nowrap">
-                    <Link href={`/employee/leads/${lead.id}`} className="hover:text-[#E9B95E] transition-colors">
+                    <Link href={`/employee/leads/${lead.referenceId || lead.id}`} className="hover:text-[#E9B95E] transition-colors">
                       {lead.referenceId}
                     </Link>
                     <span className="block text-[10px] text-[#666E79] font-sans">
@@ -161,7 +161,7 @@ export default function LeadTableView({ leads, onRefresh }: LeadTableViewProps) 
                         <MessageSquare size={13} />
                       </button>
                       <Link
-                        href={`/employee/leads/${lead.id}`}
+                        href={`/employee/leads/${lead.referenceId || lead.id}`}
                         className="p-1 rounded bg-[#1D2025] hover:bg-[#2A2E34] text-[#969CA5] hover:text-[#E9B95E] border border-[#2A2E34] transition-colors"
                         title="Review Details"
                       >

@@ -30,6 +30,10 @@ export interface FlightEnquiryData {
   infantsCount: number;
   cabinClass: 'ECONOMY' | 'PREMIUM_ECONOMY' | 'BUSINESS' | 'FIRST';
   specialRequirements?: string;
+  mealPreferenceCode?: string;
+  mealPreferenceDescription?: string;
+  wheelchairAssistanceCode?: string;
+  wheelchairAssistanceDescription?: string;
   segments?: Array<{
     segmentOrder: number;
     originAirport: string;
@@ -61,7 +65,9 @@ export interface PackageEnquiryData {
 
 export interface VisaEnquiryData {
   destinationCountry: string;
+  otherCountryName?: string;
   visaCategory: 'TOURIST' | 'BUSINESS' | 'STUDENT' | 'WORK' | 'TRANSIT' | 'OTHER';
+  visaType?: string;
   travelPurpose?: string;
   applicantNationality: string;
   residenceCountry: string;
@@ -71,9 +77,39 @@ export interface VisaEnquiryData {
   specialCircumstances?: string;
 }
 
+export interface CustomHolidayData {
+  departureDate: string;
+  returnDate: string;
+  destinations: string;
+  adultsCount: number;
+  childrenCount: number;
+  infantsCount: number;
+  mealPlan: 'CPAI' | 'MAP' | 'APAI' | 'EP';
+  hotelCategory: 'THREE_STAR' | 'FOUR_STAR' | 'FIVE_STAR' | 'FLEXIBLE';
+  transferType: 'SHARING' | 'PRIVATE' | 'RECOMMEND';
+  specialRequirements?: string | null;
+  needVisa?: boolean;
+  needFlights?: boolean;
+  needInsurance?: boolean;
+  confirmedFlightDetails?: string | null;
+  confirmedHotelDetails?: string | null;
+  confirmedVisaDetails?: string | null;
+  invoiceReference?: string | null;
+  itineraryNotes?: string | null;
+}
+
+export interface TravelInsuranceData {
+  departureDate: string;
+  destinationCountry: string;
+  dateOfBirth: string;
+  hasPreExistingDisease: boolean;
+  preExistingDiseaseDetails?: string | null;
+  consentGiven: boolean;
+}
+
 export interface LeadRecord {
   id: string;
-  referenceId: string; // "FLT-...", "PKG-...", "VIS-..."
+  referenceId: string; // "FLT-...", "PKG-...", "VIS-...", "HOL-...", "INS-..."
   serviceType: ServiceTypeCode;
   stage: PipelineStageCode;
   priorityLevel: PriorityLevelCode;
@@ -83,6 +119,8 @@ export interface LeadRecord {
   flightDetail?: FlightEnquiryData;
   packageDetail?: PackageEnquiryData;
   visaDetail?: VisaEnquiryData;
+  customHolidayDetail?: CustomHolidayData;
+  insuranceDetail?: TravelInsuranceData;
   closeReason?: string | null;
   closedAt?: string | null;
   isDeleted: boolean;

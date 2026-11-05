@@ -74,3 +74,4 @@ function doPost(e) {
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({ status: "ACTIVE", app: "VARNI HOLIDAYS CRM", spreadsheetId: "1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A" })).setMimeType(ContentService.MimeType.JSON);
 }
+

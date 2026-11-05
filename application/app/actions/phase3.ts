@@ -373,6 +373,7 @@ export async function getQuotationDetailsAction(quotationId: string) {
       });
 
       if (dbQuo) {
+        const snap = dbQuo.pricingSnapshotJson as any;
         const lineItems = dbQuo.lineItems.map((li) => ({
           itemOrder: li.itemOrder,
           description: li.title || li.description || 'Travel Service',
@@ -392,15 +393,15 @@ export async function getQuotationDetailsAction(quotationId: string) {
             createdByUserId: dbQuo.createdByUserId,
             createdByName: dbQuo.createdByUser?.fullName || 'Neel Patel',
             status: dbQuo.status,
-            title: (dbQuo as any).title || dbQuo.customerNotes || 'Customized Travel Quotation',
+            title: snap?.title || dbQuo.customerNotes || 'Customized Travel Quotation',
             subtotalInr: Number(dbQuo.subtotalAmountInr || dbQuo.totalAmountInr),
             taxesInr: Number(dbQuo.taxAmountInr || 0),
             discountInr: Number(dbQuo.discountAmountInr || 0),
             totalAmountInr: Number(dbQuo.totalAmountInr),
             validUntil: dbQuo.validUntil.toISOString(),
             terms: dbQuo.termsAndConditions || '50% advance for booking confirmation. Balance due 7 days prior to travel.',
-            inclusions: (dbQuo as any).inclusions || ['Accommodation with breakfast', 'Private AC Vehicle & Chauffeur', 'Tolls, parking, and driver allowances'],
-            exclusions: (dbQuo as any).exclusions || ['Airfare (unless specified)', 'Personal expenses', 'Monument entry fees'],
+            inclusions: snap?.inclusions || (dbQuo as any).inclusions || ['Accommodation with breakfast', 'Private AC Vehicle & Chauffeur', 'Tolls, parking, and driver allowances'],
+            exclusions: snap?.exclusions || (dbQuo as any).exclusions || ['Airfare (unless specified)', 'Personal expenses', 'Monument entry fees'],
             lineItems,
             createdAt: dbQuo.createdAt.toISOString(),
           },

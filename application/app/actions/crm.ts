@@ -4,7 +4,15 @@ import { prisma } from '@/lib/prisma';
 import { crmRepo } from '@/lib/crm/store';
 import { DEFAULT_USERS } from '@/lib/auth/session';
 import { PipelineStageCode, PriorityLevelCode, ServiceTypeCode } from '@/lib/auth/types';
-import { CustomerRecord, LeadRecord, PackageEnquiryData, FlightEnquiryData, VisaEnquiryData } from '@/lib/crm/types';
+import {
+  CustomerRecord,
+  LeadRecord,
+  PackageEnquiryData,
+  FlightEnquiryData,
+  VisaEnquiryData,
+  CustomHolidayData,
+  TravelInsuranceData,
+} from '@/lib/crm/types';
 import { processSyncQueueAction } from '@/app/actions/google-sheets';
 
 // Helper to resolve current user name
@@ -68,6 +76,10 @@ function mapPrismaLeadToCrm(dbLead: any): LeadRecord & { customer: CustomerRecor
       infantsCount: fd.infantsCount || 0,
       cabinClass: fd.cabinClass || 'ECONOMY',
       specialRequirements: fd.specialRequirements || undefined,
+      mealPreferenceCode: fd.mealPreferenceCode || undefined,
+      mealPreferenceDescription: fd.mealPreferenceDescription || undefined,
+      wheelchairAssistanceCode: fd.wheelchairAssistanceCode || undefined,
+      wheelchairAssistanceDescription: fd.wheelchairAssistanceDescription || undefined,
     };
   }
 
@@ -76,7 +88,9 @@ function mapPrismaLeadToCrm(dbLead: any): LeadRecord & { customer: CustomerRecor
     const vd = dbLead.visaDetail;
     visaDetail = {
       destinationCountry: vd.destinationCountry || '',
+      otherCountryName: vd.otherCountryName || undefined,
       visaCategory: vd.visaCategory || 'TOURIST',
+      visaType: vd.visaType || undefined,
       travelPurpose: vd.travelPurpose || undefined,
       applicantNationality: vd.applicantNationality || 'Indian',
       residenceCountry: vd.residenceCountry || 'India',
@@ -84,6 +98,44 @@ function mapPrismaLeadToCrm(dbLead: any): LeadRecord & { customer: CustomerRecor
       stayDurationDays: vd.stayDurationDays || null,
       applicantCount: vd.applicantCount || 1,
       specialCircumstances: vd.specialCircumstances || undefined,
+    };
+  }
+
+  let customHolidayDetail: CustomHolidayData | undefined;
+  if (dbLead.customHolidayDetail) {
+    const cd = dbLead.customHolidayDetail;
+    customHolidayDetail = {
+      departureDate: cd.departureDate ? new Date(cd.departureDate).toISOString().split('T')[0] : '',
+      returnDate: cd.returnDate ? new Date(cd.returnDate).toISOString().split('T')[0] : '',
+      destinations: cd.destinations || '',
+      adultsCount: cd.adultsCount || 2,
+      childrenCount: cd.childrenCount || 0,
+      infantsCount: cd.infantsCount || 0,
+      mealPlan: cd.mealPlan || 'CPAI',
+      hotelCategory: cd.hotelCategory || 'FOUR_STAR',
+      transferType: cd.transferType || 'PRIVATE',
+      specialRequirements: cd.specialRequirements || null,
+      needVisa: cd.needVisa ?? false,
+      needFlights: cd.needFlights ?? false,
+      needInsurance: cd.needInsurance ?? false,
+      confirmedFlightDetails: cd.confirmedFlightDetails || null,
+      confirmedHotelDetails: cd.confirmedHotelDetails || null,
+      confirmedVisaDetails: cd.confirmedVisaDetails || null,
+      invoiceReference: cd.invoiceReference || null,
+      itineraryNotes: cd.itineraryNotes || null,
+    };
+  }
+
+  let insuranceDetail: TravelInsuranceData | undefined;
+  if (dbLead.insuranceDetail) {
+    const idData = dbLead.insuranceDetail;
+    insuranceDetail = {
+      departureDate: idData.departureDate ? new Date(idData.departureDate).toISOString().split('T')[0] : '',
+      destinationCountry: idData.destinationCountry || '',
+      dateOfBirth: idData.dateOfBirth ? new Date(idData.dateOfBirth).toISOString().split('T')[0] : '',
+      hasPreExistingDisease: idData.hasPreExistingDisease ?? false,
+      preExistingDiseaseDetails: idData.preExistingDiseaseDetails || null,
+      consentGiven: idData.consentGiven ?? true,
     };
   }
 
@@ -116,6 +168,8 @@ function mapPrismaLeadToCrm(dbLead: any): LeadRecord & { customer: CustomerRecor
     packageDetail,
     flightDetail,
     visaDetail,
+    customHolidayDetail,
+    insuranceDetail,
     closeReason: dbLead.closeReason,
     closedAt: dbLead.closedAt ? new Date(dbLead.closedAt).toISOString() : null,
     isDeleted: dbLead.isDeleted || false,
@@ -158,6 +212,8 @@ export async function getLeadsAction(filters?: {
         packageDetail: { include: { package: true } },
         flightDetail: true,
         visaDetail: true,
+        customHolidayDetail: true,
+        insuranceDetail: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -200,6 +256,8 @@ export async function getLeadByIdAction(id: string) {
         packageDetail: { include: { package: true } },
         flightDetail: true,
         visaDetail: true,
+        customHolidayDetail: true,
+        insuranceDetail: true,
       },
     });
 
@@ -215,6 +273,8 @@ export async function getLeadByIdAction(id: string) {
             packageDetail: { include: { package: true } },
             flightDetail: true,
             visaDetail: true,
+            customHolidayDetail: true,
+            insuranceDetail: true,
           },
         });
       }
@@ -238,6 +298,8 @@ export async function getLeadByIdAction(id: string) {
               packageDetail: { include: { package: true } },
               flightDetail: true,
               visaDetail: true,
+              customHolidayDetail: true,
+              insuranceDetail: true,
             },
           });
           if (candidates.length > 0) {
@@ -733,6 +795,61 @@ export async function mergeCustomersAction(
 // 5. QUOTATIONS
 // ----------------------------------------------------
 export async function getQuotationsAction(leadId?: string) {
+  try {
+    let whereClause: any = { isDeleted: false };
+    if (leadId) {
+      const dbLead = await prisma.lead.findFirst({
+        where: { OR: [{ id: leadId }, { referenceId: leadId }] },
+      });
+      whereClause.leadId = dbLead ? dbLead.id : leadId;
+    }
+    const dbQuotations = await prisma.quotation.findMany({
+      where: whereClause,
+      include: {
+        customer: true,
+        createdByUser: true,
+        lineItems: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (dbQuotations && dbQuotations.length > 0) {
+      return dbQuotations.map((q) => {
+        const snap = q.pricingSnapshotJson as any;
+        return {
+          id: q.id,
+          quotationNumber: q.quotationReference,
+          leadId: q.leadId,
+          customerId: q.customerId,
+          createdByUserId: q.createdByUserId,
+          createdByName: q.createdByUser?.fullName || 'Neel Patel',
+          status: q.status,
+          title: snap?.title || q.customerNotes || 'Travel Proposal',
+          subtotalInr: Number(q.subtotalAmountInr),
+          taxesInr: Number(q.taxAmountInr),
+          discountInr: Number(q.discountAmountInr),
+          totalAmountInr: Number(q.totalAmountInr),
+          validUntil: q.validUntil.toISOString(),
+          terms: q.termsAndConditions || '',
+          inclusions: snap?.inclusions || [],
+          exclusions: snap?.exclusions || [],
+          customerNotes: q.customerNotes || '',
+          internalNotes: q.internalNotes || '',
+          createdAt: q.createdAt.toISOString(),
+          lineItems: q.lineItems.map((li) => ({
+            id: li.id,
+            itemOrder: li.itemOrder,
+            serviceCategory: li.serviceType,
+            description: li.title || li.description || '',
+            quantity: li.quantity,
+            unitPriceInr: Number(li.unitPriceInr),
+            totalPriceInr: Number(li.totalPriceInr),
+          })),
+        };
+      });
+    }
+  } catch (err) {
+    console.warn('Prisma getQuotationsAction fallback:', err);
+  }
   return crmRepo.getQuotations(leadId);
 }
 

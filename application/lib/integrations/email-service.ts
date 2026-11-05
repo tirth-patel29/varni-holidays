@@ -463,13 +463,12 @@ export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationPa
  */
 export async function sendCustomerEmail(options: EmailSendOptions): Promise<EmailSendResult> {
   const resendApiKey = process.env.RESEND_API_KEY;
-  let fromEmail = process.env.RESEND_FROM_EMAIL || 'Varni Holidays <contact@varnitours.com>';
-
-  // Resend verified domain is varnitours.com.
-  // Until varniholidays.com DNS records are added, automatically use verified varnitours.com to prevent 403 Forbidden errors
-  if (fromEmail.includes('@varniholidays.com')) {
-    fromEmail = fromEmail.replace('@varniholidays.com', '@varnitours.com');
-  }
+  // Unless domain is verified in Resend DNS (flagged via RESEND_DOMAIN_VERIFIED=true),
+  // default to Resend-provided verified sandbox 'onboarding@resend.dev' to prevent 403 Domain Not Verified errors
+  const isDomainVerified = process.env.RESEND_DOMAIN_VERIFIED === 'true';
+  let fromEmail = isDomainVerified
+    ? (process.env.RESEND_FROM_EMAIL || 'Varni Holidays <noreply@varniholidays.com>')
+    : 'Varni Holidays <onboarding@resend.dev>';
 
   const now = new Date().toISOString();
   const renderedHtml = options.customHtml || buildVarniEmailHtml(options);

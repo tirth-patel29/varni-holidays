@@ -8,7 +8,7 @@ export type UserRoleCode =
   | 'ACCOUNTANT'
   | 'OPERATIONS';
 
-export type ServiceTypeCode = 'FLIGHT' | 'PACKAGE' | 'VISA' | 'GENERAL';
+export type ServiceTypeCode = 'FLIGHT' | 'PACKAGE' | 'VISA' | 'GENERAL' | 'CUSTOM_HOLIDAY' | 'TRAVEL_INSURANCE';
 
 export type PipelineStageCode =
   | 'REQUESTS'

@@ -150,6 +150,8 @@ enum ServiceType {
   PACKAGE
   VISA
   GENERAL
+  CUSTOM_HOLIDAY
+  TRAVEL_INSURANCE
 }
 
 enum PipelineStage {
@@ -185,6 +187,8 @@ model Lead {
   flightDetail         FlightEnquiryDetail?
   packageDetail        PackageEnquiryDetail?
   visaDetail           VisaEnquiryDetail?
+  customHolidayDetail  CustomHolidayDetail?
+  insuranceDetail      TravelInsuranceDetail?
 
   // Activities & Lifecycle
   activities           LeadActivity[]
@@ -237,6 +241,12 @@ model FlightEnquiryDetail {
   infantsCount        Int             @default(0)
   cabinClass          CabinClass      @default(ECONOMY)
   specialRequirements String?
+
+  // Preferences & Special Assistance (Phase 3.1)
+  mealPreferenceCode              String?
+  mealPreferenceDescription       String?
+  wheelchairAssistanceCode        String?
+  wheelchairAssistanceDescription String?
 
   segments            FlightSegment[]
 
@@ -316,7 +326,9 @@ model VisaEnquiryDetail {
   lead                 Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
   destinationCountry   String
+  otherCountryName     String?
   visaCategory         VisaCategory @default(TOURIST)
+  visaType             String?      // Country-dependent subtype (e.g. "B1/B2 Visitor Visa", "Super Visa")
   travelPurpose        String?
   applicantNationality String       @default("Indian")
   residenceCountry     String       @default("India")
@@ -326,6 +338,56 @@ model VisaEnquiryDetail {
   specialCircumstances String?
 
   @@map("visa_enquiry_details")
+}
+
+model CustomHolidayDetail {
+  id                        String    @id @default(uuid())
+  leadId                    String    @unique
+  lead                      Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  departureDate             DateTime
+  returnDate                DateTime
+  destinations              String
+  adultsCount               Int       @default(2)
+  childrenCount             Int       @default(0)
+  infantsCount              Int       @default(0)
+  mealPlan                  String    // "CPAI" | "MAP" | "APAI"
+  hotelCategory             String    // "3_STAR" | "4_STAR" | "5_STAR" | "FLEXIBLE"
+  transferPreference        String    // "SHARING" | "PRIVATE" | "RECOMMEND"
+  specialRequirements       String?   @db.Text
+  visaAssistanceRequired    Boolean   @default(false)
+  flightAssistanceRequired  Boolean   @default(false)
+  travelInsuranceRequired   Boolean   @default(false)
+
+  // Physical Register Operational Follow-Up Fields
+  confirmedFlightDetails    String?   @db.Text
+  confirmedHotelDetails     String?   @db.Text
+  confirmedVisaDetails      String?   @db.Text
+  invoiceReference          String?
+  itineraryNotes            String?   @db.Text
+
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@map("custom_holiday_details")
+}
+
+model TravelInsuranceDetail {
+  id                          String    @id @default(uuid())
+  leadId                      String    @unique
+  lead                        Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  travelDate                  DateTime
+  destinationCountry          String
+  dateOfBirth                 DateTime
+  hasPreExistingDisease       Boolean   @default(false)
+  preExistingDiseaseDetails   String?   @db.Text // Sensitive medical data: restricted
+  consentGiven                Boolean   @default(true)
+
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  @@map("travel_insurance_details")
 }
 
 // ====================================================

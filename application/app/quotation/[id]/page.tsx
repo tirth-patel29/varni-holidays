@@ -53,6 +53,20 @@ export default function PublicQuotationViewPage() {
     window.open(COMPANY_CONTACT.whatsapp.buildUrl(`Hello Varni Holidays Anand! I have reviewed quotation ${q.quotationNumber} for "${q.title}" (Total: ₹${(q.totalAmountInr ?? 0).toLocaleString('en-IN')}). I would like to proceed with the booking confirmation. Please guide me with next steps!`), '_blank');
   };
 
+  const handleShareToCustomerWhatsApp = () => {
+    if (!data?.quotation) return;
+    const q = data.quotation;
+    const c = data.customer;
+    const rawPhone = (c?.phoneCountryCode || '+91') + (c?.phoneNumber || '');
+    const cleanPhone = rawPhone.replace(/\D/g, '');
+    const quoteUrl = typeof window !== 'undefined' ? window.location.href : `https://varni-holidays.vercel.app/quotation/${q.quotationNumber}`;
+    const totalFormatted = (q.totalAmountInr ?? 0).toLocaleString('en-IN');
+    const msg = encodeURIComponent(
+      `Namaste ${c?.fullName || 'Valued Guest'} Ji 🙏\n\nGreetings from Varni Holidays Anand!\n\nHere is your official travel proposal & quotation for *${q.title || 'Your Journey'}*:\n\n📋 *Quotation Ref:* ${q.quotationNumber}\n💰 *Total Investment:* ₹${totalFormatted} (All Taxes Included)\n📅 *Validity:* ${new Date(q.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}\n\n📄 *View & Print Official Quotation / PDF:* \n${quoteUrl}\n\nPlease review the itemized itinerary and inclusions. Feel free to reply here to confirm your reservations or ask any questions!\n\nWarm Regards,\n*Varni Holidays Anand*\n📞 +91 63570 50505`
+    );
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-8 text-slate-300">
@@ -141,11 +155,18 @@ export default function PublicQuotationViewPage() {
             <span>Save / Print PDF</span>
           </button>
           <button
-            onClick={handleConfirmWhatsApp}
-            className="px-4 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-xs font-bold text-slate-950 inline-flex items-center gap-1.5 transition-all shadow-md"
+            onClick={handleShareToCustomerWhatsApp}
+            className="px-3.5 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-xs font-bold text-slate-950 inline-flex items-center gap-1.5 transition-all shadow-md"
+            title="Send proposal to client on WhatsApp"
           >
             <MessageSquare size={14} />
-            <span>Confirm on WhatsApp</span>
+            <span>Send to Client via WhatsApp</span>
+          </button>
+          <button
+            onClick={handleConfirmWhatsApp}
+            className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-xs font-bold text-slate-950 inline-flex items-center gap-1.5 transition-all shadow-md"
+          >
+            <span>Confirm Booking</span>
           </button>
         </div>
       </div>

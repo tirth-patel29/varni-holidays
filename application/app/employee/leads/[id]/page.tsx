@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -446,6 +446,27 @@ export default function LeadDetailPage() {
                       <span className="font-medium text-[#F4F4F2]">{lead.flightDetail.childrenCount} / {lead.flightDetail.infantsCount}</span>
                     </div>
                   </div>
+
+                  {(lead.flightDetail.mealPreferenceCode || lead.flightDetail.wheelchairAssistanceCode) && (
+                    <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-1.5 text-[11px]">
+                      {lead.flightDetail.mealPreferenceCode && (
+                        <div>
+                          <span className="text-[#666E79] block text-[10px] uppercase">Meal Preference</span>
+                          <span className="font-medium text-[#E9B95E]">
+                            {lead.flightDetail.mealPreferenceCode} - {lead.flightDetail.mealPreferenceDescription || lead.flightDetail.mealPreferenceCode}
+                          </span>
+                        </div>
+                      )}
+                      {lead.flightDetail.wheelchairAssistanceCode && lead.flightDetail.wheelchairAssistanceCode !== 'NONE' && (
+                        <div>
+                          <span className="text-[#666E79] block text-[10px] uppercase">Special Assistance</span>
+                          <span className="font-medium text-[#DF7373]">
+                            ♿ {lead.flightDetail.wheelchairAssistanceCode} - {lead.flightDetail.wheelchairAssistanceDescription || 'Wheelchair Required'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -454,8 +475,15 @@ export default function LeadDetailPage() {
                   <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
                     <span className="text-[10px] uppercase text-[#666E79] block">Visa Application</span>
                     <div className="font-medium text-xs text-[#F4F4F2] mt-0.5">
-                      {lead.visaDetail.destinationCountry} Visa ({lead.visaDetail.visaCategory})
+                      {lead.visaDetail.destinationCountry === 'OTHER' || lead.visaDetail.destinationCountry === 'Other'
+                        ? (lead.visaDetail.otherCountryName || 'Other Country')
+                        : lead.visaDetail.destinationCountry} Visa ({lead.visaDetail.visaCategory})
                     </div>
+                    {lead.visaDetail.visaType && (
+                      <div className="text-[11px] text-[#E9B95E] font-medium mt-0.5">
+                        Specific Type: {lead.visaDetail.visaType}
+                      </div>
+                    )}
                     <span className="text-[10px] text-[#969CA5] block mt-0.5">
                       {lead.visaDetail.applicantCount} Applicant(s) • Nationality: {lead.visaDetail.applicantNationality}
                     </span>
@@ -464,6 +492,92 @@ export default function LeadDetailPage() {
                   <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34] text-[11px]">
                     <span className="text-[#666E79] block">Planned Travel Date</span>
                     <span className="font-medium text-[#F4F4F2]">{lead.visaDetail.plannedTravelDate || 'Tentative'}</span>
+                  </div>
+                </div>
+              )}
+
+              {lead.serviceType === 'CUSTOM_HOLIDAY' && lead.customHolidayDetail && (
+                <div className="space-y-3 text-xs">
+                  <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
+                    <span className="text-[10px] uppercase text-[#666E79] block">Custom Holiday Plan</span>
+                    <div className="font-medium text-xs text-[#F4F4F2] mt-0.5 flex items-center gap-1.5">
+                      <Compass size={13} className="text-[#E9B95E]" />
+                      <span>{lead.customHolidayDetail.destinations}</span>
+                    </div>
+                    <div className="text-[10px] text-[#969CA5] mt-1">
+                      {lead.customHolidayDetail.adultsCount} Adults • {lead.customHolidayDetail.childrenCount} Children • {lead.customHolidayDetail.infantsCount} Infants
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34]">
+                      <span className="text-[#666E79] block">Departure</span>
+                      <span className="font-medium text-[#F4F4F2]">{lead.customHolidayDetail.departureDate}</span>
+                    </div>
+                    <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34]">
+                      <span className="text-[#666E79] block">Return</span>
+                      <span className="font-medium text-[#F4F4F2]">{lead.customHolidayDetail.returnDate}</span>
+                    </div>
+                    <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34]">
+                      <span className="text-[#666E79] block">Meal Plan</span>
+                      <span className="font-medium text-[#E9B95E]">{lead.customHolidayDetail.mealPlan}</span>
+                    </div>
+                    <div className="bg-[#1D2025] p-2 rounded border border-[#2A2E34]">
+                      <span className="text-[#666E79] block">Hotel Tier</span>
+                      <span className="font-medium text-[#F4F4F2]">{lead.customHolidayDetail.hotelCategory.replace('_', ' ')}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-[11px] space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#666E79]">Transfer Preference:</span>
+                      <span className="font-medium text-[#F4F4F2]">{lead.customHolidayDetail.transferType}</span>
+                    </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      {lead.customHolidayDetail.needFlights && <span className="px-1.5 py-0.5 rounded bg-[#17191D] border border-[#2A2E34] text-[10px] text-[#969CA5]">✈ Flights</span>}
+                      {lead.customHolidayDetail.needVisa && <span className="px-1.5 py-0.5 rounded bg-[#17191D] border border-[#2A2E34] text-[10px] text-[#969CA5]">🛂 Visa</span>}
+                      {lead.customHolidayDetail.needInsurance && <span className="px-1.5 py-0.5 rounded bg-[#17191D] border border-[#2A2E34] text-[10px] text-[#969CA5]">🛡 Insurance</span>}
+                    </div>
+                  </div>
+
+                  {lead.customHolidayDetail.specialRequirements && (
+                    <div className="p-2 rounded bg-[#1D2025] border border-[#2A2E34] text-[11px]">
+                      <span className="text-[#666E79] block text-[10px] uppercase">Special Requests</span>
+                      <p className="text-[#969CA5] mt-0.5">{lead.customHolidayDetail.specialRequirements}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {lead.serviceType === 'TRAVEL_INSURANCE' && lead.insuranceDetail && (
+                <div className="space-y-3 text-xs">
+                  <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34]">
+                    <span className="text-[10px] uppercase text-[#666E79] block">Travel Insurance Policy</span>
+                    <div className="font-medium text-xs text-[#F4F4F2] mt-0.5">
+                      Destination: {lead.insuranceDetail.destinationCountry}
+                    </div>
+                    <div className="text-[11px] text-[#969CA5] mt-0.5">
+                      Travel Date: {lead.insuranceDetail.departureDate}
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-1.5 text-[11px]">
+                    <div>
+                      <span className="text-[#666E79] block text-[10px] uppercase">Insured DOB</span>
+                      <span className="font-medium text-[#F4F4F2]">{lead.insuranceDetail.dateOfBirth}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#666E79] block text-[10px] uppercase">Pre-Existing Disease (PED)</span>
+                      <span className={`font-semibold ${lead.insuranceDetail.hasPreExistingDisease ? 'text-[#DF7373]' : 'text-[#55B98A]'}`}>
+                        {lead.insuranceDetail.hasPreExistingDisease ? 'Yes - Declared' : 'No PED Reported'}
+                      </span>
+                    </div>
+                    {lead.insuranceDetail.hasPreExistingDisease && lead.insuranceDetail.preExistingDiseaseDetails && (
+                      <div className="p-2 rounded bg-[#DF7373]/10 border border-[#DF7373]/20 text-[#DF7373]">
+                        <span className="font-medium text-[10px] uppercase block">Declared Conditions:</span>
+                        <p className="text-[11px] text-[#F4F4F2] mt-0.5">{lead.insuranceDetail.preExistingDiseaseDetails}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -670,23 +784,57 @@ export default function LeadDetailPage() {
               </div>
 
               {quotations.map((q) => (
-                <div key={q.id} className="p-2.5 rounded bg-[#1D2025] border border-[#2A2E34] space-y-1">
+                <div key={q.id} className="p-3 rounded-lg bg-[#1D2025] border border-[#2A2E34] space-y-2">
                   <div className="flex items-center justify-between">
                     <Link
-                      href={`/employee/quotations/${q.id}`}
-                      className="text-xs font-mono font-medium text-[#E9B95E] hover:underline"
+                      href={`/quotation/${q.quotationNumber || q.quotationReference || q.id}`}
+                      target="_blank"
+                      className="text-xs font-mono font-bold text-[#E9B95E] hover:underline flex items-center gap-1"
                     >
-                      {q.quotationReference}
+                      <span>{q.quotationNumber || q.quotationReference}</span>
+                      <ExternalLink size={11} />
                     </Link>
-                    <span className="text-[9px] uppercase px-1 rounded bg-[#17191D] text-[#969CA5] border border-[#2A2E34]">
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[#17191D] text-[#969CA5] border border-[#2A2E34] font-medium">
                       {q.status}
                     </span>
                   </div>
-                  <div className="text-xs font-semibold text-[#55B98A] tabular-nums">
+                  <div className="text-xs text-[#F4F4F2] font-medium line-clamp-1">
+                    {q.title || 'Tour Proposal'}
+                  </div>
+                  <div className="text-sm font-bold text-[#55B98A] tabular-nums">
                     ₹{(q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN')}
                   </div>
                   <div className="text-[10px] text-[#666E79]">
-                    Valid till: {new Date(q.validUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    Valid till: {new Date(q.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+
+                  <div className="pt-2 border-t border-[#2A2E34]/80 flex flex-col gap-1.5">
+                    <a
+                      href={`/quotation/${q.quotationNumber || q.quotationReference || q.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-1.5 px-2.5 rounded bg-[#2A2E34] hover:bg-[#32373E] text-[#F4F4F2] text-[11px] font-medium inline-flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <FileText size={12} className="text-[#E9B95E]" />
+                      <span>Open / Print PDF Template</span>
+                    </a>
+                    <button
+                      onClick={() => {
+                        const rawPhone = (lead.customer.phoneCountryCode || '+91') + lead.customer.phoneNumber;
+                        const cleanPhone = rawPhone.replace(/\D/g, '');
+                        const quoteRef = q.quotationNumber || q.quotationReference || q.id;
+                        const quoteUrl = `${window.location.origin}/quotation/${quoteRef}`;
+                        const totalFormatted = (q.totalAmountInr ?? q.finalPayableAmountInr ?? 0).toLocaleString('en-IN');
+                        const text = encodeURIComponent(
+                          `Namaste ${lead.customer.fullName} Ji 🙏\n\nGreetings from Varni Holidays Anand!\n\nHere is your official travel proposal & quotation for *${q.title || 'Your Journey'}*:\n\n📋 *Quotation Ref:* ${quoteRef}\n💰 *Total Investment:* ₹${totalFormatted} (All Taxes Included)\n📅 *Validity:* ${new Date(q.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}\n\n📄 *View & Print Official Quotation / PDF:* \n${quoteUrl}\n\nPlease review the itemized itinerary and inclusions. Feel free to reply here to confirm your reservations or ask any questions!\n\nWarm Regards,\n*Varni Holidays Anand*\n📞 +91 63570 50505\n🌐 317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Anand`
+                        );
+                        window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
+                      }}
+                      className="w-full py-1.5 px-2.5 rounded bg-[#25D366] hover:bg-[#20ba59] text-[#101113] text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                    >
+                      <MessageSquare size={12} />
+                      <span>Send Quotation via WhatsApp</span>
+                    </button>
                   </div>
                 </div>
               ))}

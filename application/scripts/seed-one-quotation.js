@@ -313,3 +313,4 @@ async function seedOneQuotation() {
 seedOneQuotation()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+
