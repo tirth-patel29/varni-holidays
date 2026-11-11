@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getPotentialDuplicatesAction, mergeCustomersAction } from '@/app/actions/crm';
 import { useCrm } from '@/components/crm/CrmContext';
+import { Breadcrumbs } from '@/components/admin/Breadcrumbs';
 import {
   GitMerge,
   Phone,
@@ -53,6 +54,7 @@ export default function DeduplicationPage() {
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#F7F8FA] text-[#172B45]">
       <main className="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col min-w-0 space-y-6 max-w-7xl mx-auto w-full">
+        <Breadcrumbs items={[{ label: 'Settings & Team', href: '/admin/settings/roles' }, { label: 'Customer Deduplication' }]} />
         
         {/* Page Title & Context Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E8ED]">

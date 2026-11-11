@@ -40,3 +40,4 @@ desktop.ini
 .idea/
 .playwright-mcp/
 ORIGINAL-BUSINESS-DATA/
+*.tsbuildinfo
