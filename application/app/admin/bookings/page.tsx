@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/admin/PageHeader';
@@ -25,7 +25,7 @@ import {
   Plus,
 } from 'lucide-react';
 
-export default function AdminBookingsPage() {
+function AdminBookingsContent() {
   const searchParams = useSearchParams();
   const serviceParam = searchParams.get('service') || 'ALL';
 
@@ -401,5 +401,18 @@ export default function AdminBookingsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AdminBookingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="py-24 text-center text-[#718096]">
+        <div className="w-6 h-6 border-2 border-[#153650] border-t-transparent rounded-none animate-spin mx-auto mb-3" />
+        <p className="text-xs font-semibold tracking-wide uppercase font-mono">Loading bookings...</p>
+      </div>
+    }>
+      <AdminBookingsContent />
+    </Suspense>
   );
 }

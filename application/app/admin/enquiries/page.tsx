@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/admin/PageHeader';
@@ -25,7 +25,7 @@ import {
   Clock,
 } from 'lucide-react';
 
-export default function AllEnquiriesPage() {
+function AllEnquiriesContent() {
   const searchParams = useSearchParams();
   const initialType = searchParams.get('type') || 'ALL';
   const initialSearch = searchParams.get('search') || '';
@@ -337,6 +337,19 @@ export default function AllEnquiriesPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AllEnquiriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="py-24 text-center text-[#718096]">
+        <div className="w-6 h-6 border-2 border-[#153650] border-t-transparent rounded-none animate-spin mx-auto mb-3" />
+        <p className="text-xs font-semibold tracking-wide uppercase font-mono">Loading enquiries...</p>
+      </div>
+    }>
+      <AllEnquiriesContent />
+    </Suspense>
   );
 }
 

@@ -67,6 +67,24 @@ export default function AdminSidebar({
   mobileOpen,
   onCloseMobile,
 }: AdminSidebarProps) {
+  return (
+    <React.Suspense fallback={null}>
+      <AdminSidebarInner
+        collapsed={collapsed}
+        onToggleCollapse={onToggleCollapse}
+        mobileOpen={mobileOpen}
+        onCloseMobile={onCloseMobile}
+      />
+    </React.Suspense>
+  );
+}
+
+function AdminSidebarInner({
+  collapsed,
+  onToggleCollapse,
+  mobileOpen,
+  onCloseMobile,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { currentUser } = useCrm();
