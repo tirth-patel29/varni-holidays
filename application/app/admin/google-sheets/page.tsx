@@ -42,9 +42,11 @@ export default function GoogleSheetsAdminPage() {
     setLoading(true);
     try {
       const res = await getGoogleSheetsStatusAction();
-      setData(res);
-      setSpreadsheetIdInput(res.config.spreadsheetId);
-      setWebhookUrlInput(res.config.webhookUrl || '');
+      if (res) {
+        setData(res);
+        setSpreadsheetIdInput(res.config?.spreadsheetId || '');
+        setWebhookUrlInput(res.config?.webhookUrl || '');
+      }
     } catch (err) {
       console.error('Failed to load Google Sheets config:', err);
     } finally {
@@ -191,12 +193,14 @@ export default function GoogleSheetsAdminPage() {
                 Connection Status
               </span>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className={`w-2 h-2 ${cfg?.enabled ? 'bg-[#168653]' : 'bg-[#D54747]'}`} />
+                <span className={`w-2 h-2 ${cfg?.status === 'CONNECTED' ? 'bg-[#168653]' : 'bg-[#D54747]'}`} />
                 <span className="text-sm font-bold text-[#153650] font-mono">
-                  {cfg?.enabled ? 'CONNECTED' : 'DISCONNECTED'}
+                  {cfg?.status === 'CONNECTED' ? 'CONNECTED' : (cfg?.status || 'DISCONNECTED')}
                 </span>
               </div>
-              <span className="text-[10px] text-[#718096] mt-1 block">Mode: {cfg?.mode || 'Apps Script Webhook'}</span>
+              <span className="text-[10px] text-[#718096] mt-1 block">
+                Mode: {data.isLive ? 'Google Service Account' : (cfg?.webhookUrl ? 'Apps Script Webhook' : 'Simulation Mirror')}
+              </span>
             </div>
 
             <div className="bg-[#FFFFFF] border border-[#E5E8ED] p-4 rounded-none shadow-xs">
@@ -204,7 +208,7 @@ export default function GoogleSheetsAdminPage() {
                 Pending Outbox
               </span>
               <div className="text-xl font-bold text-[#153650] mt-1.5 font-headline tabular-nums">
-                {data.outbox.pending} jobs
+                {data.outbox?.pending ?? data.counts?.pending ?? 0} jobs
               </div>
               <span className="text-[10px] text-[#718096] mt-1 block">Awaiting batch delivery</span>
             </div>
@@ -214,7 +218,7 @@ export default function GoogleSheetsAdminPage() {
                 Synced Records
               </span>
               <div className="text-xl font-bold text-[#168653] mt-1.5 font-headline tabular-nums">
-                {data.outbox.completed} jobs
+                {data.outbox?.completed ?? data.counts?.completed ?? 0} jobs
               </div>
               <span className="text-[10px] text-[#168653] font-semibold mt-1 block">Successfully reconciled</span>
             </div>
@@ -224,9 +228,9 @@ export default function GoogleSheetsAdminPage() {
                 Failed Attempts
               </span>
               <div className="text-xl font-bold text-[#D54747] mt-1.5 font-headline tabular-nums">
-                {data.outbox.failed} jobs
+                {data.outbox?.failed ?? data.counts?.failed ?? 0} jobs
               </div>
-              {data.outbox.failed > 0 ? (
+              {(data.outbox?.failed ?? data.counts?.failed ?? 0) > 0 ? (
                 <button
                   onClick={handleRetryFailed}
                   className="text-[10px] font-bold text-[#D54747] hover:underline mt-1 block"
@@ -313,33 +317,66 @@ export default function GoogleSheetsAdminPage() {
           {showAppsScript && (
             <div className="mt-4 p-4 bg-[#F8FAFC] border border-[#E5E8ED] rounded-none">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#153650] block font-mono mb-2">
-                Google Apps Script Webhook Handler (Code.gs)
+                Production-Ready Google Apps Script Webhook Handler (Code.gs)
               </span>
-              <pre className="text-[10px] font-mono text-[#172B45] bg-[#FFFFFF] p-3 border border-[#E5E8ED] overflow-x-auto crm-scrollbar max-h-48 leading-relaxed">
+              <p className="text-[11px] text-[#718096] mb-2">
+                Paste this into your Google Sheet (Extensions → Apps Script → Code.gs), deploy as Web App (Execute as: Me, Who has access: Anyone), and paste the Web App URL above.
+              </p>
+              <pre className="text-[10px] font-mono text-[#172B45] bg-[#FFFFFF] p-3 border border-[#E5E8ED] overflow-x-auto crm-scrollbar max-h-60 leading-relaxed">
 {`function doPost(e) {
+  var lock = LockService.getScriptLock();
   try {
-    var data = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("All Leads");
-    if (!sheet) {
-      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("All Leads");
+    lock.waitLock(30000);
+    var payload = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (payload.action === "FULL_RECONCILE") {
+      var tabNames = ["ALL_LEADS", "QUOTATIONS", "FOLLOW_UPS", "BOOKINGS", "BUSINESS_SUMMARY"];
+      for (var i = 0; i < tabNames.length; i++) {
+        var tName = tabNames[i];
+        var rows = payload.tabs[tName];
+        if (!rows || !rows.length) continue;
+        var sheet = ss.getSheetByName(tName) || ss.insertSheet(tName);
+        sheet.clearContents();
+        var numCols = rows[0].length;
+        sheet.getRange(1, 1, rows.length, numCols).setValues(rows);
+        sheet.getRange(1, 1, 1, numCols).setBackground("#002037").setFontColor("#FFF").setFontWeight("bold");
+        sheet.setFrozenRows(1);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Reconciled" })).setMimeType(ContentService.MimeType.JSON);
     }
-    // Append sanitized row
-    sheet.appendRow([
-      data.referenceId,
-      data.createdAt,
-      data.customerName,
-      data.phone,
-      data.email,
-      data.serviceType,
-      data.stage,
-      data.quotedPrice || "-"
-    ]);
-    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
+
+    if (payload.action === "UPSERT_ROW") {
+      var sheet = ss.getSheetByName(payload.tabName) || ss.insertSheet(payload.tabName);
+      var lastRow = sheet.getLastRow();
+      var rowIndex = -1;
+      if (lastRow > 1) {
+        var colA = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+        for (var i = 0; i < colA.length; i++) {
+          if (String(colA[i][0]).trim() === String(payload.primaryKey).trim()) {
+            rowIndex = i + 2;
+            break;
+          }
+        }
+      }
+      if (rowIndex > 0) {
+        sheet.getRange(rowIndex, 1, 1, payload.rowValues.length).setValues([payload.rowValues]);
+      } else {
+        sheet.appendRow(payload.rowValues);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, op: rowIndex > 0 ? "UPDATE" : "INSERT" })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ success: true, status: "READY" })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({ success: true, service: "Varni Holidays Webhook", status: "READY" })).setMimeType(ContentService.MimeType.JSON);
 }`}
               </pre>
             </div>

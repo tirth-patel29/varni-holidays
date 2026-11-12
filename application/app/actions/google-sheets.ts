@@ -5,30 +5,66 @@ import { googleSheetsSync, simulatedSheets } from '@/lib/integrations/google-she
 import { GoogleSheetsConfig } from '@/lib/crm/types';
 
 export async function getGoogleSheetsStatusAction() {
-  const config = crmRepo.getGoogleSheetsConfig();
-  const allJobs = crmRepo.getSyncJobs(50);
-  const pendingJobs = allJobs.filter((j) => j.status === 'PENDING');
-  const failedJobs = allJobs.filter((j) => j.status === 'FAILED');
-  const completedJobs = allJobs.filter((j) => j.status === 'COMPLETED');
-  const isLive = googleSheetsSync.isLiveCredentialsConfigured();
+  try {
+    const config = crmRepo.getGoogleSheetsConfig() || {
+      spreadsheetId: '',
+      spreadsheetUrl: '',
+      webhookUrl: '',
+      status: 'DISCONNECTED',
+      lastSyncedAt: null,
+      totalSyncedEvents: 0,
+      autoSync: true,
+      syncIntervalMinutes: 5,
+    };
+    const allJobs = crmRepo.getSyncJobs ? (crmRepo.getSyncJobs(50) || []) : [];
+    const pendingJobs = allJobs.filter((j) => j?.status === 'PENDING');
+    const failedJobs = allJobs.filter((j) => j?.status === 'FAILED');
+    const completedJobs = allJobs.filter((j) => j?.status === 'COMPLETED');
+    const isLive = Boolean(googleSheetsSync?.isLiveCredentialsConfigured?.());
 
-  return {
-    config,
-    isLive,
-    counts: {
-      total: allJobs.length,
-      pending: pendingJobs.length,
-      failed: failedJobs.length,
-      completed: completedJobs.length,
-    },
-    recentJobs: allJobs.slice(0, 20),
-    simulatedStats: {
-      leadsCount: simulatedSheets.tabs.ALL_LEADS.rows.length,
-      quotationsCount: simulatedSheets.tabs.QUOTATIONS.rows.length,
-      followUpsCount: simulatedSheets.tabs.FOLLOW_UPS.rows.length,
-      bookingsCount: simulatedSheets.tabs.BOOKINGS.rows.length,
-    },
-  };
+    return {
+      config,
+      isLive,
+      counts: {
+        total: allJobs.length,
+        pending: pendingJobs.length,
+        failed: failedJobs.length,
+        completed: completedJobs.length,
+      },
+      outbox: {
+        total: allJobs.length,
+        pending: pendingJobs.length,
+        failed: failedJobs.length,
+        completed: completedJobs.length,
+      },
+      recentJobs: allJobs.slice(0, 20),
+      simulatedStats: {
+        leadsCount: simulatedSheets?.tabs?.ALL_LEADS?.rows?.length ?? 0,
+        quotationsCount: simulatedSheets?.tabs?.QUOTATIONS?.rows?.length ?? 0,
+        followUpsCount: simulatedSheets?.tabs?.FOLLOW_UPS?.rows?.length ?? 0,
+        bookingsCount: simulatedSheets?.tabs?.BOOKINGS?.rows?.length ?? 0,
+      },
+    };
+  } catch (err: any) {
+    console.error('getGoogleSheetsStatusAction error:', err);
+    return {
+      config: {
+        spreadsheetId: '',
+        spreadsheetUrl: '',
+        webhookUrl: '',
+        status: 'ERROR' as const,
+        lastSyncedAt: null,
+        totalSyncedEvents: 0,
+        autoSync: false,
+        syncIntervalMinutes: 5,
+      },
+      isLive: false,
+      counts: { total: 0, pending: 0, failed: 0, completed: 0 },
+      outbox: { total: 0, pending: 0, failed: 0, completed: 0 },
+      recentJobs: [],
+      simulatedStats: { leadsCount: 0, quotationsCount: 0, followUpsCount: 0, bookingsCount: 0 },
+    };
+  }
 }
 
 export async function processSyncQueueAction() {
