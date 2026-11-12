@@ -195,7 +195,7 @@ export default function VarniLoader() {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 50,
+        zIndex: 99999,
         overflow: 'visible',
         pointerEvents: 'none',
       }}
@@ -239,20 +239,20 @@ export default function VarniLoader() {
           </mask>
         </defs>
 
-        {/* 60000x60000 dark canvas with dynamic hole mask */}
+        {/* 60000x60000 brand canvas (#002037 Varni Primary Navy) with dynamic hole mask */}
         <rect
           x="-30000"
           y="-30000"
           width="60000"
           height="60000"
-          fill="#161616"
+          fill="#002037"
           mask="url(#hole)"
         />
 
         {/* Typographic text layers */}
         <g ref={layersRef} id="layers" style={{ transition: 'opacity .35s ease' }}>
-          {/* Dim text baseline (#444) */}
-          <g fill="#444" style={{ fontFamily: "'Archivo Black', Impact, 'Arial Black', sans-serif" }}>
+          {/* Dim text baseline in rich Varni primary-container navy (#153650) */}
+          <g fill="#153650" style={{ fontFamily: "'Archivo Black', Impact, 'Arial Black', sans-serif" }}>
             <text id="t1" x="30" y="300" fontSize="357" textLength="1340" lengthAdjust="spacingAndGlyphs">
               VARNI
             </text>
