@@ -23,7 +23,7 @@ export default function HomePage() {
           {/* Left Column: Editorial Storytelling */}
           <div className="lg:col-span-5 flex flex-col justify-center">
             {/* Greeting Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container shadow-clay-card w-fit mb-4">
+            <div className="rise inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container shadow-clay-card w-fit mb-4">
               <span className="text-lg">✨</span>
               <span className="text-xs font-bold text-primary tracking-wide">
                 Namaste, Explorer
@@ -31,17 +31,17 @@ export default function HomePage() {
               <span className="w-1.5 h-1.5 rounded-full bg-gold-deep animate-pulse ml-1" />
             </div>
 
-            <h1 className="font-headline text-3xl sm:text-5xl lg:text-[54px] font-bold text-primary leading-tight tracking-tight mb-4">
+            <h1 className="rise font-headline text-3xl sm:text-5xl lg:text-[54px] font-bold text-primary leading-tight tracking-tight mb-4">
               Your Next Journey <br className="hidden sm:inline" />
               <span className="italic font-normal text-secondary font-serif">Begins Here</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-on-surface-variant mb-6 max-w-xl leading-relaxed">
+            <p className="rise b text-sm sm:text-base text-on-surface-variant mb-6 max-w-xl leading-relaxed">
               Discover extraordinary destinations, thoughtfully curated itineraries, and seamless international escapes crafted with genuine Gujarat hospitality from Anand.
             </p>
 
             {/* CTA Cluster */}
-            <div className="flex flex-wrap items-center gap-3 mb-8">
+            <div className="rise b flex flex-wrap items-center gap-3 mb-8">
               <a
                 href="#packages"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-primary text-white text-xs font-bold clay-pill-button hover:bg-primary-container"
