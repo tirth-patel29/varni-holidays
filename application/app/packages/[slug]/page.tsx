@@ -45,3 +45,4 @@ export default function PackageDetailPage({ params }: PackagePageProps) {
 
   return <DestinationPackageView packageItem={pkg} theme={theme} />;
 }
+

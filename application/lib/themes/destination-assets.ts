@@ -177,3 +177,4 @@ export function getDestinationAssets(destinationId: string): DestinationAssetBun
   }
   return DESTINATION_ASSETS.kerala;
 }
+

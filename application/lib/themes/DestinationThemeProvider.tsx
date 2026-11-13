@@ -8,13 +8,16 @@ interface DestinationThemeContextValue {
   theme: DestinationTheme;
 }
 
-const DestinationThemeContext = createContext<DestinationThemeContextValue>({
-  theme: KERALA_THEME,
-});
+const DestinationThemeContext = createContext<DestinationThemeContextValue | null>(null);
 
 export function useDestinationTheme(): DestinationTheme {
   const context = useContext(DestinationThemeContext);
-  return context.theme;
+  return context ? context.theme : KERALA_THEME;
+}
+
+export function useDestinationThemeSafe(): DestinationTheme | null {
+  const context = useContext(DestinationThemeContext);
+  return context ? context.theme : null;
 }
 
 interface DestinationThemeProviderProps {
@@ -54,10 +57,9 @@ export function DestinationThemeProvider({
   return (
     <DestinationThemeContext.Provider value={{ theme }}>
       <div
-        className={`destination-theme-scope w-full min-h-screen transition-colors duration-500 ${className}`}
+        className={`destination-theme-scope w-full min-h-screen relative bg-transparent transition-colors duration-500 ${className}`}
         style={{
           ...cssVariables,
-          backgroundColor: theme.colors.surface,
           color: theme.colors.textSecondary,
         }}
         data-destination-theme={theme.id}
