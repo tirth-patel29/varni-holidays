@@ -154,8 +154,10 @@ function AdminSidebarInner({
       id: 'communications',
       label: 'Communications',
       icon: MessageSquare,
-      defaultHref: '/admin/communications',
+      defaultHref: '/admin/communications/visa',
       children: [
+        { label: 'Visa Management', href: '/admin/communications/visa' },
+        { label: 'Visa Email Templates', href: '/admin/communications/visa/templates' },
         { label: 'Communication History', href: '/admin/communications' },
         { label: 'Email Records', href: '/admin/communications/emails' },
         { label: 'WhatsApp Records', href: '/admin/communications/whatsapp' },

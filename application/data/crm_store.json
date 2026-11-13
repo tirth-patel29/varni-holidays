@@ -90,6 +90,19 @@
       "isDeleted": false,
       "createdAt": "2026-11-13T05:02:53.794Z",
       "updatedAt": "2026-11-13T05:02:53.794Z"
+    },
+    {
+      "id": "cust-1794553623629-205",
+      "fullName": "Jitendrabhai Shah",
+      "email": "jitendra.shah.test@example.com",
+      "phoneCountryCode": "+91",
+      "phoneNumber": "+91 98980 11223",
+      "normalizedPhone": "+91919898011223",
+      "normalizedEmail": "jitendra.shah.test@example.com",
+      "duplicateWarning": false,
+      "isDeleted": false,
+      "createdAt": "2026-11-13T07:07:03.629Z",
+      "updatedAt": "2026-11-13T07:07:03.630Z"
     }
   ],
   "leads": [
@@ -231,6 +244,186 @@
     }
   ],
   "activities": [
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: VISA_APPROVED",
+      "description": "Application VH-VIS-202611-0003 (Jitendrabhai Shah) transitioned to VISA_APPROVED. Notes: Passport received with approved visa vignette sticker",
+      "metadata": {
+        "visaApplicationId": "visa-1794553922310-83",
+        "applicationReference": "VH-VIS-202611-0003",
+        "status": "VISA_APPROVED"
+      },
+      "id": "act-1794553922319-4",
+      "createdAt": "2026-11-13T07:12:02.319Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: FILE_SUBMITTED",
+      "description": "Application VH-VIS-202611-0003 (Jitendrabhai Shah) transitioned to FILE_SUBMITTED. Notes: File lodged on UKVI portal",
+      "metadata": {
+        "visaApplicationId": "visa-1794553922310-83",
+        "applicationReference": "VH-VIS-202611-0003",
+        "status": "FILE_SUBMITTED"
+      },
+      "id": "act-1794553922316-424",
+      "createdAt": "2026-11-13T07:12:02.316Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: DOCUMENTS_RECEIVED",
+      "description": "Application VH-VIS-202611-0003 (Jitendrabhai Shah) transitioned to DOCUMENTS_RECEIVED. Notes: Original passports and ITR files collected at Anand HQ",
+      "metadata": {
+        "visaApplicationId": "visa-1794553922310-83",
+        "applicationReference": "VH-VIS-202611-0003",
+        "status": "DOCUMENTS_RECEIVED"
+      },
+      "id": "act-1794553922313-915",
+      "createdAt": "2026-11-13T07:12:02.313Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Application Registered: VH-VIS-202611-0003",
+      "description": "Inquiry for United Kingdom (Standard Visitor Visa (6 Months)) registered for Jitendrabhai Shah",
+      "metadata": {
+        "visaApplicationId": "visa-1794553922310-83",
+        "applicationReference": "VH-VIS-202611-0003",
+        "status": "INQUIRY_RECEIVED"
+      },
+      "id": "act-1794553922310-685",
+      "createdAt": "2026-11-13T07:12:02.310Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: VISA_APPROVED",
+      "description": "Application VH-VIS-202611-0002 (Jitendrabhai Shah) transitioned to VISA_APPROVED. Notes: Passport received with approved visa vignette sticker",
+      "metadata": {
+        "visaApplicationId": "visa-1794553656868-56",
+        "applicationReference": "VH-VIS-202611-0002",
+        "status": "VISA_APPROVED"
+      },
+      "id": "act-1794553656876-504",
+      "createdAt": "2026-11-13T07:07:36.876Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: FILE_SUBMITTED",
+      "description": "Application VH-VIS-202611-0002 (Jitendrabhai Shah) transitioned to FILE_SUBMITTED. Notes: File lodged on UKVI portal",
+      "metadata": {
+        "visaApplicationId": "visa-1794553656868-56",
+        "applicationReference": "VH-VIS-202611-0002",
+        "status": "FILE_SUBMITTED"
+      },
+      "id": "act-1794553656874-346",
+      "createdAt": "2026-11-13T07:07:36.874Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: DOCUMENTS_RECEIVED",
+      "description": "Application VH-VIS-202611-0002 (Jitendrabhai Shah) transitioned to DOCUMENTS_RECEIVED. Notes: Original passports and ITR files collected at Anand HQ",
+      "metadata": {
+        "visaApplicationId": "visa-1794553656868-56",
+        "applicationReference": "VH-VIS-202611-0002",
+        "status": "DOCUMENTS_RECEIVED"
+      },
+      "id": "act-1794553656872-131",
+      "createdAt": "2026-11-13T07:07:36.872Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Application Registered: VH-VIS-202611-0002",
+      "description": "Inquiry for United Kingdom (Standard Visitor Visa (6 Months)) registered for Jitendrabhai Shah",
+      "metadata": {
+        "visaApplicationId": "visa-1794553656868-56",
+        "applicationReference": "VH-VIS-202611-0002",
+        "status": "INQUIRY_RECEIVED"
+      },
+      "id": "act-1794553656869-64",
+      "createdAt": "2026-11-13T07:07:36.869Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: VISA_APPROVED",
+      "description": "Application VH-VIS-202611-0001 (Jitendrabhai Shah) transitioned to VISA_APPROVED. Notes: Passport received with approved visa vignette sticker",
+      "metadata": {
+        "visaApplicationId": "visa-1794553623632-502",
+        "applicationReference": "VH-VIS-202611-0001",
+        "status": "VISA_APPROVED"
+      },
+      "id": "act-1794553623641-429",
+      "createdAt": "2026-11-13T07:07:03.641Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: FILE_SUBMITTED",
+      "description": "Application VH-VIS-202611-0001 (Jitendrabhai Shah) transitioned to FILE_SUBMITTED. Notes: File lodged on UKVI portal",
+      "metadata": {
+        "visaApplicationId": "visa-1794553623632-502",
+        "applicationReference": "VH-VIS-202611-0001",
+        "status": "FILE_SUBMITTED"
+      },
+      "id": "act-1794553623638-253",
+      "createdAt": "2026-11-13T07:07:03.638Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Status: DOCUMENTS_RECEIVED",
+      "description": "Application VH-VIS-202611-0001 (Jitendrabhai Shah) transitioned to DOCUMENTS_RECEIVED. Notes: Original passports and ITR files collected at Anand HQ",
+      "metadata": {
+        "visaApplicationId": "visa-1794553623632-502",
+        "applicationReference": "VH-VIS-202611-0001",
+        "status": "DOCUMENTS_RECEIVED"
+      },
+      "id": "act-1794553623635-471",
+      "createdAt": "2026-11-13T07:07:03.635Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-ananya-joshi-visa",
+      "userName": "Ananya Joshi",
+      "type": "STATUS_CHANGE",
+      "title": "Visa Application Registered: VH-VIS-202611-0001",
+      "description": "Inquiry for United Kingdom (Standard Visitor Visa (6 Months)) registered for Jitendrabhai Shah",
+      "metadata": {
+        "visaApplicationId": "visa-1794553623632-502",
+        "applicationReference": "VH-VIS-202611-0001",
+        "status": "INQUIRY_RECEIVED"
+      },
+      "id": "act-1794553623632-167",
+      "createdAt": "2026-11-13T07:07:03.632Z"
+    },
     {
       "leadId": "",
       "userId": "usr-neel-patel-superadmin",
@@ -1118,6 +1311,26 @@
   "bookings": [],
   "auditLogs": [
     {
+      "userId": "usr-ananya-joshi-visa",
+      "userEmail": "Ananya Joshi",
+      "action": "COMMUNICATION_EMAIL_SENT",
+      "entityType": "COMMUNICATION",
+      "entityId": "com-1794553922328-886",
+      "details": "Sent EMAIL to Jitendrabhai Shah (dhaval.patel@example.com) - VISA_APPROVED. Status: SENT",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794553922329-45",
+      "createdAt": "2026-11-13T07:12:02.329Z"
+    },
+    {
+      "action": "COMMUNICATION_EMAIL_undefined",
+      "entityType": "COMMUNICATION",
+      "entityId": "com-1794553656884-242",
+      "details": "Sent EMAIL to undefined (undefined) - undefined. Status: undefined",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794553656885-428",
+      "createdAt": "2026-11-13T07:07:36.885Z"
+    },
+    {
       "userId": "usr-neel-patel-superadmin",
       "userEmail": "neel@varniholidays.com",
       "action": "QUOTATION_SENT",
@@ -1634,5 +1847,383 @@
   },
   "bookingServices": [],
   "payments": [],
-  "communicationLogs": []
+  "communicationLogs": [
+    {
+      "customerId": "",
+      "customerName": "Jitendrabhai Shah",
+      "customerContact": "dhaval.patel@example.com",
+      "senderUserId": "usr-ananya-joshi-visa",
+      "senderUserName": "Ananya Joshi",
+      "templateKey": "CUSTOM_MESSAGE",
+      "templateTitle": "VISA_APPROVED",
+      "channel": "EMAIL",
+      "subject": "Congratulations! Your UK Visa Has Been Approved – Varni Holidays",
+      "content": "Dear Jitendrabhai Shah,\n\nCongratulations from the entire team at Varni Holidays!\n\nWe are thrilled to share the wonderful news: your visa for United Kingdom (Standard Visitor Visa (6 Months)) has been officially APPROVED!\n\nApproval Highlights:\n• Reference Number: VH-VIS-202611-0003\n• Official Reference: UKVI-GWF-9928172\n• Destination: United Kingdom\n• Visa Category: Standard Visitor Visa (6 Months)\n• Decision Date: 13/11/2026\n• Primary Applicant: Jitendrabhai Shah\n\nNext Steps & Travel Readiness:\n1. Document Verification: Please inspect your approved visa document (attached herewith or available at our Anand office) to confirm exact spelling of name, passport number, validity dates, and entry category.\n2. Passport Collection: If physical stamping was conducted, your passport is safely stored in our Anand vault and ready for pickup during office hours.\n3. Travel Insurance & Flights: If you require flight ticketing, hotel vouchers, or comprehensive overseas travel insurance, your Varni travel counselor is ready to assist.\n\nSpecial Note from Counselor:\nYour passport is ready for pickup at our Anand office.\n\n\nThank you for choosing Varni Holidays as your trusted travel partner. We wish you a delightful and safe journey ahead!\n\nWarmest congratulations,\nAnanya Joshi\nVisa Operations Desk | VARNI HOLIDAYS\nOffice: 317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Vivekanand Wadi / Sardarganj, Anand, Gujarat 388120 (Near Panchal Hall)\nPhone: +91 63570 50505",
+      "deliveryStatus": "SENT",
+      "providerRef": "sim-1794553922328-266",
+      "id": "com-1794553922328-886",
+      "createdAt": "2026-11-13T07:12:02.328Z"
+    },
+    {
+      "customerId": "",
+      "leadId": "",
+      "channel": "EMAIL",
+      "direction": "OUTBOUND",
+      "recipient": "dhaval.patel@example.com",
+      "subject": "Congratulations! Your UK Visa Has Been Approved – Varni Holidays",
+      "body": "Dear Jitendrabhai Shah,\n\nCongratulations from the entire team at Varni Holidays!\n\nWe are thrilled to share the wonderful news: your visa for United Kingdom (Standard Visitor Visa (6 Months)) has been officially APPROVED!\n\nApproval Highlights:\n• Reference Number: VH-VIS-202611-0002\n• Official Reference: UKVI-GWF-9928172\n• Destination: United Kingdom\n• Visa Category: Standard Visitor Visa (6 Months)\n• Decision Date: 13/11/2026\n• Primary Applicant: Jitendrabhai Shah\n\nNext Steps & Travel Readiness:\n1. Document Verification: Please inspect your approved visa document (attached herewith or available at our Anand office) to confirm exact spelling of name, passport number, validity dates, and entry category.\n2. Passport Collection: If physical stamping was conducted, your passport is safely stored in our Anand vault and ready for pickup during office hours.\n3. Travel Insurance & Flights: If you require flight ticketing, hotel vouchers, or comprehensive overseas travel insurance, your Varni travel counselor is ready to assist.\n\nSpecial Note from Counselor:\nYour passport is ready for pickup at our Anand office.\n\n\nThank you for choosing Varni Holidays as your trusted travel partner. We wish you a delightful and safe journey ahead!\n\nWarmest congratulations,\nAnanya Joshi\nVisa Operations Desk | VARNI HOLIDAYS\nOffice: undefined, Anand, Gujarat undefined\nPhone: [object Object]",
+      "status": "SENT",
+      "userId": "usr-ananya-joshi-visa",
+      "metadata": {
+        "visaApplicationId": "visa-1794553656868-56",
+        "applicationReference": "VH-VIS-202611-0002",
+        "templateCode": "VISA_APPROVED",
+        "resendMessageId": "sim-1794553656884-337"
+      },
+      "id": "com-1794553656884-242",
+      "createdAt": "2026-11-13T07:07:36.884Z"
+    }
+  ],
+  "visaApplications": [
+    {
+      "id": "visa-1794553623632-502",
+      "applicationReference": "VH-VIS-202611-0001",
+      "leadId": null,
+      "customerId": "cust-1794553623629-205",
+      "customerName": "Jitendrabhai Shah",
+      "customerEmail": "jitendra.shah.test@example.com",
+      "customerPhone": "+91 98980 11223",
+      "assignedUserId": "usr-ananya-joshi-visa",
+      "assignedUserName": "Ananya Joshi",
+      "assignedUserEmail": "ananya@varniholidays.com",
+      "assignedUserPhone": "+91 94260 45678",
+      "destinationCountry": "United Kingdom",
+      "visaType": "Standard Visitor Visa (6 Months)",
+      "visaCategory": "TOURIST",
+      "applicantCount": 2,
+      "travelPlannedDate": "2026-12-15",
+      "stayDurationDays": 20,
+      "status": "VISA_APPROVED",
+      "officialReferenceNo": "UKVI-GWF-9928172",
+      "inquiryDate": "2026-11-13T07:07:03.632Z",
+      "documentReceivedDate": "2026-11-13T07:07:03.635Z",
+      "submissionDate": "2026-11-13T07:07:03.638Z",
+      "decisionDate": "2026-11-13T07:07:03.641Z",
+      "completionDate": null,
+      "internalNotes": "Family visiting London for winter holidays. All financial proofs available.",
+      "specialInstructions": "",
+      "isDeleted": false,
+      "createdAt": "2026-11-13T07:07:03.632Z",
+      "updatedAt": "2026-11-13T07:07:03.641Z"
+    },
+    {
+      "id": "visa-1794553656868-56",
+      "applicationReference": "VH-VIS-202611-0002",
+      "leadId": null,
+      "customerId": "cust-1794553623629-205",
+      "customerName": "Jitendrabhai Shah",
+      "customerEmail": "jitendra.shah.test@example.com",
+      "customerPhone": "+91 98980 11223",
+      "assignedUserId": "usr-ananya-joshi-visa",
+      "assignedUserName": "Ananya Joshi",
+      "assignedUserEmail": "ananya@varniholidays.com",
+      "assignedUserPhone": "+91 94260 45678",
+      "destinationCountry": "United Kingdom",
+      "visaType": "Standard Visitor Visa (6 Months)",
+      "visaCategory": "TOURIST",
+      "applicantCount": 2,
+      "travelPlannedDate": "2026-12-15",
+      "stayDurationDays": 20,
+      "status": "VISA_APPROVED",
+      "officialReferenceNo": "UKVI-GWF-9928172",
+      "inquiryDate": "2026-11-13T07:07:36.868Z",
+      "documentReceivedDate": "2026-11-13T07:07:36.872Z",
+      "submissionDate": "2026-11-13T07:07:36.874Z",
+      "decisionDate": "2026-11-13T07:07:36.876Z",
+      "completionDate": null,
+      "internalNotes": "Family visiting London for winter holidays. All financial proofs available.",
+      "specialInstructions": "",
+      "isDeleted": false,
+      "createdAt": "2026-11-13T07:07:36.868Z",
+      "updatedAt": "2026-11-13T07:07:36.876Z"
+    },
+    {
+      "id": "visa-1794553922310-83",
+      "applicationReference": "VH-VIS-202611-0003",
+      "leadId": null,
+      "customerId": "cust-1794553623629-205",
+      "customerName": "Jitendrabhai Shah",
+      "customerEmail": "jitendra.shah.test@example.com",
+      "customerPhone": "+91 98980 11223",
+      "assignedUserId": "usr-ananya-joshi-visa",
+      "assignedUserName": "Ananya Joshi",
+      "assignedUserEmail": "ananya@varniholidays.com",
+      "assignedUserPhone": "+91 94260 45678",
+      "destinationCountry": "United Kingdom",
+      "visaType": "Standard Visitor Visa (6 Months)",
+      "visaCategory": "TOURIST",
+      "applicantCount": 2,
+      "travelPlannedDate": "2026-12-15",
+      "stayDurationDays": 20,
+      "status": "VISA_APPROVED",
+      "officialReferenceNo": "UKVI-GWF-9928172",
+      "inquiryDate": "2026-11-13T07:12:02.309Z",
+      "documentReceivedDate": "2026-11-13T07:12:02.313Z",
+      "submissionDate": "2026-11-13T07:12:02.316Z",
+      "decisionDate": "2026-11-13T07:12:02.319Z",
+      "completionDate": null,
+      "internalNotes": "Family visiting London for winter holidays. All financial proofs available.",
+      "specialInstructions": "",
+      "isDeleted": false,
+      "createdAt": "2026-11-13T07:12:02.309Z",
+      "updatedAt": "2026-11-13T07:12:02.319Z"
+    }
+  ],
+  "visaStatusHistory": [
+    {
+      "id": "vsh-1794553623632-995",
+      "visaApplicationId": "visa-1794553623632-502",
+      "fromStatus": null,
+      "toStatus": "INQUIRY_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Family visiting London for winter holidays. All financial proofs available.",
+      "createdAt": "2026-11-13T07:07:03.632Z"
+    },
+    {
+      "id": "vsh-1794553623635-963",
+      "visaApplicationId": "visa-1794553623632-502",
+      "fromStatus": "INQUIRY_RECEIVED",
+      "toStatus": "DOCUMENTS_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Original passports and ITR files collected at Anand HQ",
+      "createdAt": "2026-11-13T07:07:03.635Z"
+    },
+    {
+      "id": "vsh-1794553623638-566",
+      "visaApplicationId": "visa-1794553623632-502",
+      "fromStatus": "DOCUMENTS_RECEIVED",
+      "toStatus": "FILE_SUBMITTED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "File lodged on UKVI portal",
+      "createdAt": "2026-11-13T07:07:03.638Z"
+    },
+    {
+      "id": "vsh-1794553623641-14",
+      "visaApplicationId": "visa-1794553623632-502",
+      "fromStatus": "FILE_SUBMITTED",
+      "toStatus": "VISA_APPROVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Passport received with approved visa vignette sticker",
+      "createdAt": "2026-11-13T07:07:03.641Z"
+    },
+    {
+      "id": "vsh-1794553656868-690",
+      "visaApplicationId": "visa-1794553656868-56",
+      "fromStatus": null,
+      "toStatus": "INQUIRY_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Family visiting London for winter holidays. All financial proofs available.",
+      "createdAt": "2026-11-13T07:07:36.868Z"
+    },
+    {
+      "id": "vsh-1794553656872-86",
+      "visaApplicationId": "visa-1794553656868-56",
+      "fromStatus": "INQUIRY_RECEIVED",
+      "toStatus": "DOCUMENTS_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Original passports and ITR files collected at Anand HQ",
+      "createdAt": "2026-11-13T07:07:36.872Z"
+    },
+    {
+      "id": "vsh-1794553656874-11",
+      "visaApplicationId": "visa-1794553656868-56",
+      "fromStatus": "DOCUMENTS_RECEIVED",
+      "toStatus": "FILE_SUBMITTED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "File lodged on UKVI portal",
+      "createdAt": "2026-11-13T07:07:36.874Z"
+    },
+    {
+      "id": "vsh-1794553656876-547",
+      "visaApplicationId": "visa-1794553656868-56",
+      "fromStatus": "FILE_SUBMITTED",
+      "toStatus": "VISA_APPROVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Passport received with approved visa vignette sticker",
+      "createdAt": "2026-11-13T07:07:36.876Z"
+    },
+    {
+      "id": "vsh-1794553922310-689",
+      "visaApplicationId": "visa-1794553922310-83",
+      "fromStatus": null,
+      "toStatus": "INQUIRY_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Family visiting London for winter holidays. All financial proofs available.",
+      "createdAt": "2026-11-13T07:12:02.309Z"
+    },
+    {
+      "id": "vsh-1794553922313-748",
+      "visaApplicationId": "visa-1794553922310-83",
+      "fromStatus": "INQUIRY_RECEIVED",
+      "toStatus": "DOCUMENTS_RECEIVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Original passports and ITR files collected at Anand HQ",
+      "createdAt": "2026-11-13T07:12:02.313Z"
+    },
+    {
+      "id": "vsh-1794553922316-576",
+      "visaApplicationId": "visa-1794553922310-83",
+      "fromStatus": "DOCUMENTS_RECEIVED",
+      "toStatus": "FILE_SUBMITTED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "File lodged on UKVI portal",
+      "createdAt": "2026-11-13T07:12:02.316Z"
+    },
+    {
+      "id": "vsh-1794553922319-90",
+      "visaApplicationId": "visa-1794553922310-83",
+      "fromStatus": "FILE_SUBMITTED",
+      "toStatus": "VISA_APPROVED",
+      "changedByUserId": "usr-ananya-joshi-visa",
+      "changedByName": "Ananya Joshi",
+      "notes": "Passport received with approved visa vignette sticker",
+      "createdAt": "2026-11-13T07:12:02.319Z"
+    }
+  ],
+  "visaDocuments": [
+    {
+      "visaApplicationId": "visa-1794553623632-502",
+      "documentType": "PASSPORT_FRONT",
+      "fileName": "Jitendra_Shah_Passport_Front.pdf",
+      "fileSize": 358400,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": true,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553623644-670",
+      "uploadedAt": "2026-11-13T07:07:03.644Z",
+      "verifiedAt": "2026-11-13T07:07:03.646Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553623632-502",
+      "documentType": "APPROVED_VISA",
+      "fileName": "Official_UK_Visa_Approval.pdf",
+      "fileSize": 0,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": false,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553623648-319",
+      "uploadedAt": "2026-11-13T07:07:03.648Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553656868-56",
+      "documentType": "PASSPORT_FRONT",
+      "fileName": "Jitendra_Shah_Passport_Front.pdf",
+      "fileSize": 358400,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": true,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553656879-617",
+      "uploadedAt": "2026-11-13T07:07:36.879Z",
+      "verifiedAt": "2026-11-13T07:07:36.880Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553656868-56",
+      "documentType": "APPROVED_VISA",
+      "fileName": "Official_UK_Visa_Approval.pdf",
+      "fileSize": 0,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": false,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553656882-607",
+      "uploadedAt": "2026-11-13T07:07:36.882Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553922310-83",
+      "documentType": "PASSPORT_FRONT",
+      "fileName": "Jitendra_Shah_Passport_Front.pdf",
+      "fileSize": 358400,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": true,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553922322-269",
+      "uploadedAt": "2026-11-13T07:12:02.322Z",
+      "verifiedAt": "2026-11-13T07:12:02.324Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553922310-83",
+      "documentType": "APPROVED_VISA",
+      "fileName": "Official_UK_Visa_Approval.pdf",
+      "fileSize": 0,
+      "mimeType": "application/pdf",
+      "fileDataUrl": "data:application/pdf;base64,JVBERi0xLjQK...",
+      "isVerified": false,
+      "uploadedByUserId": "usr-ananya-joshi-visa",
+      "uploadedByName": "Ananya Joshi",
+      "id": "vdoc-1794553922326-882",
+      "uploadedAt": "2026-11-13T07:12:02.326Z"
+    }
+  ],
+  "visaCommunicationLogs": [
+    {
+      "visaApplicationId": "visa-1794553656868-56",
+      "applicationReference": "VH-VIS-202611-0002",
+      "templateCode": "VISA_APPROVED",
+      "recipientEmail": "dhaval.patel@example.com",
+      "recipientName": "Jitendrabhai Shah",
+      "subject": "Congratulations! Your UK Visa Has Been Approved – Varni Holidays",
+      "messageHtml": "\n<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E5E8ED;\">\n  <!-- Header Bar -->\n  <div style=\"background-color: #002037; padding: 24px 30px; border-bottom: 3px solid #E9B95E;\">\n    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n      <tr>\n        <td>\n          <div style=\"font-size: 20px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; font-family: 'Playfair Display', Georgia, serif;\">VARNI HOLIDAYS</div>\n          <div style=\"font-size: 11px; color: #E9B95E; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px;\">Official Visa Milestone</div>\n        </td>\n        <td align=\"right\">\n          <span style=\"display: inline-block; background-color: #168653; color: #FFFFFF; font-size: 11px; font-weight: bold; padding: 5px 12px; text-transform: uppercase; letter-spacing: 1px;\">\n            ✓ VISA APPROVED\n          </span>\n        </td>\n      </tr>\n    </table>\n  </div>\n\n  <!-- Body Content -->\n  <div style=\"padding: 32px 30px; color: #172B45; line-height: 1.6; font-size: 14px;\">\n    <div style=\"text-align: center; margin-bottom: 24px;\">\n      <div style=\"display: inline-block; width: 48px; height: 48px; background-color: #F0FDF4; border: 2px solid #168653; border-radius: 50%; line-height: 48px; font-size: 24px; color: #168653; text-align: center;\">\n        ✓\n      </div>\n      <h2 style=\"font-size: 22px; color: #002037; margin: 12px 0 4px 0; font-family: 'Playfair Display', Georgia, serif;\">Congratulations, Jitendrabhai Shah!</h2>\n      <p style=\"font-size: 14px; color: #168653; font-weight: 600; margin: 0;\">Your United Kingdom Visa has been Officially Approved</p>\n    </div>\n\n    <p>Namaste from Varni Holidays!</p>\n    <p>We are delighted to bring you this joyful update. The consular authority has verified your application and granted your visa for <strong>United Kingdom</strong>.</p>\n\n    <!-- Key Details Box -->\n    <div style=\"background-color: #F8F6F0; border-left: 4px solid #168653; padding: 18px 20px; margin: 24px 0;\">\n      <table width=\"100%\" cellpadding=\"4\" cellspacing=\"0\" border=\"0\" style=\"font-size: 13px;\">\n        <tr>\n          <td width=\"42%\" style=\"color: #718096; font-weight: 600;\">Application Ref:</td>\n          <td style=\"color: #002037; font-weight: bold; font-family: monospace;\">VH-VIS-202611-0002</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Consular Ref:</td>\n          <td style=\"color: #002037; font-weight: bold; font-family: monospace;\">UKVI-GWF-9928172</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Destination:</td>\n          <td style=\"color: #002037; font-weight: bold;\">United Kingdom</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Visa Category:</td>\n          <td style=\"color: #002037;\">Standard Visitor Visa (6 Months)</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Approval Date:</td>\n          <td style=\"color: #168653; font-weight: bold;\">13/11/2026</td>\n        </tr>\n      </table>\n    </div>\n\n    <!-- Travel Checklist -->\n    <h3 style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #002037; margin-bottom: 10px; border-bottom: 1px solid #E5E8ED; padding-bottom: 6px;\">Important Pre-Travel Checklist</h3>\n    <ul style=\"padding-left: 20px; margin: 0 0 20px 0; font-size: 13px; color: #4A5568;\">\n      <li style=\"margin-bottom: 6px;\"><strong>Name & Dates Verification:</strong> Check that your name, date of birth, and passport number match your passport bio-data page precisely.</li>\n      <li style=\"margin-bottom: 6px;\"><strong>Passport Pickup:</strong> For physical passport endorsements, collect your original passport from our Anand office.</li>\n      <li style=\"margin-bottom: 6px;\"><strong>Travel Coverage:</strong> Ensure mandatory international travel medical insurance is active for your full length of stay.</li>\n    </ul>\n\n    <div style=\"background-color: #F8FAFC; border: 1px solid #E5E8ED; padding: 14px 16px; margin: 18px 0; font-size: 13px; color: #153650;\"><strong>Special Note from Counselor:</strong><br />Your passport is ready for pickup at our Anand office.</div>\n\n    <p style=\"margin-top: 24px; font-size: 13px; color: #718096;\">\n      Warmest congratulations,<br />\n      <strong style=\"color: #002037;\">Ananya Joshi</strong><br />\n      Visa Operations Team | VARNI HOLIDAYS\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"background-color: #F8FAFC; border-top: 1px solid #E5E8ED; padding: 20px 30px; font-size: 11px; color: #718096; text-align: center;\">\n    <div><strong>VARNI HOLIDAYS</strong> • undefined, Anand, Gujarat undefined</div>\n    <div style=\"margin-top: 4px;\">Phone: [object Object] • Email: [object Object]</div>\n  </div>\n</div>",
+      "messageText": "Dear Jitendrabhai Shah,\n\nCongratulations from the entire team at Varni Holidays!\n\nWe are thrilled to share the wonderful news: your visa for United Kingdom (Standard Visitor Visa (6 Months)) has been officially APPROVED!\n\nApproval Highlights:\n• Reference Number: VH-VIS-202611-0002\n• Official Reference: UKVI-GWF-9928172\n• Destination: United Kingdom\n• Visa Category: Standard Visitor Visa (6 Months)\n• Decision Date: 13/11/2026\n• Primary Applicant: Jitendrabhai Shah\n\nNext Steps & Travel Readiness:\n1. Document Verification: Please inspect your approved visa document (attached herewith or available at our Anand office) to confirm exact spelling of name, passport number, validity dates, and entry category.\n2. Passport Collection: If physical stamping was conducted, your passport is safely stored in our Anand vault and ready for pickup during office hours.\n3. Travel Insurance & Flights: If you require flight ticketing, hotel vouchers, or comprehensive overseas travel insurance, your Varni travel counselor is ready to assist.\n\nSpecial Note from Counselor:\nYour passport is ready for pickup at our Anand office.\n\n\nThank you for choosing Varni Holidays as your trusted travel partner. We wish you a delightful and safe journey ahead!\n\nWarmest congratulations,\nAnanya Joshi\nVisa Operations Desk | VARNI HOLIDAYS\nOffice: undefined, Anand, Gujarat undefined\nPhone: [object Object]",
+      "status": "SIMULATED",
+      "resendMessageId": "sim-1794553656884-337",
+      "errorMessage": null,
+      "attachmentNames": [
+        "Official_UK_Visa_Approval.pdf"
+      ],
+      "sentByUserId": "usr-ananya-joshi-visa",
+      "sentByName": "Ananya Joshi",
+      "id": "vlog-1794553656884-294",
+      "sentAt": "2026-11-13T07:07:36.884Z"
+    },
+    {
+      "visaApplicationId": "visa-1794553922310-83",
+      "applicationReference": "VH-VIS-202611-0003",
+      "templateCode": "VISA_APPROVED",
+      "recipientEmail": "dhaval.patel@example.com",
+      "recipientName": "Jitendrabhai Shah",
+      "subject": "Congratulations! Your UK Visa Has Been Approved – Varni Holidays",
+      "messageHtml": "\n<div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E5E8ED;\">\n  <!-- Header Bar -->\n  <div style=\"background-color: #002037; padding: 24px 30px; border-bottom: 3px solid #E9B95E;\">\n    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n      <tr>\n        <td>\n          <div style=\"font-size: 20px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; font-family: 'Playfair Display', Georgia, serif;\">VARNI HOLIDAYS</div>\n          <div style=\"font-size: 11px; color: #E9B95E; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px;\">Official Visa Milestone</div>\n        </td>\n        <td align=\"right\">\n          <span style=\"display: inline-block; background-color: #168653; color: #FFFFFF; font-size: 11px; font-weight: bold; padding: 5px 12px; text-transform: uppercase; letter-spacing: 1px;\">\n            ✓ VISA APPROVED\n          </span>\n        </td>\n      </tr>\n    </table>\n  </div>\n\n  <!-- Body Content -->\n  <div style=\"padding: 32px 30px; color: #172B45; line-height: 1.6; font-size: 14px;\">\n    <div style=\"text-align: center; margin-bottom: 24px;\">\n      <div style=\"display: inline-block; width: 48px; height: 48px; background-color: #F0FDF4; border: 2px solid #168653; border-radius: 50%; line-height: 48px; font-size: 24px; color: #168653; text-align: center;\">\n        ✓\n      </div>\n      <h2 style=\"font-size: 22px; color: #002037; margin: 12px 0 4px 0; font-family: 'Playfair Display', Georgia, serif;\">Congratulations, Jitendrabhai Shah!</h2>\n      <p style=\"font-size: 14px; color: #168653; font-weight: 600; margin: 0;\">Your United Kingdom Visa has been Officially Approved</p>\n    </div>\n\n    <p>Namaste from Varni Holidays!</p>\n    <p>We are delighted to bring you this joyful update. The consular authority has verified your application and granted your visa for <strong>United Kingdom</strong>.</p>\n\n    <!-- Key Details Box -->\n    <div style=\"background-color: #F8F6F0; border-left: 4px solid #168653; padding: 18px 20px; margin: 24px 0;\">\n      <table width=\"100%\" cellpadding=\"4\" cellspacing=\"0\" border=\"0\" style=\"font-size: 13px;\">\n        <tr>\n          <td width=\"42%\" style=\"color: #718096; font-weight: 600;\">Application Ref:</td>\n          <td style=\"color: #002037; font-weight: bold; font-family: monospace;\">VH-VIS-202611-0003</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Consular Ref:</td>\n          <td style=\"color: #002037; font-weight: bold; font-family: monospace;\">UKVI-GWF-9928172</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Destination:</td>\n          <td style=\"color: #002037; font-weight: bold;\">United Kingdom</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Visa Category:</td>\n          <td style=\"color: #002037;\">Standard Visitor Visa (6 Months)</td>\n        </tr>\n        <tr>\n          <td style=\"color: #718096; font-weight: 600;\">Approval Date:</td>\n          <td style=\"color: #168653; font-weight: bold;\">13/11/2026</td>\n        </tr>\n      </table>\n    </div>\n\n    <!-- Travel Checklist -->\n    <h3 style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #002037; margin-bottom: 10px; border-bottom: 1px solid #E5E8ED; padding-bottom: 6px;\">Important Pre-Travel Checklist</h3>\n    <ul style=\"padding-left: 20px; margin: 0 0 20px 0; font-size: 13px; color: #4A5568;\">\n      <li style=\"margin-bottom: 6px;\"><strong>Name & Dates Verification:</strong> Check that your name, date of birth, and passport number match your passport bio-data page precisely.</li>\n      <li style=\"margin-bottom: 6px;\"><strong>Passport Pickup:</strong> For physical passport endorsements, collect your original passport from our Anand office.</li>\n      <li style=\"margin-bottom: 6px;\"><strong>Travel Coverage:</strong> Ensure mandatory international travel medical insurance is active for your full length of stay.</li>\n    </ul>\n\n    <div style=\"background-color: #F8FAFC; border: 1px solid #E5E8ED; padding: 14px 16px; margin: 18px 0; font-size: 13px; color: #153650;\"><strong>Special Note from Counselor:</strong><br />Your passport is ready for pickup at our Anand office.</div>\n\n    <p style=\"margin-top: 24px; font-size: 13px; color: #718096;\">\n      Warmest congratulations,<br />\n      <strong style=\"color: #002037;\">Ananya Joshi</strong><br />\n      Visa Operations Team | VARNI HOLIDAYS\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"background-color: #F8FAFC; border-top: 1px solid #E5E8ED; padding: 20px 30px; font-size: 11px; color: #718096; text-align: center;\">\n    <div><strong>VARNI HOLIDAYS</strong> • 317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Vivekanand Wadi / Sardarganj, Anand, Gujarat 388120 (Near Panchal Hall)</div>\n    <div style=\"margin-top: 4px;\">Phone: +91 63570 50505 • Email: varniinternational7@gmail.com</div>\n  </div>\n</div>",
+      "messageText": "Dear Jitendrabhai Shah,\n\nCongratulations from the entire team at Varni Holidays!\n\nWe are thrilled to share the wonderful news: your visa for United Kingdom (Standard Visitor Visa (6 Months)) has been officially APPROVED!\n\nApproval Highlights:\n• Reference Number: VH-VIS-202611-0003\n• Official Reference: UKVI-GWF-9928172\n• Destination: United Kingdom\n• Visa Category: Standard Visitor Visa (6 Months)\n• Decision Date: 13/11/2026\n• Primary Applicant: Jitendrabhai Shah\n\nNext Steps & Travel Readiness:\n1. Document Verification: Please inspect your approved visa document (attached herewith or available at our Anand office) to confirm exact spelling of name, passport number, validity dates, and entry category.\n2. Passport Collection: If physical stamping was conducted, your passport is safely stored in our Anand vault and ready for pickup during office hours.\n3. Travel Insurance & Flights: If you require flight ticketing, hotel vouchers, or comprehensive overseas travel insurance, your Varni travel counselor is ready to assist.\n\nSpecial Note from Counselor:\nYour passport is ready for pickup at our Anand office.\n\n\nThank you for choosing Varni Holidays as your trusted travel partner. We wish you a delightful and safe journey ahead!\n\nWarmest congratulations,\nAnanya Joshi\nVisa Operations Desk | VARNI HOLIDAYS\nOffice: 317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Vivekanand Wadi / Sardarganj, Anand, Gujarat 388120 (Near Panchal Hall)\nPhone: +91 63570 50505",
+      "status": "SIMULATED",
+      "resendMessageId": "sim-1794553922328-266",
+      "errorMessage": null,
+      "attachmentNames": [
+        "Official_UK_Visa_Approval.pdf"
+      ],
+      "sentByUserId": "usr-ananya-joshi-visa",
+      "sentByName": "Ananya Joshi",
+      "id": "vlog-1794553922328-360",
+      "sentAt": "2026-11-13T07:12:02.328Z"
+    }
+  ]
 }

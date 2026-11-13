@@ -18,6 +18,11 @@ import {
   CommunicationLogRecord,
   QuotationSnapshotRecord,
   QuotationEmailLogRecord,
+  VisaApplicationRecord,
+  VisaStatusHistoryRecord,
+  VisaDocumentRecord,
+  VisaCommunicationLogRecord,
+  VisaApplicationStatusCode,
 } from './types';
 import { DEFAULT_USERS } from '../auth/session';
 
@@ -37,6 +42,10 @@ interface CrmDatabaseState {
   bookingServices: BookingServiceComponent[];
   payments: PaymentRecord[];
   communicationLogs: CommunicationLogRecord[];
+  visaApplications: VisaApplicationRecord[];
+  visaStatusHistory: VisaStatusHistoryRecord[];
+  visaDocuments: VisaDocumentRecord[];
+  visaCommunicationLogs: VisaCommunicationLogRecord[];
 }
 
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
@@ -74,6 +83,10 @@ function generateInitialState(): CrmDatabaseState {
     bookingServices: [],
     payments: [],
     communicationLogs: [],
+    visaApplications: [],
+    visaStatusHistory: [],
+    visaDocuments: [],
+    visaCommunicationLogs: [],
   };
 }
 
@@ -114,6 +127,10 @@ class CrmRepository {
           bookingServices: loaded.bookingServices || seed.bookingServices,
           payments: loaded.payments || seed.payments,
           communicationLogs: loaded.communicationLogs || seed.communicationLogs,
+          visaApplications: loaded.visaApplications || seed.visaApplications,
+          visaStatusHistory: loaded.visaStatusHistory || seed.visaStatusHistory,
+          visaDocuments: loaded.visaDocuments || seed.visaDocuments,
+          visaCommunicationLogs: loaded.visaCommunicationLogs || seed.visaCommunicationLogs,
         };
         if (candidatePath !== STORE_PATH) {
           this.persist(merged);
@@ -1719,6 +1736,322 @@ class CrmRepository {
     this.state.auditLogs.unshift(log);
     this.persist(this.state);
     return log;
+  }
+
+  // ====================================================
+  // --- Visa Application & Client Communication System ---
+  // ====================================================
+
+  public getVisaApplications(filters?: {
+    status?: VisaApplicationStatusCode;
+    search?: string;
+    country?: string;
+    assignedUserId?: string;
+  }): VisaApplicationRecord[] {
+    let list = (this.state.visaApplications || []).filter((a) => !a.isDeleted);
+
+    if (filters?.status) {
+      list = list.filter((a) => a.status === filters.status);
+    }
+    if (filters?.country) {
+      list = list.filter((a) => a.destinationCountry.toLowerCase() === filters.country!.toLowerCase());
+    }
+    if (filters?.assignedUserId) {
+      list = list.filter((a) => a.assignedUserId === filters.assignedUserId);
+    }
+    if (filters?.search) {
+      const q = filters.search.toLowerCase().trim();
+      list = list.filter(
+        (a) =>
+          a.applicationReference.toLowerCase().includes(q) ||
+          a.customerName.toLowerCase().includes(q) ||
+          a.customerEmail.toLowerCase().includes(q) ||
+          a.customerPhone.includes(q) ||
+          a.destinationCountry.toLowerCase().includes(q) ||
+          (a.officialReferenceNo && a.officialReferenceNo.toLowerCase().includes(q))
+      );
+    }
+
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  public getVisaApplicationById(id: string): VisaApplicationRecord | null {
+    return (this.state.visaApplications || []).find((a) => a.id === id && !a.isDeleted) || null;
+  }
+
+  public getVisaApplicationByReference(reference: string): VisaApplicationRecord | null {
+    return (this.state.visaApplications || []).find((a) => a.applicationReference === reference && !a.isDeleted) || null;
+  }
+
+  public createVisaApplication(
+    payload: Partial<VisaApplicationRecord>,
+    actorId: string = 'usr-ananya-joshi-visa'
+  ): VisaApplicationRecord {
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId) || DEFAULT_USERS[0];
+    const now = new Date().toISOString();
+    const id = `visa-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    const yearMonth = new Date().toISOString().slice(0, 7).replace('-', '');
+    const currentCount = (this.state.visaApplications || []).length + 1;
+    const applicationReference = `VH-VIS-${yearMonth}-${String(currentCount).padStart(4, '0')}`;
+
+    const assignedUser = payload.assignedUserId
+      ? DEFAULT_USERS.find((u) => u.id === payload.assignedUserId)
+      : DEFAULT_USERS.find((u) => u.id === 'usr-ananya-joshi-visa') || actor;
+
+    const record: VisaApplicationRecord = {
+      id,
+      applicationReference,
+      leadId: payload.leadId || null,
+      customerId: payload.customerId || '',
+      customerName: payload.customerName || 'Valued Applicant',
+      customerEmail: payload.customerEmail || '',
+      customerPhone: payload.customerPhone || '',
+      assignedUserId: assignedUser?.id || actor.id,
+      assignedUserName: assignedUser?.fullName || actor.fullName,
+      assignedUserEmail: assignedUser?.email || actor.email,
+      assignedUserPhone: assignedUser?.phone || actor.phone,
+      destinationCountry: payload.destinationCountry || 'Canada',
+      visaType: payload.visaType || 'Tourist / Visitor Visa',
+      visaCategory: payload.visaCategory || 'TOURIST',
+      applicantCount: payload.applicantCount || 1,
+      travelPlannedDate: payload.travelPlannedDate || null,
+      stayDurationDays: payload.stayDurationDays || null,
+      status: 'INQUIRY_RECEIVED',
+      officialReferenceNo: payload.officialReferenceNo || null,
+      inquiryDate: now,
+      documentReceivedDate: null,
+      submissionDate: null,
+      decisionDate: null,
+      completionDate: null,
+      internalNotes: payload.internalNotes || '',
+      specialInstructions: payload.specialInstructions || '',
+      isDeleted: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    if (!this.state.visaApplications) this.state.visaApplications = [];
+    this.state.visaApplications.push(record);
+
+    // Initial Status History Entry
+    if (!this.state.visaStatusHistory) this.state.visaStatusHistory = [];
+    this.state.visaStatusHistory.push({
+      id: `vsh-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      visaApplicationId: id,
+      fromStatus: null,
+      toStatus: 'INQUIRY_RECEIVED',
+      changedByUserId: actor.id,
+      changedByName: actor.fullName,
+      notes: payload.internalNotes || 'Visa inquiry dossier registered into CRM',
+      createdAt: now,
+    });
+
+    // Add Activity
+    this.addActivity({
+      leadId: payload.leadId || '',
+      userId: actor.id,
+      userName: actor.fullName,
+      type: 'STATUS_CHANGE',
+      title: `Visa Application Registered: ${applicationReference}`,
+      description: `Inquiry for ${record.destinationCountry} (${record.visaType}) registered for ${record.customerName}`,
+      metadata: { visaApplicationId: id, applicationReference, status: 'INQUIRY_RECEIVED' },
+    });
+
+    this.persist(this.state);
+    return record;
+  }
+
+  public updateVisaApplicationStatus(
+    id: string,
+    newStatus: VisaApplicationStatusCode,
+    actorId: string = 'usr-ananya-joshi-visa',
+    notes?: string,
+    officialRef?: string
+  ): VisaApplicationRecord | null {
+    const app = this.getVisaApplicationById(id);
+    if (!app) return null;
+
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId) || DEFAULT_USERS[0];
+    const previousStatus = app.status;
+    const now = new Date().toISOString();
+
+    app.status = newStatus;
+    app.updatedAt = now;
+
+    if (officialRef) {
+      app.officialReferenceNo = officialRef;
+    }
+
+    // Update milestone dates based on status
+    if (newStatus === 'DOCUMENTS_RECEIVED' && !app.documentReceivedDate) {
+      app.documentReceivedDate = now;
+    } else if (newStatus === 'FILE_SUBMITTED' && !app.submissionDate) {
+      app.submissionDate = now;
+    } else if ((newStatus === 'VISA_APPROVED' || newStatus === 'VISA_REJECTED') && !app.decisionDate) {
+      app.decisionDate = now;
+    } else if (newStatus === 'COMPLETED' && !app.completionDate) {
+      app.completionDate = now;
+    }
+
+    // Append to status history
+    if (!this.state.visaStatusHistory) this.state.visaStatusHistory = [];
+    this.state.visaStatusHistory.push({
+      id: `vsh-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      visaApplicationId: id,
+      fromStatus: previousStatus,
+      toStatus: newStatus,
+      changedByUserId: actor.id,
+      changedByName: actor.fullName,
+      notes: notes || `Status changed from ${previousStatus} to ${newStatus}`,
+      createdAt: now,
+    });
+
+    // Add activity
+    this.addActivity({
+      leadId: app.leadId || '',
+      userId: actor.id,
+      userName: actor.fullName,
+      type: 'STATUS_CHANGE',
+      title: `Visa Status: ${newStatus}`,
+      description: `Application ${app.applicationReference} (${app.customerName}) transitioned to ${newStatus}. Notes: ${notes || 'Updated by employee'}`,
+      metadata: { visaApplicationId: id, applicationReference: app.applicationReference, status: newStatus },
+    });
+
+    this.persist(this.state);
+    return app;
+  }
+
+  public updateVisaApplication(
+    id: string,
+    updates: Partial<VisaApplicationRecord>,
+    actorId: string = 'usr-ananya-joshi-visa'
+  ): VisaApplicationRecord | null {
+    const app = this.getVisaApplicationById(id);
+    if (!app) return null;
+
+    Object.assign(app, updates, { updatedAt: new Date().toISOString() });
+    this.persist(this.state);
+    return app;
+  }
+
+  public addVisaDocument(
+    doc: Omit<VisaDocumentRecord, 'id' | 'uploadedAt'>
+  ): VisaDocumentRecord {
+    const id = `vdoc-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const now = new Date().toISOString();
+
+    const record: VisaDocumentRecord = {
+      ...doc,
+      id,
+      uploadedAt: now,
+    };
+
+    if (!this.state.visaDocuments) this.state.visaDocuments = [];
+    this.state.visaDocuments.push(record);
+    this.persist(this.state);
+    return record;
+  }
+
+  public getVisaDocuments(visaApplicationId: string): VisaDocumentRecord[] {
+    return (this.state.visaDocuments || []).filter((d) => d.visaApplicationId === visaApplicationId);
+  }
+
+  public verifyVisaDocument(
+    docId: string,
+    isVerified: boolean,
+    actorId: string = 'usr-ananya-joshi-visa'
+  ): VisaDocumentRecord | null {
+    const doc = (this.state.visaDocuments || []).find((d) => d.id === docId);
+    if (!doc) return null;
+
+    doc.isVerified = isVerified;
+    doc.verifiedAt = isVerified ? new Date().toISOString() : null;
+    this.persist(this.state);
+    return doc;
+  }
+
+  public getVisaStatusHistory(visaApplicationId: string): VisaStatusHistoryRecord[] {
+    return (this.state.visaStatusHistory || [])
+      .filter((h) => h.visaApplicationId === visaApplicationId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+
+  public addVisaCommunicationLog(
+    log: Omit<VisaCommunicationLogRecord, 'id' | 'sentAt'>
+  ): VisaCommunicationLogRecord {
+    const id = `vlog-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const now = new Date().toISOString();
+
+    const record: VisaCommunicationLogRecord = {
+      ...log,
+      id,
+      sentAt: now,
+    };
+
+    if (!this.state.visaCommunicationLogs) this.state.visaCommunicationLogs = [];
+    this.state.visaCommunicationLogs.push(record);
+
+    // Also mirror to global CRM communicationLogs so it appears in unified timeline
+    this.logCommunication({
+      customerId: '',
+      customerName: record.recipientName || 'Valued Applicant',
+      customerContact: record.recipientEmail,
+      senderUserId: record.sentByUserId,
+      senderUserName: record.sentByName,
+      templateKey: 'CUSTOM_MESSAGE',
+      templateTitle: record.templateCode,
+      channel: 'EMAIL',
+      subject: record.subject,
+      content: record.messageText || record.messageHtml,
+      deliveryStatus: record.status === 'FAILED' ? 'FAILED' : 'SENT',
+      providerRef: record.resendMessageId || undefined,
+    });
+
+    this.persist(this.state);
+    return record;
+  }
+
+  public getVisaCommunicationLogs(visaApplicationId: string): VisaCommunicationLogRecord[] {
+    return (this.state.visaCommunicationLogs || [])
+      .filter((l) => l.visaApplicationId === visaApplicationId)
+      .sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
+  }
+
+  public getVisaDashboardStats() {
+    const apps = (this.state.visaApplications || []).filter((a) => !a.isDeleted);
+    const total = apps.length;
+
+    const counts: Record<VisaApplicationStatusCode, number> = {
+      INQUIRY_RECEIVED: 0,
+      DOCUMENTS_RECEIVED: 0,
+      DOCUMENTS_UNDER_REVIEW: 0,
+      FILE_SUBMITTED: 0,
+      UNDER_PROCESSING: 0,
+      ADDITIONAL_INFORMATION_REQUIRED: 0,
+      VISA_APPROVED: 0,
+      VISA_REJECTED: 0,
+      COMPLETED: 0,
+    };
+
+    for (const app of apps) {
+      if (counts[app.status] !== undefined) {
+        counts[app.status]++;
+      }
+    }
+
+    return {
+      total,
+      counts,
+      activeProcessing:
+        counts.DOCUMENTS_RECEIVED +
+        counts.DOCUMENTS_UNDER_REVIEW +
+        counts.FILE_SUBMITTED +
+        counts.UNDER_PROCESSING +
+        counts.ADDITIONAL_INFORMATION_REQUIRED,
+      approvedCount: counts.VISA_APPROVED + counts.COMPLETED,
+      recentApplications: apps.slice(0, 10),
+    };
   }
 
   // --- Package Cost Governance ---

@@ -524,3 +524,111 @@ export interface GoogleSheetsConfig {
   webhookUrl?: string | null;
 }
 
+// ====================================================
+// 10. VISA EMAIL AUTOMATION & APPLICATIONS TYPES
+// ====================================================
+
+export type VisaApplicationStatusCode =
+  | 'INQUIRY_RECEIVED'
+  | 'DOCUMENTS_RECEIVED'
+  | 'DOCUMENTS_UNDER_REVIEW'
+  | 'FILE_SUBMITTED'
+  | 'UNDER_PROCESSING'
+  | 'ADDITIONAL_INFORMATION_REQUIRED'
+  | 'VISA_APPROVED'
+  | 'VISA_REJECTED'
+  | 'COMPLETED';
+
+export interface VisaApplicationRecord {
+  id: string;
+  applicationReference: string; // e.g. "VH-VIS-202611-0001"
+  leadId?: string | null;
+  customerId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  assignedUserId?: string | null;
+  assignedUserName?: string | null;
+  assignedUserEmail?: string | null;
+  assignedUserPhone?: string | null;
+
+  destinationCountry: string;
+  visaType: string;
+  visaCategory: string; // "TOURIST" | "BUSINESS" | "TRANSIT" | "STUDENT" | "WORK"
+  applicantCount: number;
+  travelPlannedDate?: string | null;
+  stayDurationDays?: number | null;
+
+  status: VisaApplicationStatusCode;
+  officialReferenceNo?: string | null; // e.g. VFS tracking / Embassy portal ID
+  inquiryDate: string;
+  documentReceivedDate?: string | null;
+  submissionDate?: string | null;
+  decisionDate?: string | null;
+  completionDate?: string | null;
+
+  internalNotes?: string | null;
+  specialInstructions?: string | null;
+
+  isDeleted?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VisaStatusHistoryRecord {
+  id: string;
+  visaApplicationId: string;
+  fromStatus: VisaApplicationStatusCode | null;
+  toStatus: VisaApplicationStatusCode;
+  changedByUserId: string;
+  changedByName: string;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface VisaDocumentRecord {
+  id: string;
+  visaApplicationId: string;
+  documentType: 'PASSPORT_FRONT' | 'PASSPORT_BACK' | 'PHOTO' | 'FINANCIAL_PROOF' | 'EMPLOYMENT_PROOF' | 'APPROVED_VISA' | 'OTHER';
+  fileName: string;
+  fileSize?: number;
+  mimeType?: string;
+  fileDataUrl?: string; // base64 or secure link
+  isVerified: boolean;
+  verifiedAt?: string | null;
+  uploadedByUserId: string;
+  uploadedByName: string;
+  uploadedAt: string;
+}
+
+export interface VisaEmailTemplateRecord {
+  id: string;
+  code: string;
+  title: string;
+  triggerStage: VisaApplicationStatusCode;
+  defaultSubject: string;
+  bodyTemplate: string;
+  isActive: boolean;
+  updatedAt: string;
+}
+
+export interface VisaCommunicationLogRecord {
+  id: string;
+  visaApplicationId: string;
+  applicationReference: string;
+  templateCode: string;
+  recipientEmail: string;
+  recipientName: string;
+  subject: string;
+  messageHtml: string;
+  messageText: string;
+  status: 'SENT' | 'SIMULATED' | 'FAILED';
+  resendMessageId?: string | null;
+  errorMessage?: string | null;
+  attachmentNames: string[];
+  sentByUserId: string;
+  sentByName: string;
+  sentAt: string;
+}
+
+
