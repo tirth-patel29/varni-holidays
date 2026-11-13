@@ -113,64 +113,86 @@ export async function triggerImmediateBackgroundSync() {
 }
 
 export async function triggerManualSyncAction() {
-  // Reconcile full workbook across ALL_LEADS, FOLLOW_UPS, BOOKINGS, and BUSINESS_SUMMARY
-  const result = await googleSheetsSync.reconcileFullWorkbook();
+  try {
+    // Reconcile full workbook across ALL_LEADS, FOLLOW_UPS, BOOKINGS, and BUSINESS_SUMMARY
+    const result = await googleSheetsSync.reconcileFullWorkbook();
 
-  // Also drain any pending queue items
-  await processSyncQueueAction();
+    // Also drain any pending queue items
+    await processSyncQueueAction();
 
-  // Audit Log
-  crmRepo.addAuditLog({
-    userId: 'usr-neel-patel-superadmin',
-    userEmail: 'neel@varniholidays.com',
-    action: 'GOOGLE_SHEETS_MANUAL_SYNC',
-    entityType: 'INTEGRATION',
-    entityId: crmRepo.getGoogleSheetsConfig().spreadsheetId,
-    details: `Manual Google Sheets reconciliation executed. Results: ${result.syncedLeads} leads, ${result.syncedFollowUps} follow-ups, ${result.syncedBookings} bookings synced.`,
-    ipAddress: 'Internal Portal',
-  });
+    // Audit Log
+    crmRepo.addAuditLog({
+      userId: 'usr-neel-patel-superadmin',
+      userEmail: 'neel@varniholidays.com',
+      action: 'GOOGLE_SHEETS_MANUAL_SYNC',
+      entityType: 'INTEGRATION',
+      entityId: crmRepo.getGoogleSheetsConfig()?.spreadsheetId || 'default',
+      details: `Manual Google Sheets reconciliation executed. Results: ${result?.syncedLeads ?? 0} leads, ${result?.syncedFollowUps ?? 0} follow-ups, ${result?.syncedBookings ?? 0} bookings synced.`,
+      ipAddress: 'Internal Portal',
+    });
 
-  return result;
+    return result;
+  } catch (err: any) {
+    console.error('triggerManualSyncAction error:', err);
+    return {
+      success: false,
+      syncedLeads: 0,
+      syncedFollowUps: 0,
+      syncedBookings: 0,
+      error: err.message || 'Failed to trigger manual sync',
+    };
+  }
 }
 
 export async function retryFailedJobsAction() {
-  const retriedCount = crmRepo.retryFailedSyncJobs();
-  const processResult = await processSyncQueueAction();
+  try {
+    const retriedCount = crmRepo.retryFailedSyncJobs();
+    const processResult = await processSyncQueueAction();
 
-  return {
-    retriedCount,
-    processResult,
-  };
+    return {
+      retriedCount,
+      processResult,
+    };
+  } catch (err: any) {
+    console.error('retryFailedJobsAction error:', err);
+    return {
+      retriedCount: 0,
+      processResult: { processed: 0, successCount: 0, failCount: 0 },
+    };
+  }
 }
 
 export async function testGoogleSheetsConnectionAction() {
-  const config = crmRepo.getGoogleSheetsConfig();
-  const isLive = googleSheetsSync.isLiveCredentialsConfigured();
-
-  if (!isLive) {
-    return {
-      success: true,
-      mode: 'SIMULATION',
-      message: 'Operating in Development Simulation Mode. Local mirror active. Real Google API keys can be configured in .env.',
-      spreadsheetUrl: config.spreadsheetUrl,
-    };
-  }
-
   try {
+    const config = crmRepo.getGoogleSheetsConfig() || {
+      spreadsheetId: '',
+      spreadsheetUrl: '',
+    };
+    const isLive = Boolean(googleSheetsSync?.isLiveCredentialsConfigured?.());
+
+    if (!isLive) {
+      return {
+        success: true,
+        mode: 'SIMULATION',
+        message: 'Operating in Development Simulation Mode. Local mirror active. Real Google API keys can be configured in .env.',
+        spreadsheetUrl: config.spreadsheetUrl || '',
+      };
+    }
+
     const res = await googleSheetsSync.reconcileFullWorkbook();
-    if (res.success) {
+    if (res?.success) {
       return {
         success: true,
         mode: 'LIVE',
         message: 'Successfully authenticated with Google Sheets API and validated workbook permissions.',
-        spreadsheetUrl: config.spreadsheetUrl,
+        spreadsheetUrl: config.spreadsheetUrl || '',
       };
     } else {
       return {
         success: false,
         mode: 'LIVE',
-        message: `Connection failed: ${res.error}`,
-        spreadsheetUrl: config.spreadsheetUrl,
+        message: `Connection failed: ${res?.error || 'Unknown error'}`,
+        spreadsheetUrl: config.spreadsheetUrl || '',
       };
     }
   } catch (e: any) {
@@ -178,47 +200,57 @@ export async function testGoogleSheetsConnectionAction() {
       success: false,
       mode: 'LIVE',
       message: `Google Sheets API Error: ${e.message}`,
-      spreadsheetUrl: config.spreadsheetUrl,
+      spreadsheetUrl: '',
     };
   }
 }
 
 export async function updateGoogleSheetsSettingsAction(updates: Partial<GoogleSheetsConfig>) {
-  const updated = crmRepo.updateGoogleSheetsConfig({
-    ...updates,
-    spreadsheetUrl: updates.spreadsheetId
-      ? `https://docs.google.com/spreadsheets/d/${updates.spreadsheetId}/edit`
-      : undefined,
-  });
+  try {
+    const updated = crmRepo.updateGoogleSheetsConfig({
+      ...updates,
+      spreadsheetUrl: updates.spreadsheetId
+        ? `https://docs.google.com/spreadsheets/d/${updates.spreadsheetId}/edit`
+        : undefined,
+    });
 
-  crmRepo.addAuditLog({
-    userId: 'usr-neel-patel-superadmin',
-    userEmail: 'neel@varniholidays.com',
-    action: 'GOOGLE_SHEETS_SETTINGS_UPDATED',
-    entityType: 'INTEGRATION',
-    entityId: updated.spreadsheetId,
-    details: `Google Sheets integration settings updated by Super Admin Neel Patel.`,
-    ipAddress: 'Internal Portal',
-  });
+    crmRepo.addAuditLog({
+      userId: 'usr-neel-patel-superadmin',
+      userEmail: 'neel@varniholidays.com',
+      action: 'GOOGLE_SHEETS_SETTINGS_UPDATED',
+      entityType: 'INTEGRATION',
+      entityId: updated?.spreadsheetId || 'default',
+      details: `Google Sheets integration settings updated by Super Admin Neel Patel.`,
+      ipAddress: 'Internal Portal',
+    });
 
-  return updated;
+    return updated;
+  } catch (err: any) {
+    console.error('updateGoogleSheetsSettingsAction error:', err);
+    return null;
+  }
 }
 
 export async function disconnectGoogleSheetsAction() {
-  const updated = crmRepo.updateGoogleSheetsConfig({
-    status: 'DISCONNECTED',
-  });
+  try {
+    const updated = crmRepo.updateGoogleSheetsConfig({
+      status: 'DISCONNECTED',
+    });
 
-  crmRepo.addAuditLog({
-    userId: 'usr-neel-patel-superadmin',
-    userEmail: 'neel@varniholidays.com',
-    action: 'GOOGLE_SHEETS_DISCONNECTED',
-    entityType: 'INTEGRATION',
-    entityId: updated.spreadsheetId,
-    details: `Google Sheets live synchronization disconnected by Super Admin Neel Patel.`,
-    ipAddress: 'Internal Portal',
-  });
+    crmRepo.addAuditLog({
+      userId: 'usr-neel-patel-superadmin',
+      userEmail: 'neel@varniholidays.com',
+      action: 'GOOGLE_SHEETS_DISCONNECTED',
+      entityType: 'INTEGRATION',
+      entityId: updated?.spreadsheetId || 'default',
+      details: `Google Sheets live synchronization disconnected by Super Admin Neel Patel.`,
+      ipAddress: 'Internal Portal',
+    });
 
-  return updated;
+    return updated;
+  } catch (err: any) {
+    console.error('disconnectGoogleSheetsAction error:', err);
+    return null;
+  }
 }
 

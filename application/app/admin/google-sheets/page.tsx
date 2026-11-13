@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useCrm } from '@/components/crm/CrmContext';
 import { Breadcrumbs } from '@/components/admin/Breadcrumbs';
 import {
   getGoogleSheetsStatusAction,
@@ -28,7 +27,6 @@ import {
 } from 'lucide-react';
 
 export default function GoogleSheetsAdminPage() {
-  const { currentUser } = useCrm();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -118,7 +116,7 @@ export default function GoogleSheetsAdminPage() {
     setActionLoading(false);
   };
 
-  const cfg = data?.config;
+  const cfg = data?.config || {};
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#F7F8FA] text-[#172B45]">

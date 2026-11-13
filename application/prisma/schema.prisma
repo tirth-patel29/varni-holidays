@@ -45,6 +45,7 @@ model User {
   recordedPayments PaymentRecord[] @relation("PaymentRecorder")
   customerMerges   Customer[]      @relation("CustomerMerger")
   auditLogs        AuditLog[]
+  assignedVisaApps VisaApplication[] @relation("VisaAssignee")
 
   @@map("users")
 }
@@ -135,6 +136,7 @@ model Customer {
   quotations           Quotation[]
   updates              CustomerUpdate[]
   bookings             Booking[]
+  visaApplications     VisaApplication[]
 
   @@index([normalizedPhone])
   @@index([normalizedEmail])
@@ -196,6 +198,7 @@ model Lead {
   customerUpdates      CustomerUpdate[]
   quotations           Quotation[]
   booking              Booking?
+  visaApplications     VisaApplication[]
 
   closeReason          String?
   closedAt             DateTime?
@@ -1040,4 +1043,138 @@ model NewsletterSubscription {
 
   @@index([status])
   @@map("newsletter_subscriptions")
+}
+
+// ====================================================
+// 12. VISA EMAIL AUTOMATION & APPLICATIONS
+// ====================================================
+
+enum VisaApplicationStatus {
+  INQUIRY_RECEIVED
+  DOCUMENTS_RECEIVED
+  DOCUMENTS_UNDER_REVIEW
+  FILE_SUBMITTED
+  UNDER_PROCESSING
+  ADDITIONAL_INFORMATION_REQUIRED
+  VISA_APPROVED
+  VISA_REJECTED
+  COMPLETED
+}
+
+model VisaApplication {
+  id                    String                @id @default(uuid())
+  applicationReference  String                @unique // e.g. "VH-VIS-202611-0001"
+  leadId                String?
+  lead                  Lead?                 @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  customerId            String
+  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  assignedUserId        String?
+  assignedTo            User?                 @relation("VisaAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  destinationCountry    String
+  visaType              String
+  visaCategory          VisaCategory          @default(TOURIST)
+  applicantCount        Int                   @default(1)
+  travelPlannedDate     DateTime?
+  stayDurationDays      Int?
+  
+  status                VisaApplicationStatus @default(INQUIRY_RECEIVED)
+  officialReferenceNo   String?               // VFS / Embassy portal tracking code
+  inquiryDate           DateTime              @default(now())
+  documentReceivedDate  DateTime?
+  submissionDate        DateTime?
+  decisionDate          DateTime?
+  completionDate        DateTime?
+
+  internalNotes         String?               @db.Text
+  specialInstructions   String?               @db.Text
+
+  // Soft Deletion
+  isDeleted             Boolean               @default(false)
+  deletedAt             DateTime?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  statusHistory         VisaStatusHistory[]
+  documents             VisaDocument[]
+  communicationLogs     VisaCommunicationLog[]
+
+  @@index([status])
+  @@index([customerId])
+  @@index([assignedUserId])
+  @@index([destinationCountry])
+  @@map("visa_applications")
+}
+
+model VisaStatusHistory {
+  id                  String                @id @default(uuid())
+  visaApplicationId   String
+  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+
+  fromStatus          VisaApplicationStatus?
+  toStatus            VisaApplicationStatus
+  changedByUserId     String?
+  changedByName       String?
+  notes               String?               @db.Text
+  createdAt           DateTime              @default(now())
+
+  @@index([visaApplicationId])
+  @@map("visa_status_history")
+}
+
+model VisaDocument {
+  id                  String                @id @default(uuid())
+  visaApplicationId   String
+  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+
+  documentType        String                // "PASSPORT_FRONT", "PASSPORT_BACK", "PHOTO", "FINANCIAL_PROOF", "EMPLOYMENT_PROOF", "APPROVED_VISA", "OTHER"
+  fileName            String
+  fileSize            Int?
+  mimeType            String?
+  fileDataUrl         String?               @db.Text // Secure base64 or storage URL
+  isVerified          Boolean               @default(false)
+  verifiedAt          DateTime?
+  uploadedByUserId    String?
+  uploadedAt          DateTime              @default(now())
+
+  @@index([visaApplicationId])
+  @@map("visa_documents")
+}
+
+model VisaEmailTemplate {
+  id                  String                @id @default(uuid())
+  code                String                @unique // "INQUIRY_RECEIVED", "DOCUMENTS_RECEIVED", "FILE_SUBMITTED", "VISA_APPROVED", "ADDITIONAL_INFO", "VISA_REJECTED", "COMPLETED"
+  title               String
+  triggerStage        VisaApplicationStatus
+  defaultSubject      String
+  bodyTemplate        String                @db.Text
+  isActive            Boolean               @default(true)
+  updatedAt           DateTime              @updatedAt
+
+  @@map("visa_email_templates")
+}
+
+model VisaCommunicationLog {
+  id                  String                @id @default(uuid())
+  visaApplicationId   String
+  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+
+  templateCode        String?
+  recipientEmail      String
+  recipientName       String?
+  subject             String
+  messageHtml         String                @db.Text
+  messageText         String?               @db.Text
+  status              String                @default("SENT") // "SENT" | "PROVIDER_ACCEPTED" | "FAILED" | "SIMULATED"
+  resendMessageId     String?
+  errorMessage        String?
+  attachmentNames     String[]              @default([])
+  sentByUserId        String?
+  sentByName          String?
+  sentAt              DateTime              @default(now())
+
+  @@index([visaApplicationId])
+  @@map("visa_communication_logs")
 }

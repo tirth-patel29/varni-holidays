@@ -29,7 +29,7 @@ import {
   Mail,
 } from 'lucide-react';
 export default function CrmSidebar() {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const [currentStage, setCurrentStage] = useState<string | null>(null);
   React.useEffect(() => { if (typeof window !== 'undefined') { setCurrentStage(new URLSearchParams(window.location.search).get('stage')); } }, [pathname]);
   const { currentUser, allUsers, setCurrentUserId, isSuperAdmin, isAdmin } = useCrm();

@@ -85,12 +85,12 @@ function AdminSidebarInner({
   mobileOpen,
   onCloseMobile,
 }: AdminSidebarProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
   const searchParams = useSearchParams();
   const { currentUser } = useCrm();
 
-  const currentService = searchParams.get('service');
-  const currentTab = searchParams.get('tab');
+  const currentService = searchParams?.get('service') || null;
+  const currentTab = searchParams?.get('tab') || null;
 
   // Master 7-Category Navigation Hierarchy
   const categories: NavCategory[] = [
@@ -200,6 +200,7 @@ function AdminSidebarInner({
 
   // Helper: check if a child item is active
   const isChildActive = (href: string) => {
+    if (!pathname) return false;
     const [pathPart, queryPart] = href.split('?');
     if (pathPart === '/admin') {
       if (queryPart) {
@@ -212,7 +213,7 @@ function AdminSidebarInner({
       return pathname === pathPart && currentService === expectedService;
     }
     if (currentService) return false;
-    return pathname === pathPart || pathname.startsWith(`${pathPart}/`);
+    return pathname === pathPart || (pathname.startsWith && pathname.startsWith(`${pathPart}/`));
   };
 
   // Helper: check if any child of a category is active

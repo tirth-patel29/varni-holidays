@@ -12,7 +12,7 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ customItems, items }: BreadcrumbsProps) {
   const activeItems = items || customItems;
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
 
   if (activeItems && activeItems.length > 0) {
     return (

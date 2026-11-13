@@ -7,8 +7,8 @@ import Footer from './Footer';
 import VarniLoader from './VarniLoader';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isCrmRoute = pathname.startsWith('/employee') || pathname.startsWith('/admin');
+  const pathname = usePathname() || '';
+  const isCrmRoute = Boolean(pathname.startsWith('/employee') || pathname.startsWith('/admin'));
 
   if (isCrmRoute) {
     return <main className="flex-1 w-full min-h-screen">{children}</main>;
