@@ -862,7 +862,7 @@ export default function PackagesPage() {
 
               {/* Action Buttons */}
               <div className="p-5 pt-0 flex items-center gap-2">
-                {item.slug === 'kerala-6n7d-winter' ? (
+                {item.slug && ['kerala-6n7d-winter', 'kashmir-valley-5n6d', 'rajasthan-royal-7n8d'].includes(item.slug) ? (
                   <Link
                     href={`/packages/${item.slug}`}
                     className="flex-1 py-2.5 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center gap-1 hover:bg-primary-container transition-colors text-center"

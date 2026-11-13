@@ -68,7 +68,7 @@ export default function RootLayout({
         <LayoutShell>{children}</LayoutShell>
       {/* impeccable-live-start */}
       {process.env.NODE_ENV === 'development' && (
-        <script src="http://localhost:8400/live.js?token=16faec4f-4a40-4b57-9174-d4c82bf82fcf" />
+        <script src="http://localhost:8400/live.js?token=479c2639-cb61-4eee-b236-569c373be7c4" />
       )}
       {/* impeccable-live-end */}
 </body>
