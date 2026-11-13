@@ -66,7 +66,12 @@ export default function RootLayout({
       </head>
       <body className="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
         <LayoutShell>{children}</LayoutShell>
-      </body>
+      {/* impeccable-live-start */}
+      {process.env.NODE_ENV === 'development' && (
+        <script src="http://localhost:8400/live.js?token=16faec4f-4a40-4b57-9174-d4c82bf82fcf" />
+      )}
+      {/* impeccable-live-end */}
+</body>
     </html>
   );
 }
