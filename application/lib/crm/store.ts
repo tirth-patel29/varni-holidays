@@ -16,6 +16,8 @@ import {
   BookingServiceComponent,
   PaymentRecord,
   CommunicationLogRecord,
+  QuotationSnapshotRecord,
+  QuotationEmailLogRecord,
 } from './types';
 import { DEFAULT_USERS } from '../auth/session';
 
@@ -25,6 +27,8 @@ interface CrmDatabaseState {
   activities: LeadActivityRecord[];
   followUps: FollowUpRecord[];
   quotations: QuotationRecord[];
+  quotationSnapshots: QuotationSnapshotRecord[];
+  quotationEmailLogs: QuotationEmailLogRecord[];
   bookings: BookingRecord[];
   auditLogs: AuditLogRecord[];
   packageCosts: PackageCostItem[];
@@ -60,6 +64,8 @@ function generateInitialState(): CrmDatabaseState {
     activities: [],
     followUps: [],
     quotations: [],
+    quotationSnapshots: [],
+    quotationEmailLogs: [],
     bookings: [],
     auditLogs: [],
     packageCosts: [],
@@ -100,6 +106,8 @@ class CrmRepository {
           activities: loaded.activities || seed.activities,
           followUps: loaded.followUps || seed.followUps,
           quotations: loaded.quotations || seed.quotations,
+          quotationSnapshots: loaded.quotationSnapshots || seed.quotationSnapshots,
+          quotationEmailLogs: loaded.quotationEmailLogs || seed.quotationEmailLogs,
           bookings: loaded.bookings || seed.bookings,
           syncJobs: loaded.syncJobs || seed.syncJobs,
           sheetsConfig: loaded.sheetsConfig || seed.sheetsConfig,
@@ -143,6 +151,42 @@ class CrmRepository {
 
   public getCustomerById(id: string): CustomerRecord | null {
     return this.state.customers.find((c) => c.id === id && !c.isDeleted) || null;
+  }
+
+  public findCustomerByPhone(phoneNumber: string): CustomerRecord | null {
+    const clean = phoneNumber.replace(/\D/g, '');
+    return (
+      this.state.customers.find(
+        (c) => !c.isDeleted && c.phoneNumber.replace(/\D/g, '').endsWith(clean.slice(-10))
+      ) || null
+    );
+  }
+
+  public createCustomer(data: {
+    fullName: string;
+    phoneNumber: string;
+    phoneCountryCode?: string;
+    email?: string;
+    city?: string;
+  }): CustomerRecord {
+    const id = `cust-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const phoneCountryCode = data.phoneCountryCode || '+91';
+    const normalizedPhone = `${phoneCountryCode}${data.phoneNumber.replace(/\D/g, '')}`;
+    const customer: CustomerRecord = {
+      id,
+      fullName: data.fullName,
+      email: data.email || null,
+      phoneCountryCode,
+      phoneNumber: data.phoneNumber,
+      normalizedPhone,
+      normalizedEmail: data.email ? data.email.toLowerCase().trim() : null,
+      city: data.city,
+      duplicateWarning: false,
+      isDeleted: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveCustomer(customer);
   }
 
   public findCustomerByPhoneOrEmail(normalizedPhone: string, normalizedEmail?: string | null): CustomerRecord | null {
@@ -664,21 +708,64 @@ class CrmRepository {
   }
 
   public createQuotation(data: {
-    leadId: string;
+    quotationType?: 'PACKAGE' | 'HOTEL' | 'CUSTOM';
+    leadId?: string;
+    leadReferenceId?: string;
     customerId: string;
+    customerName?: string;
+    customerEmail?: string | null;
+    customerPhone?: string;
     createdByUserId: string;
     createdByName: string;
     title: string;
+    destination?: string | null;
+    durationNights?: number | null;
+    durationDays?: number | null;
+    travelStartDate?: string | null;
+    travelEndDate?: string | null;
+    adultsCount?: number;
+    childrenCount?: number;
+    roomsCount?: number;
+    hotelCategory?: string | null;
+    mealPlan?: string | null;
+    transportType?: string | null;
+    sourcePackageSlug?: string | null;
+    sourceHotelId?: string | null;
+
+    basePriceInr?: number;
+    transportChargesInr?: number;
+    additionalServicesInr?: number;
+    extraChargesInr?: number;
+    discountType?: 'FIXED' | 'PERCENTAGE';
+    discountValue?: number;
+    discountInr?: number;
+    taxPercent?: number;
+    taxesInr?: number;
     subtotalInr: number;
-    taxesInr: number;
-    discountInr: number;
     totalAmountInr: number;
     supplierNetCostInr?: number;
     validUntil: string;
     terms: string;
     inclusions?: string[];
     exclusions?: string[];
+    itineraryDays?: Array<{
+      dayNumber: number;
+      title: string;
+      description: string;
+      meals?: string;
+      stayDestination?: string;
+    }>;
+    hotelDetails?: {
+      hotelName: string;
+      location: string;
+      roomType: string;
+      mealPlan: string;
+      checkInTime?: string;
+      checkOutTime?: string;
+      perks?: string[];
+    };
     internalNotes?: string;
+    customerNotes?: string;
     lineItems: Array<{
       itemOrder: number;
       description: string;
@@ -693,27 +780,66 @@ class CrmRepository {
     const seq = (this.state.quotations.length + 1).toString().padStart(4, '0');
     const quotationNumber = `VH-QUO-${yearMonth}-${seq}`;
 
+    // Look up customer if not provided
+    const customer = this.getCustomerById(data.customerId);
+    const customerName = data.customerName || customer?.fullName || 'Valued Guest';
+    const customerPhone = data.customerPhone || customer?.phoneNumber || '';
+    const customerEmail = data.customerEmail !== undefined ? data.customerEmail : (customer?.email || null);
+
     const quote: QuotationRecord = {
       id: `quo-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       quotationNumber,
-      leadId: data.leadId,
+      quotationType: data.quotationType || 'PACKAGE',
+      version: 1,
+      revisionNumber: 0,
+      parentQuotationId: null,
+      leadId: data.leadId || '',
+      leadReferenceId: data.leadReferenceId,
       customerId: data.customerId,
+      customerName,
+      customerEmail,
+      customerPhone,
       createdByUserId: data.createdByUserId,
       createdByName: data.createdByName,
       status: 'DRAFT',
       title: data.title,
+      destination: data.destination,
+      durationNights: data.durationNights,
+      durationDays: data.durationDays,
+      travelStartDate: data.travelStartDate,
+      travelEndDate: data.travelEndDate,
+      adultsCount: data.adultsCount || 2,
+      childrenCount: data.childrenCount || 0,
+      roomsCount: data.roomsCount || 1,
+      hotelCategory: data.hotelCategory,
+      mealPlan: data.mealPlan,
+      transportType: data.transportType,
+      sourcePackageSlug: data.sourcePackageSlug,
+      sourceHotelId: data.sourceHotelId,
+
+      basePriceInr: data.basePriceInr || data.subtotalInr,
+      transportChargesInr: data.transportChargesInr || 0,
+      additionalServicesInr: data.additionalServicesInr || 0,
+      extraChargesInr: data.extraChargesInr || 0,
+      discountType: data.discountType || 'FIXED',
+      discountValue: data.discountValue || 0,
+      discountInr: data.discountInr || 0,
+      taxPercent: data.taxPercent !== undefined ? data.taxPercent : 5,
+      taxesInr: data.taxesInr || 0,
       subtotalInr: data.subtotalInr,
-      taxesInr: data.taxesInr,
-      discountInr: data.discountInr,
       totalAmountInr: data.totalAmountInr,
       supplierNetCostInr: data.supplierNetCostInr,
       validUntil: data.validUntil,
       terms: data.terms,
       inclusions: data.inclusions || [],
       exclusions: data.exclusions || [],
+      itineraryDays: data.itineraryDays || [],
+      hotelDetails: data.hotelDetails,
       internalNotes: data.internalNotes,
+      customerNotes: data.customerNotes,
       lineItems: data.lineItems,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     // Immutable snapshot JSON
@@ -721,16 +847,18 @@ class CrmRepository {
 
     this.state.quotations.unshift(quote);
 
-    // Add activity to lead
-    this.addLeadActivity({
-      leadId: data.leadId,
-      userId: data.createdByUserId,
-      userName: data.createdByName,
-      type: 'QUOTATION',
-      title: `Quotation Created (${quotationNumber})`,
-      description: `Official proposal prepared for ₹${quote.totalAmountInr.toLocaleString('en-IN')}: ${quote.title}`,
-      metadata: { quotationNumber, totalAmountInr: quote.totalAmountInr },
-    });
+    // Add activity to lead if leadId present
+    if (data.leadId) {
+      this.addLeadActivity({
+        leadId: data.leadId,
+        userId: data.createdByUserId,
+        userName: data.createdByName,
+        type: 'QUOTATION',
+        title: `Quotation Created (${quotationNumber})`,
+        description: `Official proposal prepared for ₹${quote.totalAmountInr.toLocaleString('en-IN')}: ${quote.title}`,
+        metadata: { quotationNumber, totalAmountInr: quote.totalAmountInr },
+      });
+    }
 
     // Audit log
     this.addAuditLog({
@@ -739,7 +867,7 @@ class CrmRepository {
       action: 'QUOTATION_CREATED',
       entityType: 'QUOTATION',
       entityId: quote.id,
-      details: `Created quotation ${quotationNumber} for lead ${data.leadId} (Amount: ₹${quote.totalAmountInr})`,
+      details: `Created quotation ${quotationNumber} for customer ${customerName} (Amount: ₹${quote.totalAmountInr})`,
       ipAddress: '127.0.0.1 (Internal CRM)',
     });
 
@@ -752,6 +880,205 @@ class CrmRepository {
 
     this.persist(this.state);
     return quote;
+  }
+
+  public updateQuotationDraft(
+    id: string,
+    data: Partial<QuotationRecord>,
+    actorId: string
+  ): QuotationRecord {
+    const quote = this.getQuotationById(id);
+    if (!quote) throw new Error(`Quotation not found: ${id}`);
+    if (quote.status !== 'DRAFT') {
+      throw new Error(`Cannot modify quotation ${quote.quotationNumber} because status is ${quote.status}. Please create a new revision instead.`);
+    }
+
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId) || DEFAULT_USERS[0];
+
+    Object.assign(quote, data);
+    quote.updatedAt = new Date().toISOString();
+    quote.immutableSnapshotJson = JSON.stringify(quote);
+
+    this.addAuditLog({
+      userId: actor.id,
+      userEmail: actor.email,
+      action: 'QUOTATION_UPDATED',
+      entityType: 'QUOTATION',
+      entityId: quote.id,
+      details: `Updated draft quotation ${quote.quotationNumber}. New Amount: ₹${quote.totalAmountInr}`,
+      ipAddress: '127.0.0.1 (Internal CRM)',
+    });
+
+    this.persist(this.state);
+    return quote;
+  }
+
+  public createQuotationRevision(id: string, actorId: string): QuotationRecord {
+    const original = this.getQuotationById(id);
+    if (!original) throw new Error(`Quotation not found: ${id}`);
+
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId) || DEFAULT_USERS[0];
+    const newRevNumber = (original.revisionNumber || 0) + 1;
+    const baseRef = original.quotationNumber.replace(/-R\d+$/, '');
+    const newQuotationNumber = `${baseRef}-R${newRevNumber}`;
+
+    const revision: QuotationRecord = {
+      ...JSON.parse(JSON.stringify(original)),
+      id: `quo-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      quotationNumber: newQuotationNumber,
+      version: (original.version || 1) + 1,
+      revisionNumber: newRevNumber,
+      parentQuotationId: original.id,
+      status: 'DRAFT',
+      sentAt: null,
+      acceptedAt: null,
+      rejectedAt: null,
+      createdByUserId: actor.id,
+      createdByName: actor.fullName,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    revision.immutableSnapshotJson = JSON.stringify(revision);
+    this.state.quotations.unshift(revision);
+
+    this.addAuditLog({
+      userId: actor.id,
+      userEmail: actor.email,
+      action: 'QUOTATION_REVISION_CREATED',
+      entityType: 'QUOTATION',
+      entityId: revision.id,
+      details: `Created revision ${newQuotationNumber} from original ${original.quotationNumber}`,
+      ipAddress: '127.0.0.1 (Internal CRM)',
+    });
+
+    this.persist(this.state);
+    return revision;
+  }
+
+  public duplicateQuotation(id: string, actorId: string): QuotationRecord {
+    const original = this.getQuotationById(id);
+    if (!original) throw new Error(`Quotation not found: ${id}`);
+
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId) || DEFAULT_USERS[0];
+    const yearMonth = new Date().toISOString().slice(0, 7).replace('-', '');
+    const seq = (this.state.quotations.length + 1).toString().padStart(4, '0');
+    const newQuotationNumber = `VH-QUO-${yearMonth}-${seq}`;
+
+    const clone: QuotationRecord = {
+      ...JSON.parse(JSON.stringify(original)),
+      id: `quo-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      quotationNumber: newQuotationNumber,
+      version: 1,
+      revisionNumber: 0,
+      parentQuotationId: null,
+      status: 'DRAFT',
+      title: `${original.title} (Copy)`,
+      sentAt: null,
+      acceptedAt: null,
+      rejectedAt: null,
+      createdByUserId: actor.id,
+      createdByName: actor.fullName,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    clone.immutableSnapshotJson = JSON.stringify(clone);
+    this.state.quotations.unshift(clone);
+
+    this.addAuditLog({
+      userId: actor.id,
+      userEmail: actor.email,
+      action: 'QUOTATION_DUPLICATED',
+      entityType: 'QUOTATION',
+      entityId: clone.id,
+      details: `Duplicated quotation ${original.quotationNumber} into new proposal ${newQuotationNumber}`,
+      ipAddress: '127.0.0.1 (Internal CRM)',
+    });
+
+    this.persist(this.state);
+    return clone;
+  }
+
+  public createQuotationSnapshot(
+    quotationId: string,
+    pdfBase64: string,
+    sentToEmail: string,
+    actorId?: string
+  ): QuotationSnapshotRecord {
+    const quote = this.getQuotationById(quotationId);
+    if (!quote) throw new Error(`Quotation not found: ${quotationId}`);
+
+    const actor = DEFAULT_USERS.find((u) => u.id === actorId);
+
+    const snapshot: QuotationSnapshotRecord = {
+      id: `qsnap-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      quotationId: quote.id,
+      version: quote.version || 1,
+      revisionNumber: quote.revisionNumber || 0,
+      snapshotDataJson: JSON.stringify(quote),
+      totalAmountInr: quote.totalAmountInr,
+      pdfBase64,
+      sentToEmail,
+      sentAt: new Date().toISOString(),
+      sentByUserId: actor?.id,
+      sentByName: actor?.fullName,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (!this.state.quotationSnapshots) {
+      this.state.quotationSnapshots = [];
+    }
+    this.state.quotationSnapshots.unshift(snapshot);
+    this.persist(this.state);
+    return snapshot;
+  }
+
+  public recordQuotationEmailLog(data: {
+    quotationId: string;
+    snapshotId?: string;
+    recipientEmail: string;
+    recipientName?: string;
+    subject: string;
+    messageBody?: string;
+    status: 'SENT' | 'PROVIDER_ACCEPTED' | 'FAILED' | 'SIMULATED';
+    providerMessageId?: string;
+    errorMessage?: string;
+    attachmentFilename?: string;
+    sentByUserId?: string;
+    sentByName?: string;
+  }): QuotationEmailLogRecord {
+    const log: QuotationEmailLogRecord = {
+      id: `qemail-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      quotationId: data.quotationId,
+      snapshotId: data.snapshotId,
+      recipientEmail: data.recipientEmail,
+      recipientName: data.recipientName,
+      subject: data.subject,
+      messageBody: data.messageBody,
+      status: data.status,
+      providerMessageId: data.providerMessageId,
+      errorMessage: data.errorMessage,
+      attachmentFilename: data.attachmentFilename,
+      sentByUserId: data.sentByUserId,
+      sentByName: data.sentByName,
+      sentAt: new Date().toISOString(),
+    };
+
+    if (!this.state.quotationEmailLogs) {
+      this.state.quotationEmailLogs = [];
+    }
+    this.state.quotationEmailLogs.unshift(log);
+    this.persist(this.state);
+    return log;
+  }
+
+  public getQuotationSnapshots(quotationId: string): QuotationSnapshotRecord[] {
+    return (this.state.quotationSnapshots || []).filter((s) => s.quotationId === quotationId);
+  }
+
+  public getQuotationEmailLogs(quotationId: string): QuotationEmailLogRecord[] {
+    return (this.state.quotationEmailLogs || []).filter((l) => l.quotationId === quotationId);
   }
 
   public updateQuotationStatus(

@@ -63,6 +63,33 @@
       "isDeleted": false,
       "createdAt": "2026-11-05T18:51:52.380Z",
       "updatedAt": "2026-11-05T18:51:52.380Z"
+    },
+    {
+      "id": "cust-1794546173741-91",
+      "fullName": "Anilbhai Shah",
+      "email": "anil.shah@example.com",
+      "phoneCountryCode": "+91",
+      "phoneNumber": "+91 98240 55555",
+      "normalizedPhone": "+91919824055555",
+      "normalizedEmail": "anil.shah@example.com",
+      "city": "Nadiad",
+      "duplicateWarning": false,
+      "isDeleted": false,
+      "createdAt": "2026-11-13T05:02:53.741Z",
+      "updatedAt": "2026-11-13T05:02:53.741Z"
+    },
+    {
+      "id": "cust-1794546173794-972",
+      "fullName": "Test Draft User",
+      "email": null,
+      "phoneCountryCode": "+91",
+      "phoneNumber": "+91 99999 11111",
+      "normalizedPhone": "+91919999911111",
+      "normalizedEmail": null,
+      "duplicateWarning": false,
+      "isDeleted": false,
+      "createdAt": "2026-11-13T05:02:53.794Z",
+      "updatedAt": "2026-11-13T05:02:53.794Z"
     }
   ],
   "leads": [
@@ -205,6 +232,48 @@
   ],
   "activities": [
     {
+      "leadId": "",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "QUOTATION",
+      "title": "Quotation Status Updated: SENT",
+      "description": "Quotation VH-QUO-202611-0002 changed to SENT",
+      "metadata": {
+        "quotationNumber": "VH-QUO-202611-0002",
+        "status": "SENT"
+      },
+      "id": "act-1794546173798-343",
+      "createdAt": "2026-11-13T05:02:53.798Z"
+    },
+    {
+      "leadId": "",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "QUOTATION",
+      "title": "Quotation Status Updated: SENT",
+      "description": "Dispatched via email to chirag.patel@charotar.in",
+      "metadata": {
+        "quotationNumber": "VH-QUO-202611-0002",
+        "status": "SENT"
+      },
+      "id": "act-1794546173792-945",
+      "createdAt": "2026-11-13T05:02:53.792Z"
+    },
+    {
+      "leadId": "546534d4-862e-4436-a12d-5d0c3e2843f8",
+      "userId": "usr-neel-patel-superadmin",
+      "userName": "Neel Patel",
+      "type": "QUOTATION",
+      "title": "Quotation Created (VH-QUO-202611-0005)",
+      "description": "Official proposal prepared for ₹22,050: Kerala 5N/6D Winter Proposal for Enquiry",
+      "metadata": {
+        "quotationNumber": "VH-QUO-202611-0005",
+        "totalAmountInr": 22050
+      },
+      "id": "act-1794546173745-21",
+      "createdAt": "2026-11-13T05:02:53.745Z"
+    },
+    {
       "leadId": "546534d4-862e-4436-a12d-5d0c3e2843f8",
       "userId": "usr-neel-patel-superadmin",
       "userName": "Neel Patel",
@@ -274,6 +343,517 @@
   ],
   "quotations": [
     {
+      "id": "quo-1794546173800-219",
+      "quotationNumber": "VH-QUO-202611-0002-R1",
+      "quotationType": "PACKAGE",
+      "version": 2,
+      "revisionNumber": 1,
+      "parentQuotationId": "quo-1794546173721-900",
+      "leadId": "",
+      "customerId": "cust-real-1001",
+      "customerName": "Chirag Patel",
+      "customerEmail": "chirag.patel@charotar.in",
+      "customerPhone": "+91 98250 12345",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "DRAFT",
+      "title": "Scenic Kerala & Backwaters Grand Tour",
+      "destination": "Kerala (Munnar, Thekkady, Alleppey, Kovalam)",
+      "durationNights": 6,
+      "durationDays": 7,
+      "adultsCount": 2,
+      "childrenCount": 1,
+      "roomsCount": 1,
+      "sourcePackageSlug": "kerala-6n7d-winter",
+      "basePriceInr": 28000,
+      "transportChargesInr": 5000,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 1000,
+      "discountType": "FIXED",
+      "discountValue": 2000,
+      "discountInr": 2000,
+      "taxPercent": 5,
+      "taxesInr": 1600,
+      "subtotalInr": 32000,
+      "totalAmountInr": 33600,
+      "validUntil": "2026-11-20T05:02:53.720Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [
+        "Accommodation for 6 Nights on double/twin sharing basis",
+        "Daily breakfast at all hotels (CPAI Plan)",
+        "All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay",
+        "Private AC vehicle for all transfers, sightseeing, and intercity travel",
+        "Toll taxes, parking fees, interstate driver allowances, and fuel charges",
+        "Complimentary spice plantation guided tour in Thekkady",
+        "Assistance on arrival and departure at Cochin / Trivandrum Airport"
+      ],
+      "exclusions": [
+        "Airfare or train fare to/from Kerala",
+        "Monument entrance fees, national park safaris, and activity tickets",
+        "Personal expenses such as laundry, phone calls, room service, and tips",
+        "Any optional watersports or Ayurvedic spa therapies",
+        "Travel insurance (available upon request as optional add-on)",
+        "5% GST applicable as per government regulations"
+      ],
+      "itineraryDays": [
+        {
+          "dayNumber": 1,
+          "title": "Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)",
+          "description": "Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.",
+          "meals": "Breakfast included upon arrival check-in",
+          "stayDestination": "Munnar"
+        },
+        {
+          "dayNumber": 2,
+          "title": "Full Day Munnar Exploration & Tea Museum",
+          "description": "Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Munnar"
+        },
+        {
+          "dayNumber": 3,
+          "title": "Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)",
+          "description": "Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Thekkady"
+        },
+        {
+          "dayNumber": 4,
+          "title": "Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)",
+          "description": "Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.",
+          "meals": "Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)",
+          "stayDestination": "Alleppey (Houseboat)"
+        },
+        {
+          "dayNumber": 5,
+          "title": "Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)",
+          "description": "Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.",
+          "meals": "Breakfast on houseboat",
+          "stayDestination": "Kovalam"
+        },
+        {
+          "dayNumber": 6,
+          "title": "Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam",
+          "description": "Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Kovalam"
+        },
+        {
+          "dayNumber": 7,
+          "title": "Kovalam to Trivandrum Airport Departure",
+          "description": "Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Departure"
+        }
+      ],
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 28000,
+          "totalAmountInr": 28000
+        },
+        {
+          "itemOrder": 2,
+          "description": "Dedicated Private Transportation & Sightseeing Transfers",
+          "serviceCategory": "TRANSPORT",
+          "quantity": 1,
+          "unitPriceInr": 5000,
+          "totalAmountInr": 5000
+        },
+        {
+          "itemOrder": 3,
+          "description": "Peak Season / Destination Environmental & Permit Surcharges",
+          "serviceCategory": "SURCHARGE",
+          "quantity": 1,
+          "unitPriceInr": 1000,
+          "totalAmountInr": 1000
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.800Z",
+      "updatedAt": "2026-11-13T05:02:53.800Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173800-219\",\"quotationNumber\":\"VH-QUO-202611-0002-R1\",\"quotationType\":\"PACKAGE\",\"version\":2,\"revisionNumber\":1,\"parentQuotationId\":\"quo-1794546173721-900\",\"leadId\":\"\",\"customerId\":\"cust-real-1001\",\"customerName\":\"Chirag Patel\",\"customerEmail\":\"chirag.patel@charotar.in\",\"customerPhone\":\"+91 98250 12345\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Scenic Kerala & Backwaters Grand Tour\",\"destination\":\"Kerala (Munnar, Thekkady, Alleppey, Kovalam)\",\"durationNights\":6,\"durationDays\":7,\"adultsCount\":2,\"childrenCount\":1,\"roomsCount\":1,\"sourcePackageSlug\":\"kerala-6n7d-winter\",\"basePriceInr\":28000,\"transportChargesInr\":5000,\"additionalServicesInr\":0,\"extraChargesInr\":1000,\"discountType\":\"FIXED\",\"discountValue\":2000,\"discountInr\":2000,\"taxPercent\":5,\"taxesInr\":1600,\"subtotalInr\":32000,\"totalAmountInr\":33600,\"validUntil\":\"2026-11-20T05:02:53.720Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[\"Accommodation for 6 Nights on double/twin sharing basis\",\"Daily breakfast at all hotels (CPAI Plan)\",\"All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay\",\"Private AC vehicle for all transfers, sightseeing, and intercity travel\",\"Toll taxes, parking fees, interstate driver allowances, and fuel charges\",\"Complimentary spice plantation guided tour in Thekkady\",\"Assistance on arrival and departure at Cochin / Trivandrum Airport\"],\"exclusions\":[\"Airfare or train fare to/from Kerala\",\"Monument entrance fees, national park safaris, and activity tickets\",\"Personal expenses such as laundry, phone calls, room service, and tips\",\"Any optional watersports or Ayurvedic spa therapies\",\"Travel insurance (available upon request as optional add-on)\",\"5% GST applicable as per government regulations\"],\"itineraryDays\":[{\"dayNumber\":1,\"title\":\"Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)\",\"description\":\"Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.\",\"meals\":\"Breakfast included upon arrival check-in\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":2,\"title\":\"Full Day Munnar Exploration & Tea Museum\",\"description\":\"Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":3,\"title\":\"Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)\",\"description\":\"Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Thekkady\"},{\"dayNumber\":4,\"title\":\"Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)\",\"description\":\"Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.\",\"meals\":\"Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)\",\"stayDestination\":\"Alleppey (Houseboat)\"},{\"dayNumber\":5,\"title\":\"Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)\",\"description\":\"Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.\",\"meals\":\"Breakfast on houseboat\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":6,\"title\":\"Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam\",\"description\":\"Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":7,\"title\":\"Kovalam to Trivandrum Airport Departure\",\"description\":\"Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Departure\"}],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":28000,\"totalAmountInr\":28000},{\"itemOrder\":2,\"description\":\"Dedicated Private Transportation & Sightseeing Transfers\",\"serviceCategory\":\"TRANSPORT\",\"quantity\":1,\"unitPriceInr\":5000,\"totalAmountInr\":5000},{\"itemOrder\":3,\"description\":\"Peak Season / Destination Environmental & Permit Surcharges\",\"serviceCategory\":\"SURCHARGE\",\"quantity\":1,\"unitPriceInr\":1000,\"totalAmountInr\":1000}],\"createdAt\":\"2026-11-13T05:02:53.800Z\",\"updatedAt\":\"2026-11-13T05:02:53.800Z\",\"immutableSnapshotJson\":\"{\\\"id\\\":\\\"quo-1794546173721-900\\\",\\\"quotationNumber\\\":\\\"VH-QUO-202611-0002\\\",\\\"quotationType\\\":\\\"PACKAGE\\\",\\\"version\\\":1,\\\"revisionNumber\\\":0,\\\"parentQuotationId\\\":null,\\\"leadId\\\":\\\"\\\",\\\"customerId\\\":\\\"cust-real-1001\\\",\\\"customerName\\\":\\\"Chirag Patel\\\",\\\"customerEmail\\\":\\\"chirag.patel@charotar.in\\\",\\\"customerPhone\\\":\\\"+91 98250 12345\\\",\\\"createdByUserId\\\":\\\"usr-neel-patel-superadmin\\\",\\\"createdByName\\\":\\\"Neel Patel\\\",\\\"status\\\":\\\"DRAFT\\\",\\\"title\\\":\\\"Scenic Kerala & Backwaters Grand Tour\\\",\\\"destination\\\":\\\"Kerala (Munnar, Thekkady, Alleppey, Kovalam)\\\",\\\"durationNights\\\":6,\\\"durationDays\\\":7,\\\"adultsCount\\\":2,\\\"childrenCount\\\":1,\\\"roomsCount\\\":1,\\\"sourcePackageSlug\\\":\\\"kerala-6n7d-winter\\\",\\\"basePriceInr\\\":28000,\\\"transportChargesInr\\\":5000,\\\"additionalServicesInr\\\":0,\\\"extraChargesInr\\\":1000,\\\"discountType\\\":\\\"FIXED\\\",\\\"discountValue\\\":2000,\\\"discountInr\\\":2000,\\\"taxPercent\\\":5,\\\"taxesInr\\\":1600,\\\"subtotalInr\\\":32000,\\\"totalAmountInr\\\":33600,\\\"validUntil\\\":\\\"2026-11-20T05:02:53.720Z\\\",\\\"terms\\\":\\\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\\\",\\\"inclusions\\\":[\\\"Accommodation for 6 Nights on double/twin sharing basis\\\",\\\"Daily breakfast at all hotels (CPAI Plan)\\\",\\\"All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay\\\",\\\"Private AC vehicle for all transfers, sightseeing, and intercity travel\\\",\\\"Toll taxes, parking fees, interstate driver allowances, and fuel charges\\\",\\\"Complimentary spice plantation guided tour in Thekkady\\\",\\\"Assistance on arrival and departure at Cochin / Trivandrum Airport\\\"],\\\"exclusions\\\":[\\\"Airfare or train fare to/from Kerala\\\",\\\"Monument entrance fees, national park safaris, and activity tickets\\\",\\\"Personal expenses such as laundry, phone calls, room service, and tips\\\",\\\"Any optional watersports or Ayurvedic spa therapies\\\",\\\"Travel insurance (available upon request as optional add-on)\\\",\\\"5% GST applicable as per government regulations\\\"],\\\"itineraryDays\\\":[{\\\"dayNumber\\\":1,\\\"title\\\":\\\"Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)\\\",\\\"description\\\":\\\"Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.\\\",\\\"meals\\\":\\\"Breakfast included upon arrival check-in\\\",\\\"stayDestination\\\":\\\"Munnar\\\"},{\\\"dayNumber\\\":2,\\\"title\\\":\\\"Full Day Munnar Exploration & Tea Museum\\\",\\\"description\\\":\\\"Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Munnar\\\"},{\\\"dayNumber\\\":3,\\\"title\\\":\\\"Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)\\\",\\\"description\\\":\\\"Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Thekkady\\\"},{\\\"dayNumber\\\":4,\\\"title\\\":\\\"Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)\\\",\\\"description\\\":\\\"Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.\\\",\\\"meals\\\":\\\"Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)\\\",\\\"stayDestination\\\":\\\"Alleppey (Houseboat)\\\"},{\\\"dayNumber\\\":5,\\\"title\\\":\\\"Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)\\\",\\\"description\\\":\\\"Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.\\\",\\\"meals\\\":\\\"Breakfast on houseboat\\\",\\\"stayDestination\\\":\\\"Kovalam\\\"},{\\\"dayNumber\\\":6,\\\"title\\\":\\\"Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam\\\",\\\"description\\\":\\\"Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Kovalam\\\"},{\\\"dayNumber\\\":7,\\\"title\\\":\\\"Kovalam to Trivandrum Airport Departure\\\",\\\"description\\\":\\\"Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Departure\\\"}],\\\"lineItems\\\":[{\\\"itemOrder\\\":1,\\\"description\\\":\\\"Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)\\\",\\\"serviceCategory\\\":\\\"BASE_SERVICE\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":28000,\\\"totalAmountInr\\\":28000},{\\\"itemOrder\\\":2,\\\"description\\\":\\\"Dedicated Private Transportation & Sightseeing Transfers\\\",\\\"serviceCategory\\\":\\\"TRANSPORT\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":5000,\\\"totalAmountInr\\\":5000},{\\\"itemOrder\\\":3,\\\"description\\\":\\\"Peak Season / Destination Environmental & Permit Surcharges\\\",\\\"serviceCategory\\\":\\\"SURCHARGE\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":1000,\\\"totalAmountInr\\\":1000}],\\\"createdAt\\\":\\\"2026-11-13T05:02:53.721Z\\\",\\\"updatedAt\\\":\\\"2026-11-13T05:02:53.721Z\\\"}\",\"sentAt\":null,\"acceptedAt\":null,\"rejectedAt\":null}",
+      "sentAt": null,
+      "acceptedAt": null,
+      "rejectedAt": null
+    },
+    {
+      "id": "quo-1794546173794-20",
+      "quotationNumber": "VH-QUO-202611-0006",
+      "quotationType": "PACKAGE",
+      "version": 1,
+      "revisionNumber": 0,
+      "parentQuotationId": null,
+      "leadId": "",
+      "customerId": "cust-1794546173794-972",
+      "customerName": "Test Draft User",
+      "customerEmail": null,
+      "customerPhone": "+91 99999 11111",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "DRAFT",
+      "title": "Updated Draft Proposal - Luxury Upgrade",
+      "adultsCount": 2,
+      "childrenCount": 0,
+      "roomsCount": 1,
+      "basePriceInr": 20000,
+      "transportChargesInr": 0,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 0,
+      "discountType": "FIXED",
+      "discountValue": 1000,
+      "discountInr": 1000,
+      "taxPercent": 5,
+      "taxesInr": 950,
+      "subtotalInr": 19000,
+      "totalAmountInr": 19950,
+      "validUntil": "2026-11-20T05:02:53.794Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [],
+      "exclusions": [],
+      "itineraryDays": [],
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (2 Adults, 1 Room)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 20000,
+          "totalAmountInr": 20000
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.794Z",
+      "updatedAt": "2026-11-13T05:02:53.796Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173794-20\",\"quotationNumber\":\"VH-QUO-202611-0006\",\"quotationType\":\"PACKAGE\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"\",\"customerId\":\"cust-1794546173794-972\",\"customerName\":\"Test Draft User\",\"customerEmail\":null,\"customerPhone\":\"+91 99999 11111\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Updated Draft Proposal - Luxury Upgrade\",\"adultsCount\":2,\"childrenCount\":0,\"roomsCount\":1,\"basePriceInr\":20000,\"transportChargesInr\":0,\"additionalServicesInr\":0,\"extraChargesInr\":0,\"discountType\":\"FIXED\",\"discountValue\":1000,\"discountInr\":1000,\"taxPercent\":5,\"taxesInr\":950,\"subtotalInr\":19000,\"totalAmountInr\":19950,\"validUntil\":\"2026-11-20T05:02:53.794Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[],\"exclusions\":[],\"itineraryDays\":[],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":20000,\"totalAmountInr\":20000}],\"createdAt\":\"2026-11-13T05:02:53.794Z\",\"updatedAt\":\"2026-11-13T05:02:53.796Z\",\"immutableSnapshotJson\":\"{\\\"id\\\":\\\"quo-1794546173794-20\\\",\\\"quotationNumber\\\":\\\"VH-QUO-202611-0006\\\",\\\"quotationType\\\":\\\"PACKAGE\\\",\\\"version\\\":1,\\\"revisionNumber\\\":0,\\\"parentQuotationId\\\":null,\\\"leadId\\\":\\\"\\\",\\\"customerId\\\":\\\"cust-1794546173794-972\\\",\\\"customerName\\\":\\\"Test Draft User\\\",\\\"customerEmail\\\":null,\\\"customerPhone\\\":\\\"+91 99999 11111\\\",\\\"createdByUserId\\\":\\\"usr-neel-patel-superadmin\\\",\\\"createdByName\\\":\\\"Neel Patel\\\",\\\"status\\\":\\\"DRAFT\\\",\\\"title\\\":\\\"Initial Draft Proposal\\\",\\\"adultsCount\\\":2,\\\"childrenCount\\\":0,\\\"roomsCount\\\":1,\\\"basePriceInr\\\":15000,\\\"transportChargesInr\\\":0,\\\"additionalServicesInr\\\":0,\\\"extraChargesInr\\\":0,\\\"discountType\\\":\\\"FIXED\\\",\\\"discountValue\\\":0,\\\"discountInr\\\":0,\\\"taxPercent\\\":5,\\\"taxesInr\\\":750,\\\"subtotalInr\\\":15000,\\\"totalAmountInr\\\":15750,\\\"validUntil\\\":\\\"2026-11-20T05:02:53.794Z\\\",\\\"terms\\\":\\\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\\\",\\\"inclusions\\\":[],\\\"exclusions\\\":[],\\\"itineraryDays\\\":[],\\\"lineItems\\\":[{\\\"itemOrder\\\":1,\\\"description\\\":\\\"Base Accommodation & Tour Plan (2 Adults, 1 Room)\\\",\\\"serviceCategory\\\":\\\"BASE_SERVICE\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":15000,\\\"totalAmountInr\\\":15000}],\\\"createdAt\\\":\\\"2026-11-13T05:02:53.794Z\\\",\\\"updatedAt\\\":\\\"2026-11-13T05:02:53.794Z\\\"}\"}"
+    },
+    {
+      "id": "quo-1794546173742-267",
+      "quotationNumber": "VH-QUO-202611-0005",
+      "quotationType": "PACKAGE",
+      "version": 1,
+      "revisionNumber": 0,
+      "parentQuotationId": null,
+      "leadId": "546534d4-862e-4436-a12d-5d0c3e2843f8",
+      "customerId": "b4b6b6a1-cf5f-46af-a0d5-98b6304c8f6e",
+      "customerName": "Hardik Prajapati",
+      "customerEmail": "hardik.prajapati@example.com",
+      "customerPhone": "+91 98790 12345",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "DRAFT",
+      "title": "Kerala 5N/6D Winter Proposal for Enquiry",
+      "destination": "Kerala, India",
+      "adultsCount": 2,
+      "childrenCount": 0,
+      "roomsCount": 1,
+      "basePriceInr": 22000,
+      "transportChargesInr": 0,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 0,
+      "discountType": "FIXED",
+      "discountValue": 1000,
+      "discountInr": 1000,
+      "taxPercent": 5,
+      "taxesInr": 1050,
+      "subtotalInr": 21000,
+      "totalAmountInr": 22050,
+      "validUntil": "2026-11-20T05:02:53.742Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [],
+      "exclusions": [],
+      "itineraryDays": [],
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (2 Adults, 1 Room)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 22000,
+          "totalAmountInr": 22000
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.742Z",
+      "updatedAt": "2026-11-13T05:02:53.742Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173742-267\",\"quotationNumber\":\"VH-QUO-202611-0005\",\"quotationType\":\"PACKAGE\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"546534d4-862e-4436-a12d-5d0c3e2843f8\",\"customerId\":\"b4b6b6a1-cf5f-46af-a0d5-98b6304c8f6e\",\"customerName\":\"Hardik Prajapati\",\"customerEmail\":\"hardik.prajapati@example.com\",\"customerPhone\":\"+91 98790 12345\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Kerala 5N/6D Winter Proposal for Enquiry\",\"destination\":\"Kerala, India\",\"adultsCount\":2,\"childrenCount\":0,\"roomsCount\":1,\"basePriceInr\":22000,\"transportChargesInr\":0,\"additionalServicesInr\":0,\"extraChargesInr\":0,\"discountType\":\"FIXED\",\"discountValue\":1000,\"discountInr\":1000,\"taxPercent\":5,\"taxesInr\":1050,\"subtotalInr\":21000,\"totalAmountInr\":22050,\"validUntil\":\"2026-11-20T05:02:53.742Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[],\"exclusions\":[],\"itineraryDays\":[],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":22000,\"totalAmountInr\":22000}],\"createdAt\":\"2026-11-13T05:02:53.742Z\",\"updatedAt\":\"2026-11-13T05:02:53.742Z\"}"
+    },
+    {
+      "id": "quo-1794546173741-395",
+      "quotationNumber": "VH-QUO-202611-0004",
+      "quotationType": "CUSTOM",
+      "version": 1,
+      "revisionNumber": 0,
+      "parentQuotationId": null,
+      "leadId": "",
+      "customerId": "cust-1794546173741-91",
+      "customerName": "Anilbhai Shah",
+      "customerEmail": "anil.shah@example.com",
+      "customerPhone": "+91 98240 55555",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "DRAFT",
+      "title": "Bespoke Gujarat Saurashtra Temple & Wildlife Circuit",
+      "destination": "Somnath, Dwarka, Gir Forest",
+      "durationNights": 4,
+      "durationDays": 5,
+      "adultsCount": 4,
+      "childrenCount": 0,
+      "roomsCount": 2,
+      "basePriceInr": 42000,
+      "transportChargesInr": 12000,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 0,
+      "discountType": "FIXED",
+      "discountValue": 0,
+      "discountInr": 0,
+      "taxPercent": 5,
+      "taxesInr": 2700,
+      "subtotalInr": 54000,
+      "totalAmountInr": 56700,
+      "validUntil": "2026-11-20T05:02:53.741Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [
+        "4 Nights 3-Star AC accommodation",
+        "Daily breakfast and dinner",
+        "AC Innova for all transfers"
+      ],
+      "exclusions": [
+        "Temple VIP darshan tickets",
+        "Gir Lion Safari permits"
+      ],
+      "itineraryDays": [],
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (4 Adults, 2 Rooms)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 42000,
+          "totalAmountInr": 42000
+        },
+        {
+          "itemOrder": 2,
+          "description": "Dedicated Private Transportation & Sightseeing Transfers",
+          "serviceCategory": "TRANSPORT",
+          "quantity": 1,
+          "unitPriceInr": 12000,
+          "totalAmountInr": 12000
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.741Z",
+      "updatedAt": "2026-11-13T05:02:53.741Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173741-395\",\"quotationNumber\":\"VH-QUO-202611-0004\",\"quotationType\":\"CUSTOM\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"\",\"customerId\":\"cust-1794546173741-91\",\"customerName\":\"Anilbhai Shah\",\"customerEmail\":\"anil.shah@example.com\",\"customerPhone\":\"+91 98240 55555\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Bespoke Gujarat Saurashtra Temple & Wildlife Circuit\",\"destination\":\"Somnath, Dwarka, Gir Forest\",\"durationNights\":4,\"durationDays\":5,\"adultsCount\":4,\"childrenCount\":0,\"roomsCount\":2,\"basePriceInr\":42000,\"transportChargesInr\":12000,\"additionalServicesInr\":0,\"extraChargesInr\":0,\"discountType\":\"FIXED\",\"discountValue\":0,\"discountInr\":0,\"taxPercent\":5,\"taxesInr\":2700,\"subtotalInr\":54000,\"totalAmountInr\":56700,\"validUntil\":\"2026-11-20T05:02:53.741Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[\"4 Nights 3-Star AC accommodation\",\"Daily breakfast and dinner\",\"AC Innova for all transfers\"],\"exclusions\":[\"Temple VIP darshan tickets\",\"Gir Lion Safari permits\"],\"itineraryDays\":[],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (4 Adults, 2 Rooms)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":42000,\"totalAmountInr\":42000},{\"itemOrder\":2,\"description\":\"Dedicated Private Transportation & Sightseeing Transfers\",\"serviceCategory\":\"TRANSPORT\",\"quantity\":1,\"unitPriceInr\":12000,\"totalAmountInr\":12000}],\"createdAt\":\"2026-11-13T05:02:53.741Z\",\"updatedAt\":\"2026-11-13T05:02:53.741Z\"}"
+    },
+    {
+      "id": "quo-1794546173740-299",
+      "quotationNumber": "VH-QUO-202611-0003",
+      "quotationType": "HOTEL",
+      "version": 1,
+      "revisionNumber": 0,
+      "parentQuotationId": null,
+      "leadId": "",
+      "customerId": "c91d24bc-e364-4994-b97e-eb3f9a1ba656",
+      "customerName": "Dhaval Patel",
+      "customerEmail": "dhaval.patel@example.com",
+      "customerPhone": "+91 98251 23456",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "DRAFT",
+      "title": "Vembanad Lakefront Luxury Retreat Stay Package",
+      "destination": "Kumarakom / Alleppey, Kerala",
+      "adultsCount": 2,
+      "childrenCount": 0,
+      "roomsCount": 1,
+      "sourceHotelId": "kerala-vembanad-resort",
+      "basePriceInr": 34500,
+      "transportChargesInr": 0,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 0,
+      "discountType": "PERCENTAGE",
+      "discountValue": 10,
+      "discountInr": 3450,
+      "taxPercent": 18,
+      "taxesInr": 5589,
+      "subtotalInr": 31050,
+      "totalAmountInr": 36639,
+      "validUntil": "2026-11-20T05:02:53.740Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [
+        "Complimentary sunset Shikara boat cruise",
+        "Traditional welcome tender coconut drink",
+        "15% discount on Ayurvedic spa treatments",
+        "Free high-speed Wi-Fi throughout resort"
+      ],
+      "exclusions": [
+        "Airfare transfers",
+        "Personal laundry"
+      ],
+      "itineraryDays": [],
+      "hotelDetails": {
+        "hotelName": "Vembanad Lakefront Luxury Retreat",
+        "location": "Kumarakom / Alleppey, Kerala",
+        "roomType": "Heritage Lake View Villa",
+        "mealPlan": "CPAI",
+        "checkInTime": "02:00 PM",
+        "checkOutTime": "11:00 AM",
+        "perks": [
+          "Complimentary sunset Shikara boat cruise",
+          "Traditional welcome tender coconut drink",
+          "15% discount on Ayurvedic spa treatments",
+          "Free high-speed Wi-Fi throughout resort"
+        ]
+      },
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (2 Adults, 1 Room)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 34500,
+          "totalAmountInr": 34500
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.740Z",
+      "updatedAt": "2026-11-13T05:02:53.740Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173740-299\",\"quotationNumber\":\"VH-QUO-202611-0003\",\"quotationType\":\"HOTEL\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"\",\"customerId\":\"c91d24bc-e364-4994-b97e-eb3f9a1ba656\",\"customerName\":\"Dhaval Patel\",\"customerEmail\":\"dhaval.patel@example.com\",\"customerPhone\":\"+91 98251 23456\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Vembanad Lakefront Luxury Retreat Stay Package\",\"destination\":\"Kumarakom / Alleppey, Kerala\",\"adultsCount\":2,\"childrenCount\":0,\"roomsCount\":1,\"sourceHotelId\":\"kerala-vembanad-resort\",\"basePriceInr\":34500,\"transportChargesInr\":0,\"additionalServicesInr\":0,\"extraChargesInr\":0,\"discountType\":\"PERCENTAGE\",\"discountValue\":10,\"discountInr\":3450,\"taxPercent\":18,\"taxesInr\":5589,\"subtotalInr\":31050,\"totalAmountInr\":36639,\"validUntil\":\"2026-11-20T05:02:53.740Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[\"Complimentary sunset Shikara boat cruise\",\"Traditional welcome tender coconut drink\",\"15% discount on Ayurvedic spa treatments\",\"Free high-speed Wi-Fi throughout resort\"],\"exclusions\":[\"Airfare transfers\",\"Personal laundry\"],\"itineraryDays\":[],\"hotelDetails\":{\"hotelName\":\"Vembanad Lakefront Luxury Retreat\",\"location\":\"Kumarakom / Alleppey, Kerala\",\"roomType\":\"Heritage Lake View Villa\",\"mealPlan\":\"CPAI\",\"checkInTime\":\"02:00 PM\",\"checkOutTime\":\"11:00 AM\",\"perks\":[\"Complimentary sunset Shikara boat cruise\",\"Traditional welcome tender coconut drink\",\"15% discount on Ayurvedic spa treatments\",\"Free high-speed Wi-Fi throughout resort\"]},\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":34500,\"totalAmountInr\":34500}],\"createdAt\":\"2026-11-13T05:02:53.740Z\",\"updatedAt\":\"2026-11-13T05:02:53.740Z\"}"
+    },
+    {
+      "id": "quo-1794546173721-900",
+      "quotationNumber": "VH-QUO-202611-0002",
+      "quotationType": "PACKAGE",
+      "version": 1,
+      "revisionNumber": 0,
+      "parentQuotationId": null,
+      "leadId": "",
+      "customerId": "cust-real-1001",
+      "customerName": "Chirag Patel",
+      "customerEmail": "chirag.patel@charotar.in",
+      "customerPhone": "+91 98250 12345",
+      "createdByUserId": "usr-neel-patel-superadmin",
+      "createdByName": "Neel Patel",
+      "status": "SENT",
+      "title": "Scenic Kerala & Backwaters Grand Tour",
+      "destination": "Kerala (Munnar, Thekkady, Alleppey, Kovalam)",
+      "durationNights": 6,
+      "durationDays": 7,
+      "adultsCount": 2,
+      "childrenCount": 1,
+      "roomsCount": 1,
+      "sourcePackageSlug": "kerala-6n7d-winter",
+      "basePriceInr": 28000,
+      "transportChargesInr": 5000,
+      "additionalServicesInr": 0,
+      "extraChargesInr": 1000,
+      "discountType": "FIXED",
+      "discountValue": 2000,
+      "discountInr": 2000,
+      "taxPercent": 5,
+      "taxesInr": 1600,
+      "subtotalInr": 32000,
+      "totalAmountInr": 33600,
+      "validUntil": "2026-11-20T05:02:53.720Z",
+      "terms": "Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.",
+      "inclusions": [
+        "Accommodation for 6 Nights on double/twin sharing basis",
+        "Daily breakfast at all hotels (CPAI Plan)",
+        "All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay",
+        "Private AC vehicle for all transfers, sightseeing, and intercity travel",
+        "Toll taxes, parking fees, interstate driver allowances, and fuel charges",
+        "Complimentary spice plantation guided tour in Thekkady",
+        "Assistance on arrival and departure at Cochin / Trivandrum Airport"
+      ],
+      "exclusions": [
+        "Airfare or train fare to/from Kerala",
+        "Monument entrance fees, national park safaris, and activity tickets",
+        "Personal expenses such as laundry, phone calls, room service, and tips",
+        "Any optional watersports or Ayurvedic spa therapies",
+        "Travel insurance (available upon request as optional add-on)",
+        "5% GST applicable as per government regulations"
+      ],
+      "itineraryDays": [
+        {
+          "dayNumber": 1,
+          "title": "Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)",
+          "description": "Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.",
+          "meals": "Breakfast included upon arrival check-in",
+          "stayDestination": "Munnar"
+        },
+        {
+          "dayNumber": 2,
+          "title": "Full Day Munnar Exploration & Tea Museum",
+          "description": "Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Munnar"
+        },
+        {
+          "dayNumber": 3,
+          "title": "Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)",
+          "description": "Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Thekkady"
+        },
+        {
+          "dayNumber": 4,
+          "title": "Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)",
+          "description": "Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.",
+          "meals": "Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)",
+          "stayDestination": "Alleppey (Houseboat)"
+        },
+        {
+          "dayNumber": 5,
+          "title": "Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)",
+          "description": "Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.",
+          "meals": "Breakfast on houseboat",
+          "stayDestination": "Kovalam"
+        },
+        {
+          "dayNumber": 6,
+          "title": "Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam",
+          "description": "Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Kovalam"
+        },
+        {
+          "dayNumber": 7,
+          "title": "Kovalam to Trivandrum Airport Departure",
+          "description": "Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.",
+          "meals": "Breakfast at hotel",
+          "stayDestination": "Departure"
+        }
+      ],
+      "lineItems": [
+        {
+          "itemOrder": 1,
+          "description": "Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)",
+          "serviceCategory": "BASE_SERVICE",
+          "quantity": 1,
+          "unitPriceInr": 28000,
+          "totalAmountInr": 28000
+        },
+        {
+          "itemOrder": 2,
+          "description": "Dedicated Private Transportation & Sightseeing Transfers",
+          "serviceCategory": "TRANSPORT",
+          "quantity": 1,
+          "unitPriceInr": 5000,
+          "totalAmountInr": 5000
+        },
+        {
+          "itemOrder": 3,
+          "description": "Peak Season / Destination Environmental & Permit Surcharges",
+          "serviceCategory": "SURCHARGE",
+          "quantity": 1,
+          "unitPriceInr": 1000,
+          "totalAmountInr": 1000
+        }
+      ],
+      "createdAt": "2026-11-13T05:02:53.721Z",
+      "updatedAt": "2026-11-13T05:02:53.721Z",
+      "immutableSnapshotJson": "{\"id\":\"quo-1794546173721-900\",\"quotationNumber\":\"VH-QUO-202611-0002\",\"quotationType\":\"PACKAGE\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"\",\"customerId\":\"cust-real-1001\",\"customerName\":\"Chirag Patel\",\"customerEmail\":\"chirag.patel@charotar.in\",\"customerPhone\":\"+91 98250 12345\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Scenic Kerala & Backwaters Grand Tour\",\"destination\":\"Kerala (Munnar, Thekkady, Alleppey, Kovalam)\",\"durationNights\":6,\"durationDays\":7,\"adultsCount\":2,\"childrenCount\":1,\"roomsCount\":1,\"sourcePackageSlug\":\"kerala-6n7d-winter\",\"basePriceInr\":28000,\"transportChargesInr\":5000,\"additionalServicesInr\":0,\"extraChargesInr\":1000,\"discountType\":\"FIXED\",\"discountValue\":2000,\"discountInr\":2000,\"taxPercent\":5,\"taxesInr\":1600,\"subtotalInr\":32000,\"totalAmountInr\":33600,\"validUntil\":\"2026-11-20T05:02:53.720Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[\"Accommodation for 6 Nights on double/twin sharing basis\",\"Daily breakfast at all hotels (CPAI Plan)\",\"All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay\",\"Private AC vehicle for all transfers, sightseeing, and intercity travel\",\"Toll taxes, parking fees, interstate driver allowances, and fuel charges\",\"Complimentary spice plantation guided tour in Thekkady\",\"Assistance on arrival and departure at Cochin / Trivandrum Airport\"],\"exclusions\":[\"Airfare or train fare to/from Kerala\",\"Monument entrance fees, national park safaris, and activity tickets\",\"Personal expenses such as laundry, phone calls, room service, and tips\",\"Any optional watersports or Ayurvedic spa therapies\",\"Travel insurance (available upon request as optional add-on)\",\"5% GST applicable as per government regulations\"],\"itineraryDays\":[{\"dayNumber\":1,\"title\":\"Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)\",\"description\":\"Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.\",\"meals\":\"Breakfast included upon arrival check-in\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":2,\"title\":\"Full Day Munnar Exploration & Tea Museum\",\"description\":\"Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":3,\"title\":\"Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)\",\"description\":\"Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Thekkady\"},{\"dayNumber\":4,\"title\":\"Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)\",\"description\":\"Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.\",\"meals\":\"Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)\",\"stayDestination\":\"Alleppey (Houseboat)\"},{\"dayNumber\":5,\"title\":\"Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)\",\"description\":\"Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.\",\"meals\":\"Breakfast on houseboat\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":6,\"title\":\"Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam\",\"description\":\"Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":7,\"title\":\"Kovalam to Trivandrum Airport Departure\",\"description\":\"Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Departure\"}],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":28000,\"totalAmountInr\":28000},{\"itemOrder\":2,\"description\":\"Dedicated Private Transportation & Sightseeing Transfers\",\"serviceCategory\":\"TRANSPORT\",\"quantity\":1,\"unitPriceInr\":5000,\"totalAmountInr\":5000},{\"itemOrder\":3,\"description\":\"Peak Season / Destination Environmental & Permit Surcharges\",\"serviceCategory\":\"SURCHARGE\",\"quantity\":1,\"unitPriceInr\":1000,\"totalAmountInr\":1000}],\"createdAt\":\"2026-11-13T05:02:53.721Z\",\"updatedAt\":\"2026-11-13T05:02:53.721Z\"}",
+      "sentAt": "2026-11-13T05:02:53.798Z"
+    },
+    {
       "id": "quo-real-202611-0001",
       "quotationNumber": "VH-QUO-202611-0001",
       "quotationReference": "VH-QUO-202611-0001",
@@ -332,10 +912,304 @@
       "createdAt": "2026-11-05T05:56:01.151Z"
     }
   ],
+  "quotationSnapshots": [
+    {
+      "id": "qsnap-1794546173789-403",
+      "quotationId": "quo-1794546173721-900",
+      "version": 1,
+      "revisionNumber": 0,
+      "snapshotDataJson": "{\"id\":\"quo-1794546173721-900\",\"quotationNumber\":\"VH-QUO-202611-0002\",\"quotationType\":\"PACKAGE\",\"version\":1,\"revisionNumber\":0,\"parentQuotationId\":null,\"leadId\":\"\",\"customerId\":\"cust-real-1001\",\"customerName\":\"Chirag Patel\",\"customerEmail\":\"chirag.patel@charotar.in\",\"customerPhone\":\"+91 98250 12345\",\"createdByUserId\":\"usr-neel-patel-superadmin\",\"createdByName\":\"Neel Patel\",\"status\":\"DRAFT\",\"title\":\"Scenic Kerala & Backwaters Grand Tour\",\"destination\":\"Kerala (Munnar, Thekkady, Alleppey, Kovalam)\",\"durationNights\":6,\"durationDays\":7,\"adultsCount\":2,\"childrenCount\":1,\"roomsCount\":1,\"sourcePackageSlug\":\"kerala-6n7d-winter\",\"basePriceInr\":28000,\"transportChargesInr\":5000,\"additionalServicesInr\":0,\"extraChargesInr\":1000,\"discountType\":\"FIXED\",\"discountValue\":2000,\"discountInr\":2000,\"taxPercent\":5,\"taxesInr\":1600,\"subtotalInr\":32000,\"totalAmountInr\":33600,\"validUntil\":\"2026-11-20T05:02:53.720Z\",\"terms\":\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\",\"inclusions\":[\"Accommodation for 6 Nights on double/twin sharing basis\",\"Daily breakfast at all hotels (CPAI Plan)\",\"All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay\",\"Private AC vehicle for all transfers, sightseeing, and intercity travel\",\"Toll taxes, parking fees, interstate driver allowances, and fuel charges\",\"Complimentary spice plantation guided tour in Thekkady\",\"Assistance on arrival and departure at Cochin / Trivandrum Airport\"],\"exclusions\":[\"Airfare or train fare to/from Kerala\",\"Monument entrance fees, national park safaris, and activity tickets\",\"Personal expenses such as laundry, phone calls, room service, and tips\",\"Any optional watersports or Ayurvedic spa therapies\",\"Travel insurance (available upon request as optional add-on)\",\"5% GST applicable as per government regulations\"],\"itineraryDays\":[{\"dayNumber\":1,\"title\":\"Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)\",\"description\":\"Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.\",\"meals\":\"Breakfast included upon arrival check-in\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":2,\"title\":\"Full Day Munnar Exploration & Tea Museum\",\"description\":\"Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Munnar\"},{\"dayNumber\":3,\"title\":\"Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)\",\"description\":\"Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Thekkady\"},{\"dayNumber\":4,\"title\":\"Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)\",\"description\":\"Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.\",\"meals\":\"Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)\",\"stayDestination\":\"Alleppey (Houseboat)\"},{\"dayNumber\":5,\"title\":\"Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)\",\"description\":\"Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.\",\"meals\":\"Breakfast on houseboat\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":6,\"title\":\"Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam\",\"description\":\"Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Kovalam\"},{\"dayNumber\":7,\"title\":\"Kovalam to Trivandrum Airport Departure\",\"description\":\"Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.\",\"meals\":\"Breakfast at hotel\",\"stayDestination\":\"Departure\"}],\"lineItems\":[{\"itemOrder\":1,\"description\":\"Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)\",\"serviceCategory\":\"BASE_SERVICE\",\"quantity\":1,\"unitPriceInr\":28000,\"totalAmountInr\":28000},{\"itemOrder\":2,\"description\":\"Dedicated Private Transportation & Sightseeing Transfers\",\"serviceCategory\":\"TRANSPORT\",\"quantity\":1,\"unitPriceInr\":5000,\"totalAmountInr\":5000},{\"itemOrder\":3,\"description\":\"Peak Season / Destination Environmental & Permit Surcharges\",\"serviceCategory\":\"SURCHARGE\",\"quantity\":1,\"unitPriceInr\":1000,\"totalAmountInr\":1000}],\"createdAt\":\"2026-11-13T05:02:53.721Z\",\"updatedAt\":\"2026-11-13T05:02:53.721Z\",\"immutableSnapshotJson\":\"{\\\"id\\\":\\\"quo-1794546173721-900\\\",\\\"quotationNumber\\\":\\\"VH-QUO-202611-0002\\\",\\\"quotationType\\\":\\\"PACKAGE\\\",\\\"version\\\":1,\\\"revisionNumber\\\":0,\\\"parentQuotationId\\\":null,\\\"leadId\\\":\\\"\\\",\\\"customerId\\\":\\\"cust-real-1001\\\",\\\"customerName\\\":\\\"Chirag Patel\\\",\\\"customerEmail\\\":\\\"chirag.patel@charotar.in\\\",\\\"customerPhone\\\":\\\"+91 98250 12345\\\",\\\"createdByUserId\\\":\\\"usr-neel-patel-superadmin\\\",\\\"createdByName\\\":\\\"Neel Patel\\\",\\\"status\\\":\\\"DRAFT\\\",\\\"title\\\":\\\"Scenic Kerala & Backwaters Grand Tour\\\",\\\"destination\\\":\\\"Kerala (Munnar, Thekkady, Alleppey, Kovalam)\\\",\\\"durationNights\\\":6,\\\"durationDays\\\":7,\\\"adultsCount\\\":2,\\\"childrenCount\\\":1,\\\"roomsCount\\\":1,\\\"sourcePackageSlug\\\":\\\"kerala-6n7d-winter\\\",\\\"basePriceInr\\\":28000,\\\"transportChargesInr\\\":5000,\\\"additionalServicesInr\\\":0,\\\"extraChargesInr\\\":1000,\\\"discountType\\\":\\\"FIXED\\\",\\\"discountValue\\\":2000,\\\"discountInr\\\":2000,\\\"taxPercent\\\":5,\\\"taxesInr\\\":1600,\\\"subtotalInr\\\":32000,\\\"totalAmountInr\\\":33600,\\\"validUntil\\\":\\\"2026-11-20T05:02:53.720Z\\\",\\\"terms\\\":\\\"Standard Varni Holidays Terms: 25% booking advance, 50% upon voucher issuance, balance 7 days prior to travel. Cancellation penalties apply as per hotel & airline policies.\\\",\\\"inclusions\\\":[\\\"Accommodation for 6 Nights on double/twin sharing basis\\\",\\\"Daily breakfast at all hotels (CPAI Plan)\\\",\\\"All meals (Breakfast, Lunch, Evening Snacks & Dinner) during Houseboat stay\\\",\\\"Private AC vehicle for all transfers, sightseeing, and intercity travel\\\",\\\"Toll taxes, parking fees, interstate driver allowances, and fuel charges\\\",\\\"Complimentary spice plantation guided tour in Thekkady\\\",\\\"Assistance on arrival and departure at Cochin / Trivandrum Airport\\\"],\\\"exclusions\\\":[\\\"Airfare or train fare to/from Kerala\\\",\\\"Monument entrance fees, national park safaris, and activity tickets\\\",\\\"Personal expenses such as laundry, phone calls, room service, and tips\\\",\\\"Any optional watersports or Ayurvedic spa therapies\\\",\\\"Travel insurance (available upon request as optional add-on)\\\",\\\"5% GST applicable as per government regulations\\\"],\\\"itineraryDays\\\":[{\\\"dayNumber\\\":1,\\\"title\\\":\\\"Arrival Cochin & Scenic Transfer to Munnar (130 km / 4 hrs)\\\",\\\"description\\\":\\\"Warm welcome by our chauffeur at Cochin Airport/Railway Station. Drive through cascading Cheeyappara and Valara waterfalls. Check in at your Munnar tea plantation resort. Evening free to stroll through local tea markets.\\\",\\\"meals\\\":\\\"Breakfast included upon arrival check-in\\\",\\\"stayDestination\\\":\\\"Munnar\\\"},{\\\"dayNumber\\\":2,\\\"title\\\":\\\"Full Day Munnar Exploration & Tea Museum\\\",\\\"description\\\":\\\"Visit Eravikulam National Park (home to the endangered Nilgiri Tahr), Mattupetty Dam, Echo Point, Kundala Lake, and the Tata Tea Museum. Experience a panoramic photo stop amidst lush undulating tea gardens.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Munnar\\\"},{\\\"dayNumber\\\":3,\\\"title\\\":\\\"Munnar to Thekkady Spice Sanctuary (90 km / 3 hrs)\\\",\\\"description\\\":\\\"Scenic drive through the Western Ghats to Thekkady (Periyar). Check in to hotel. Afternoon guided spice plantation walk discovering cardamom, pepper, and cinnamon. Optional evening Periyar Lake boat safari and Kalaripayattu martial arts show.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Thekkady\\\"},{\\\"dayNumber\\\":4,\\\"title\\\":\\\"Thekkady to Alleppey Backwaters & Private Houseboat Cruise (140 km / 4 hrs)\\\",\\\"description\\\":\\\"Journey to the Venice of the East. Board your traditional Kerala Kettuvallam (Houseboat) at 12:00 PM. Cruise along serene palm-fringed canals, paddy fields, and lagoons. Relish freshly prepared traditional Kerala lunch and dinner onboard.\\\",\\\"meals\\\":\\\"Breakfast, Lunch, Evening Tea & Snacks, Dinner (Full Board on Houseboat)\\\",\\\"stayDestination\\\":\\\"Alleppey (Houseboat)\\\"},{\\\"dayNumber\\\":5,\\\"title\\\":\\\"Alleppey to Kovalam Beach via Trivandrum (160 km / 4.5 hrs)\\\",\\\"description\\\":\\\"Disembark houseboat after breakfast. Drive to Kovalam beach town. Enroute visit the sacred Padmanabhaswamy Temple and Napier Museum in Trivandrum. Evening at leisure on Lighthouse Beach watching the Arabian Sea sunset.\\\",\\\"meals\\\":\\\"Breakfast on houseboat\\\",\\\"stayDestination\\\":\\\"Kovalam\\\"},{\\\"dayNumber\\\":6,\\\"title\\\":\\\"Excursion to Kanyakumari (Southern Tip of India) & Return to Kovalam\\\",\\\"description\\\":\\\"Day trip to Kanyakumari (90 km). Visit Vivekananda Rock Memorial, Thiruvalluvar Statue via ferry, and Gandhi Memorial Mandapam. Witness the confluence of the Indian Ocean, Arabian Sea, and Bay of Bengal. Return to Kovalam for night stay.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Kovalam\\\"},{\\\"dayNumber\\\":7,\\\"title\\\":\\\"Kovalam to Trivandrum Airport Departure\\\",\\\"description\\\":\\\"Enjoy a relaxing morning at the beach. Check out from the resort and transfer to Trivandrum Airport (TRV) with cherished memories of your joyful Varni Holidays vacation.\\\",\\\"meals\\\":\\\"Breakfast at hotel\\\",\\\"stayDestination\\\":\\\"Departure\\\"}],\\\"lineItems\\\":[{\\\"itemOrder\\\":1,\\\"description\\\":\\\"Base Accommodation & Tour Plan (2 Adults, 1 Children, 1 Room)\\\",\\\"serviceCategory\\\":\\\"BASE_SERVICE\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":28000,\\\"totalAmountInr\\\":28000},{\\\"itemOrder\\\":2,\\\"description\\\":\\\"Dedicated Private Transportation & Sightseeing Transfers\\\",\\\"serviceCategory\\\":\\\"TRANSPORT\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":5000,\\\"totalAmountInr\\\":5000},{\\\"itemOrder\\\":3,\\\"description\\\":\\\"Peak Season / Destination Environmental & Permit Surcharges\\\",\\\"serviceCategory\\\":\\\"SURCHARGE\\\",\\\"quantity\\\":1,\\\"unitPriceInr\\\":1000,\\\"totalAmountInr\\\":1000}],\\\"createdAt\\\":\\\"2026-11-13T05:02:53.721Z\\\",\\\"updatedAt\\\":\\\"2026-11-13T05:02:53.721Z\\\"}\"}",
+      "totalAmountInr": 33600,
+      "pdfBase64": "JVBERi0xLjMKJbrfrOAKMyAwIG9iago8PC9UeXBlIC9QYWdlCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyAyIDAgUgovTWVkaWFCb3ggWzAgMCA1OTUuMjc5OTk5OTk5OTk5OTcyNyA4NDEuODg5OTk5OTk5OTk5OTg2NF0KL0NvbnRlbnRzIDQgMCBSCj4+CmVuZG9iago0IDAgb2JqCjw8Ci9MZW5ndGggMTAyMzMKPj4Kc3RyZWFtCjAuNTY3MDAwMDAwMDAwMDAwMSB3CjAgRwowLiAwLjEzIDAuMjIgcmcKMC4gODQxLjg4OTk5OTk5OTk5OTk4NjQgNTk1LjI3OTk5OTk5OTk5OTk3MjcgLTc5LjM3MDA3ODc0MDE1NzQ4MTQgcmUKZgowLjgzIDAuNiAwLjIgcmcKMC4gNzYyLjUxOTkyMTI1OTg0MjQ3NjUgNTk1LjI3OTk5OTk5OTk5OTk3MjcgLTUuNjY5MjkxMzM4NTgyNjc3OCByZQpmCkJUCi9GMiAxOCBUZgoyMC42OTk5OTk5OTk5OTk5OTkzIFRMCjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA4MDcuODc0MjUxOTY4NTAzOTI2OSBUZAooVkFSTkkgSE9MSURBWVMpIFRqCkVUCkJUCi9GMSA4LjUgVGYKOS43NzQ5OTk5OTk5OTk5OTg2IFRMCjAuOTE0IDAuNzI1IDAuMzY5IHJnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNzkwLjg2NjM3Nzk1Mjc1NTg5NzIgVGQKKFlPVVIgR0FURVdBWSBUTyBKT1lGVUwgSE9MSURBWVMglSBBTkFORCwgR1VKQVJBVCkgVGoKRVQKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjc4NCAwLjg0MyAwLjkwMiByZwozOS42ODUwMzkzNzAwNzg3NDA3IDc3My44NTg1MDM5MzcwMDc4Njc1IFRkCihBbmFuZCBIUTogMzE3IE5hcmF5YW4gRW1waXJlLCBBbmFuZCAtIFZpZHlhbmFnYXIgUmQgfCBUZWw6ICs5MSA2MzU3MCA1MDUwNSB8IEVtYWlsOiB2YXJuaWludGVybmF0aW9uYWw3QGdtYWlsLmNvbSkgVGoKRVQKQlQKL0YyIDExIFRmCjEyLjY0OTk5OTk5OTk5OTk5ODYgVEwKMS4gZwozODguOTQ0OTYwNjI5OTIxMTgzNyA4MDcuODc0MjUxOTY4NTAzOTI2OSBUZAooT0ZGSUNJQUwgVFJBVkVMIFFVT1RBVElPTikgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuOTE0IDAuNzI1IDAuMzY5IHJnCjQ1Ny41MTQ5NjA2Mjk5MjExMiA3OTAuODY2Mzc3OTUyNzU1ODk3MiBUZAooUmVmOiBWSC1RVU8tMjAyNjExLTAwMDIpIFRqCkVUCkJUCi9GMSA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAowLjkxNCAwLjcyNSAwLjM2OSByZwo0MTUuNTk0OTYwNjI5OTIxMjE3OCA3NzMuODU4NTAzOTM3MDA3ODY3NSBUZAooRGF0ZTogMTMgTm92IDIwMjYgfCBWYWxpZDogMjAgTm92IDIwMjYpIFRqCkVUCjAuOTcgMC45OCAwLjk5IHJnCjAuOSAwLjkxIDAuOTMgUkcKMzkuNjg1MDM5MzcwMDc4NzQwNyA3MzkuODQyNzU1OTA1NTExODA4MSAyNDkuNDUxMDIzNjIyMDQ3MjE2NiAtOTAuNzA4NjYxNDE3MzIyODQ0IHJlCkIKQlQKL0YyIDguNSBUZgo5Ljc3NDk5OTk5OTk5OTk5ODYgVEwKMC4gMC4xMjUgMC4yMTYgcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyA3MjIuODM0ODgxODg5NzYzNzc4NCBUZAooUFJFUEFSRUQgRk9SIFwoVkFMVUVEIENMSUVOVFwpOikgVGoKRVQKQlQKL0YyIDEwLjUgVGYKMTIuMDc0OTk5OTk5OTk5OTk5MyBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjUxLjAyMzYyMjA0NzI0NDEwMzMgNzA1LjgyNzAwNzg3NDAxNTc0ODcgVGQKKENoaXJhZyBQYXRlbCkgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuNDQzIDAuNTAyIDAuNTg4IHJnCjUxLjAyMzYyMjA0NzI0NDEwMzMgNjkxLjY1Mzc3OTUyNzU1ODk4MTUgVGQKKE1vYmlsZTogKzkxIDk4MjUwIDEyMzQ1KSBUagpFVApCVAovRjEgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMC40NDMgMC41MDIgMC41ODggcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyA2NzcuNDgwNTUxMTgxMTAyMzI4IFRkCihFbWFpbDogY2hpcmFnLnBhdGVsQGNoYXJvdGFyLmluKSBUagpFVApCVAovRjEgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMC40NDMgMC41MDIgMC41ODggcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyA2NjMuMzA3MzIyODM0NjQ1Njc0NCBUZAooTG9jYXRpb246IEFuYW5kKSBUagpFVAowLjk3IDAuOTggMC45OSByZwozMDYuMTQzOTM3MDA3ODc0MDAxMiA3MzkuODQyNzU1OTA1NTExODA4MSAyNDkuNDUxMDIzNjIyMDQ3MjE2NiAtOTAuNzA4NjYxNDE3MzIyODQ0IHJlCkIKQlQKL0YyIDguNSBUZgo5Ljc3NDk5OTk5OTk5OTk5ODYgVEwKMC4gMC4xMjUgMC4yMTYgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgNzIyLjgzNDg4MTg4OTc2Mzc3ODQgVGQKKElUSU5FUkFSWSAmIFJFU0VSVkFUSU9OIFNQRUNTOikgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgNzA1LjgyNzAwNzg3NDAxNTc0ODcgVGQKKFR5cGU6IEN1cmF0ZWQgVG91ciBQYWNrYWdlIEl0aW5lcmFyeSkgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgNjkxLjY1Mzc3OTUyNzU1ODk4MTUgVGQKKER1cmF0aW9uOiA2IE5pZ2h0cyAvIDcgRGF5cykgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgNjc3LjQ4MDU1MTE4MTEwMjMyOCBUZAooVHJhdmVsIERhdGVzOiBGbGV4aWJsZSAvIEFzIENvbmZpcm1lZCkgVGoKRVQKQlQKL0YxIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgNjYzLjMwNzMyMjgzNDY0NTY3NDQgVGQKKFBhcnR5OiAyIEFkdWx0cywgMSBDaGlsZHJlbiCVIDEgUm9vbVwoc1wpKSBUagpFVAowLjk0IDAuOTYgMC45NyByZwowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKMzkuNjg1MDM5MzcwMDc4NzQwNyA2MzIuMTI2MjIwNDcyNDQwODc3NSA1MTUuOTA5OTIxMjU5ODQyNDYyOSAtMzQuMDE1NzQ4MDMxNDk2MDY2NSByZQpCCkJUCi9GMiAxMC41IFRmCjEyLjA3NDk5OTk5OTk5OTk5OTMgVEwKMC4gMC4xMjUgMC4yMTYgcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyA2MTAuODY2Mzc3OTUyNzU1ODk3MiBUZAooUEFDS0FHRSAvIFBST1BPU0FMOiBTQ0VOSUMgS0VSQUxBICYgQkFDS1dBVEVSUyBHUkFORCBUT1VSKSBUagpFVApCVAovRjEgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMC40NDMgMC41MDIgMC41ODggcmcKMzMzLjUzNjM3Nzk1Mjc1NTc5OTUgNjEwLjg2NjM3Nzk1Mjc1NTg5NzIgVGQKKERlc3RpbmF0aW9uOiBLZXJhbGEgXChNdW5uYXIsIFRoZWtrYWR5LCBBbGxlcHBleSwgS292YWxhbVwpKSBUagpFVApCVAovRjIgOS41IFRmCjEwLjkyNDk5OTk5OTk5OTk5ODkgVEwKMC4gMC4xMjUgMC4yMTYgcmcKMzkuNjg1MDM5MzcwMDc4NzQwNyA1ODYuNzcxODg5NzYzNzc5NDI3MSBUZAooREVUQUlMRUQgREFZLUJZLURBWSBUT1VSIElUSU5FUkFSWSkgVGoKRVQKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLiAwLjEzIDAuMjIgcmcKMC45IDAuOTEgMC45MyBSRwowLiB3CjAuIDAuMTMgMC4yMiByZwozOS42ODUwMzkzNzAwNzg3NDA3IDU3OC4yNjc5NTI3NTU5MDU0MTIyIDUxLjAyMzYyMjA0NzI0NDEwMzMgLTI1LjA3NDAxNTc0ODAzMTQ5NTYgcmUKZgpCVAovRjIgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMS4gZwo0Ny42MjIwNDcyNDQwOTQ0OTYgNTYzLjUzMDk0NDg4MTg4OTgwOSBUZAooRGF5KSBUagpFVAowLiAwLjEzIDAuMjIgcmcKMC45IDAuOTEgMC45MyBSRwowLiB3CjAuIDAuMTMgMC4yMiByZwo5MC43MDg2NjE0MTczMjI4NDQgNTc4LjI2Nzk1Mjc1NTkwNTQxMjIgNDY0Ljg4NjI5OTIxMjU5ODM3MzcgLTI1LjA3NDAxNTc0ODAzMTQ5NTYgcmUKZgpCVAovRjIgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMS4gZwo5OC42NDU2NjkyOTEzMzg1NzggNTYzLjUzMDk0NDg4MTg4OTgwOSBUZAooSXRpbmVyYXJ5IFNjaGVkdWxlICYgU2lnaHRzZWVpbmcgUGxhbikgVGoKRVQKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjEuIGcKMC45IDAuOTEgMC45MyBSRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNTUzLjE5MzkzNzAwNzg3Mzk1NTcgNTEuMDIzNjIyMDQ3MjQ0MTAzMyAtNTAuMzc0MDE1NzQ4MDMxNDg5MiByZQpCCkJUCi9GMiA3LjUgVGYKOC42MjUgVEwKMC4gMC4xMjUgMC4yMTYgcmcKNTUuMjU5MzUwMzkzNzAwNzg1MyA1MzguODgxOTI5MTMzODU4MTkzNCBUZAooRGF5IDEpIFRqCkVUCjEuIGcKMC45IDAuOTEgMC45MyBSRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjkwLjcwODY2MTQxNzMyMjg0NCA1NTMuMTkzOTM3MDA3ODczOTU1NyA0NjQuODg2Mjk5MjEyNTk4MzczNyAtNTAuMzc0MDE1NzQ4MDMxNDg5MiByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo5OC42NDU2NjkyOTEzMzg1NzggNTM4Ljg4MTkyOTEzMzg1ODE5MzQgVGQKKEFycml2YWwgQ29jaGluICYgU2NlbmljIFRyYW5zZmVyIHRvIE11bm5hciBcKDEzMCBrbSAvIDQgaHJzXCkpIFRqClQqIChXYXJtIHdlbGNvbWUgYnkgb3VyIGNoYXVmZmV1ciBhdCBDb2NoaW4gQWlycG9ydC9SYWlsd2F5IFN0YXRpb24uIERyaXZlIHRocm91Z2ggY2FzY2FkaW5nIENoZWV5YXBwYXJhIGFuZCBWYWxhcmEgd2F0ZXJmYWxscy4gQ2hlY2spIFRqClQqIChpbiBhdCB5b3VyIE11bm5hciB0ZWEgcGxhbnRhdGlvbiByZXNvcnQuIEV2ZW5pbmcgZnJlZSB0byBzdHJvbGwgdGhyb3VnaCBsb2NhbCB0ZWEgbWFya2V0cy4pIFRqClQqIChNZWFsczogQnJlYWtmYXN0IGluY2x1ZGVkIHVwb24gYXJyaXZhbCBjaGVjay1pbiB8IFN0YXk6IE11bm5hcikgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA1MDIuODE5OTIxMjU5ODQyNDg3OSA1MS4wMjM2MjIwNDcyNDQxMDMzIC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLiAwLjEyNSAwLjIxNiByZwo1NS4yNTkzNTAzOTM3MDA3ODUzIDQ4OC41MDc5MTMzODU4MjY3ODI0IFRkCihEYXkgMikgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKOTAuNzA4NjYxNDE3MzIyODQ0IDUwMi44MTk5MjEyNTk4NDI0ODc5IDQ2NC44ODYyOTkyMTI1OTgzNzM3IC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjk4LjY0NTY2OTI5MTMzODU3OCA0ODguNTA3OTEzMzg1ODI2NzgyNCBUZAooRnVsbCBEYXkgTXVubmFyIEV4cGxvcmF0aW9uICYgVGVhIE11c2V1bSkgVGoKVCogKFZpc2l0IEVyYXZpa3VsYW0gTmF0aW9uYWwgUGFyayBcKGhvbWUgdG8gdGhlIGVuZGFuZ2VyZWQgTmlsZ2lyaSBUYWhyXCksIE1hdHR1cGV0dHkgRGFtLCBFY2hvIFBvaW50LCBLdW5kYWxhIExha2UsIGFuZCB0aGUgVGF0YSBUZWEpIFRqClQqIChNdXNldW0uIEV4cGVyaWVuY2UgYSBwYW5vcmFtaWMgcGhvdG8gc3RvcCBhbWlkc3QgbHVzaCB1bmR1bGF0aW5nIHRlYSBnYXJkZW5zLikgVGoKVCogKE1lYWxzOiBCcmVha2Zhc3QgYXQgaG90ZWwgfCBTdGF5OiBNdW5uYXIpIFRqCkVUCjEuIGcKMC45IDAuOTEgMC45MyBSRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNDUyLjQ0NTkwNTUxMTgxMTAyIDUxLjAyMzYyMjA0NzI0NDEwMzMgLTUwLjM3NDAxNTc0ODAzMTQ4OTIgcmUKQgpCVAovRjIgNy41IFRmCjguNjI1IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjU1LjI1OTM1MDM5MzcwMDc4NTMgNDM4LjEzMzg5NzYzNzc5NTMxNDUgVGQKKERheSAzKSBUagpFVAoxLiBnCjAuOSAwLjkxIDAuOTMgUkcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo5MC43MDg2NjE0MTczMjI4NDQgNDUyLjQ0NTkwNTUxMTgxMTAyIDQ2NC44ODYyOTkyMTI1OTgzNzM3IC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjk4LjY0NTY2OTI5MTMzODU3OCA0MzguMTMzODk3NjM3Nzk1MzE0NSBUZAooTXVubmFyIHRvIFRoZWtrYWR5IFNwaWNlIFNhbmN0dWFyeSBcKDkwIGttIC8gMyBocnNcKSkgVGoKVCogKFNjZW5pYyBkcml2ZSB0aHJvdWdoIHRoZSBXZXN0ZXJuIEdoYXRzIHRvIFRoZWtrYWR5IFwoUGVyaXlhclwpLiBDaGVjayBpbiB0byBob3RlbC4gQWZ0ZXJub29uIGd1aWRlZCBzcGljZSBwbGFudGF0aW9uIHdhbGsgZGlzY292ZXJpbmcpIFRqClQqIChjYXJkYW1vbSwgcGVwcGVyLCBhbmQgY2lubmFtb24uIE9wdGlvbmFsIGV2ZW5pbmcgUGVyaXlhciBMYWtlIGJvYXQgc2FmYXJpIGFuZCBLYWxhcmlwYXlhdHR1IG1hcnRpYWwgYXJ0cyBzaG93LikgVGoKVCogKE1lYWxzOiBCcmVha2Zhc3QgYXQgaG90ZWwgfCBTdGF5OiBUaGVra2FkeSkgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA0MDIuMDcxODg5NzYzNzc5NjA5IDUxLjAyMzYyMjA0NzI0NDEwMzMgLTUwLjM3NDAxNTc0ODAzMTQ4OTIgcmUKQgpCVAovRjIgNy41IFRmCjguNjI1IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjU1LjI1OTM1MDM5MzcwMDc4NTMgMzg3Ljc1OTg4MTg4OTc2Mzg0NjYgVGQKKERheSA0KSBUagpFVAoxLiBnCjAuOSAwLjkxIDAuOTMgUkcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo5MC43MDg2NjE0MTczMjI4NDQgNDAyLjA3MTg4OTc2Mzc3OTYwOSA0NjQuODg2Mjk5MjEyNTk4MzczNyAtNTAuMzc0MDE1NzQ4MDMxNDg5MiByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo5OC42NDU2NjkyOTEzMzg1NzggMzg3Ljc1OTg4MTg4OTc2Mzg0NjYgVGQKKFRoZWtrYWR5IHRvIEFsbGVwcGV5IEJhY2t3YXRlcnMgJiBQcml2YXRlIEhvdXNlYm9hdCBDcnVpc2UgXCgxNDAga20gLyA0IGhyc1wpKSBUagpUKiAoSm91cm5leSB0byB0aGUgVmVuaWNlIG9mIHRoZSBFYXN0LiBCb2FyZCB5b3VyIHRyYWRpdGlvbmFsIEtlcmFsYSBLZXR0dXZhbGxhbSBcKEhvdXNlYm9hdFwpIGF0IDEyOjAwIFBNLiBDcnVpc2UgYWxvbmcgc2VyZW5lIHBhbG0tZnJpbmdlZCkgVGoKVCogKGNhbmFscywgcGFkZHkgZmllbGRzLCBhbmQgbGFnb29ucy4gUmVsaXNoIGZyZXNobHkgcHJlcGFyZWQgdHJhZGl0aW9uYWwgS2VyYWxhIGx1bmNoIGFuZCBkaW5uZXIgb25ib2FyZC4pIFRqClQqIChNZWFsczogQnJlYWtmYXN0LCBMdW5jaCwgRXZlbmluZyBUZWEgJiBTbmFja3MsIERpbm5lciBcKEZ1bGwgQm9hcmQgb24gSG91c2Vib2F0XCkgfCBTdGF5OiBBbGxlcHBleSBcKEhvdXNlYm9hdFwpKSBUagpFVAoxLiBnCjAuOSAwLjkxIDAuOTMgUkcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozOS42ODUwMzkzNzAwNzg3NDA3IDM1MS42OTc4NzQwMTU3NDgxNDExIDUxLjAyMzYyMjA0NzI0NDEwMzMgLTUwLjM3NDAxNTc0ODAzMTQ4OTIgcmUKQgpCVAovRjIgNy41IFRmCjguNjI1IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjU1LjI1OTM1MDM5MzcwMDc4NTMgMzM3LjM4NTg2NjE0MTczMjQzNTYgVGQKKERheSA1KSBUagpFVAoxLiBnCjAuOSAwLjkxIDAuOTMgUkcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo5MC43MDg2NjE0MTczMjI4NDQgMzUxLjY5Nzg3NDAxNTc0ODE0MTEgNDY0Ljg4NjI5OTIxMjU5ODM3MzcgLTUwLjM3NDAxNTc0ODAzMTQ4OTIgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKOTguNjQ1NjY5MjkxMzM4NTc4IDMzNy4zODU4NjYxNDE3MzI0MzU2IFRkCihBbGxlcHBleSB0byBLb3ZhbGFtIEJlYWNoIHZpYSBUcml2YW5kcnVtIFwoMTYwIGttIC8gNC41IGhyc1wpKSBUagpUKiAoRGlzZW1iYXJrIGhvdXNlYm9hdCBhZnRlciBicmVha2Zhc3QuIERyaXZlIHRvIEtvdmFsYW0gYmVhY2ggdG93bi4gRW5yb3V0ZSB2aXNpdCB0aGUgc2FjcmVkIFBhZG1hbmFiaGFzd2FteSBUZW1wbGUgYW5kIE5hcGllcikgVGoKVCogKE11c2V1bSBpbiBUcml2YW5kcnVtLiBFdmVuaW5nIGF0IGxlaXN1cmUgb24gTGlnaHRob3VzZSBCZWFjaCB3YXRjaGluZyB0aGUgQXJhYmlhbiBTZWEgc3Vuc2V0LikgVGoKVCogKE1lYWxzOiBCcmVha2Zhc3Qgb24gaG91c2Vib2F0IHwgU3RheTogS292YWxhbSkgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyAzMDEuMzIzODU4MjY3NzE2NjczMyA1MS4wMjM2MjIwNDcyNDQxMDMzIC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLiAwLjEyNSAwLjIxNiByZwo1NS4yNTkzNTAzOTM3MDA3ODUzIDI4Ny4wMTE4NTAzOTM3MDEwMjQ2IFRkCihEYXkgNikgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKOTAuNzA4NjYxNDE3MzIyODQ0IDMwMS4zMjM4NTgyNjc3MTY2NzMzIDQ2NC44ODYyOTkyMTI1OTgzNzM3IC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjk4LjY0NTY2OTI5MTMzODU3OCAyODcuMDExODUwMzkzNzAxMDI0NiBUZAooRXhjdXJzaW9uIHRvIEthbnlha3VtYXJpIFwoU291dGhlcm4gVGlwIG9mIEluZGlhXCkgJiBSZXR1cm4gdG8gS292YWxhbSkgVGoKVCogKERheSB0cmlwIHRvIEthbnlha3VtYXJpIFwoOTAga21cKS4gVmlzaXQgVml2ZWthbmFuZGEgUm9jayBNZW1vcmlhbCwgVGhpcnV2YWxsdXZhciBTdGF0dWUgdmlhIGZlcnJ5LCBhbmQgR2FuZGhpIE1lbW9yaWFsIE1hbmRhcGFtLikgVGoKVCogKFdpdG5lc3MgdGhlIGNvbmZsdWVuY2Ugb2YgdGhlIEluZGlhbiBPY2VhbiwgQXJhYmlhbiBTZWEsIGFuZCBCYXkgb2YgQmVuZ2FsLiBSZXR1cm4gdG8gS292YWxhbSBmb3IgbmlnaHQgc3RheS4pIFRqClQqIChNZWFsczogQnJlYWtmYXN0IGF0IGhvdGVsIHwgU3RheTogS292YWxhbSkgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyAyNTAuOTQ5ODQyNTE5Njg1MjYyMiA1MS4wMjM2MjIwNDcyNDQxMDMzIC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLiAwLjEyNSAwLjIxNiByZwo1NS4yNTkzNTAzOTM3MDA3ODUzIDIzNi42Mzc4MzQ2NDU2Njk0OTk5IFRkCihEYXkgNykgVGoKRVQKMS4gZwowLjkgMC45MSAwLjkzIFJHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKOTAuNzA4NjYxNDE3MzIyODQ0IDI1MC45NDk4NDI1MTk2ODUyNjIyIDQ2NC44ODYyOTkyMTI1OTgzNzM3IC01MC4zNzQwMTU3NDgwMzE0ODkyIHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjk4LjY0NTY2OTI5MTMzODU3OCAyMzYuNjM3ODM0NjQ1NjY5NDk5OSBUZAooS292YWxhbSB0byBUcml2YW5kcnVtIEFpcnBvcnQgRGVwYXJ0dXJlKSBUagpUKiAoRW5qb3kgYSByZWxheGluZyBtb3JuaW5nIGF0IHRoZSBiZWFjaC4gQ2hlY2sgb3V0IGZyb20gdGhlIHJlc29ydCBhbmQgdHJhbnNmZXIgdG8gVHJpdmFuZHJ1bSBBaXJwb3J0IFwoVFJWXCkgd2l0aCBjaGVyaXNoZWQgbWVtb3JpZXMgb2YpIFRqClQqICh5b3VyIGpveWZ1bCBWYXJuaSBIb2xpZGF5cyB2YWNhdGlvbi4pIFRqClQqIChNZWFsczogQnJlYWtmYXN0IGF0IGhvdGVsIHwgU3RheTogRGVwYXJ0dXJlKSBUagpFVAowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKMC43OCBHCjAuIHcKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLjkgMC45MSAwLjkzIFJHCjAuODUwMzkzNzAwNzg3NDAxNiB3CjM5LjY4NTAzOTM3MDA3ODc0MDcgMjguMzQ2NDU2NjkyOTEzMzg4OCBtCjU1NS41OTQ5NjA2Mjk5MjExNjA5IDI4LjM0NjQ1NjY5MjkxMzM4ODggbApTCkJUCi9GMSA2LjUgVGYKNy40NzQ5OTk5OTk5OTk5OTk2IFRMCjAuNDQzIDAuNTAyIDAuNTg4IHJnCjM5LjY4NTAzOTM3MDA3ODc0MDcgMTcuMDA3ODc0MDE1NzQ4MDI5NyBUZAooVkFSTkkgSE9MSURBWVMgUFZULiBMVEQuIJUgMzE3IE5hcmF5YW4gRW1waXJlLCBBbmFuZCwgR3VqYXJhdCCVIEhlbHBsaW5lOiArOTEgNjM1NzAgNTA1MDUglSB3d3cudmFybmlob2xpZGF5cy5jb20pIFRqCkVUCkJUCi9GMSA2LjUgVGYKNy40NzQ5OTk5OTk5OTk5OTk2IFRMCjAuNDQzIDAuNTAyIDAuNTg4IHJnCjUyMi41NzQ5NjA2Mjk5MjExNzkxIDE3LjAwNzg3NDAxNTc0ODAyOTcgVGQKKFBhZ2UgMSBvZiAyKSBUagpFVAplbmRzdHJlYW0KZW5kb2JqCjUgMCBvYmoKPDwvVHlwZSAvUGFnZQovUGFyZW50IDEgMCBSCi9SZXNvdXJjZXMgMiAwIFIKL01lZGlhQm94IFswIDAgNTk1LjI3OTk5OTk5OTk5OTk3MjcgODQxLjg4OTk5OTk5OTk5OTk4NjRdCi9Db250ZW50cyA2IDAgUgo+PgplbmRvYmoKNiAwIG9iago8PAovTGVuZ3RoIDE4MjY1Cj4+CnN0cmVhbQoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLiAwLjEzIDAuMjIgUkcKQlQKL0YyIDkuNSBUZgoxMC45MjQ5OTk5OTk5OTk5OTg5IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNzg1LjE5NzA4NjYxNDE3MzI1ODYgVGQKKElOQ0xVU0lPTlMgJiBFWENMVVNJT05TKSBUagpFVAowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjAuIDAuMTMgMC4yMiByZwowLjc4IEcKMC4gdwowLiAwLjEzIDAuMjIgcmcKMzkuNjg1MDM5MzcwMDc4NzQwNyA3NzYuNjkzMTQ5NjA2Mjk5MTMgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTIwLjUzODU4MjY3NzE2NTM1NDggcmUKZgpCVAovRjIgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMS4gZwo0NS4zNTQzMzA3MDg2NjE0MjIgNzY0LjIyMzg1ODI2NzcxNjUzNjggVGQKKFdoYXQgaXMgSW5jbHVkZWQgaW4gWW91ciBQYWNrYWdlKSBUagpFVAowLiAwLjEzIDAuMjIgcmcKMC43OCBHCjAuIHcKMC4gMC4xMyAwLjIyIHJnCjI5Ny42Mzk5OTk5OTk5OTk5ODY0IDc3Ni42OTMxNDk2MDYyOTkxMyAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMjAuNTM4NTgyNjc3MTY1MzU0OCByZQpmCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAoxLiBnCjMwMy4zMDkyOTEzMzg1ODI2MjUgNzY0LjIyMzg1ODI2NzcxNjUzNjggVGQKKFdoYXQgaXMgRXhjbHVkZWQgZnJvbSBZb3VyIFBhY2thZ2UpIFRqCkVUCjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNzU2LjE1NDU2NjkyOTEzMzkyMDkgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTE5LjM4ODU4MjY3NzE2NTM1NjIgcmUKQgpCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wODYgMC4zOTYgMC4yMDQgcmcKNDUuMzU0MzMwNzA4NjYxNDIyIDc0NC41MzUyNzU1OTA1NTExMjMxIFRkCihbK10gQWNjb21tb2RhdGlvbiBmb3IgNiBOaWdodHMgb24gZG91YmxlL3R3aW4gc2hhcmluZyBiYXNpcykgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwoyOTcuNjM5OTk5OTk5OTk5OTg2NCA3NTYuMTU0NTY2OTI5MTMzOTIwOSAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMTkuMzg4NTgyNjc3MTY1MzU2MiByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjcyNSAwLjExIDAuMTEgcmcKMzAzLjMwOTI5MTMzODU4MjYyNSA3NDQuNTM1Mjc1NTkwNTUxMTIzMSBUZAooWy1dIEFpcmZhcmUgb3IgdHJhaW4gZmFyZSB0by9mcm9tIEtlcmFsYSkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozOS42ODUwMzkzNzAwNzg3NDA3IDczNi43NjU5ODQyNTE5Njg0NjE2IDI1Ny45NTQ5NjA2Mjk5MjEyMzE0IC0xOS4zODg1ODI2NzcxNjUzNTYyIHJlCkIKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDg2IDAuMzk2IDAuMjA0IHJnCjQ1LjM1NDMzMDcwODY2MTQyMiA3MjUuMTQ2NjkyOTEzMzg1Nzc3NSBUZAooWytdIERhaWx5IGJyZWFrZmFzdCBhdCBhbGwgaG90ZWxzIFwoQ1BBSSBQbGFuXCkpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMjk3LjYzOTk5OTk5OTk5OTk4NjQgNzM2Ljc2NTk4NDI1MTk2ODQ2MTYgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTE5LjM4ODU4MjY3NzE2NTM1NjIgcmUKQgpCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC43MjUgMC4xMSAwLjExIHJnCjMwMy4zMDkyOTEzMzg1ODI2MjUgNzI1LjE0NjY5MjkxMzM4NTc3NzUgVGQKKFstXSBNb251bWVudCBlbnRyYW5jZSBmZWVzLCBuYXRpb25hbCBwYXJrIHNhZmFyaXMsIGFuZCBhY3Rpdml0eSB0aWNrZXRzKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNzE3LjM3NzQwMTU3NDgwMzExNjEgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTI3LjQzODU4MjY3NzE2NTM1MzQgcmUKQgpCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wODYgMC4zOTYgMC4yMDQgcmcKNDUuMzU0MzMwNzA4NjYxNDIyIDcwNS43NTgxMTAyMzYyMjA0MzE5IFRkCihbK10gQWxsIG1lYWxzIFwoQnJlYWtmYXN0LCBMdW5jaCwgRXZlbmluZyBTbmFja3MgJiBEaW5uZXJcKSBkdXJpbmcgSG91c2Vib2F0KSBUagpUKiAoc3RheSkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwoyOTcuNjM5OTk5OTk5OTk5OTg2NCA3MTcuMzc3NDAxNTc0ODAzMTE2MSAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMjcuNDM4NTgyNjc3MTY1MzUzNCByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjcyNSAwLjExIDAuMTEgcmcKMzAzLjMwOTI5MTMzODU4MjYyNSA3MDUuNzU4MTEwMjM2MjIwNDMxOSBUZAooWy1dIFBlcnNvbmFsIGV4cGVuc2VzIHN1Y2ggYXMgbGF1bmRyeSwgcGhvbmUgY2FsbHMsIHJvb20gc2VydmljZSwgYW5kIHRpcHMpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA2ODkuOTM4ODE4ODk3NjM3NzAyMyAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMTkuMzg4NTgyNjc3MTY1MzU2MiByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjA4NiAwLjM5NiAwLjIwNCByZwo0NS4zNTQzMzA3MDg2NjE0MjIgNjc4LjMxOTUyNzU1OTA1NTEzMTkgVGQKKFsrXSBQcml2YXRlIEFDIHZlaGljbGUgZm9yIGFsbCB0cmFuc2ZlcnMsIHNpZ2h0c2VlaW5nLCBhbmQgaW50ZXJjaXR5IHRyYXZlbCkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwoyOTcuNjM5OTk5OTk5OTk5OTg2NCA2ODkuOTM4ODE4ODk3NjM3NzAyMyAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMTkuMzg4NTgyNjc3MTY1MzU2MiByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjcyNSAwLjExIDAuMTEgcmcKMzAzLjMwOTI5MTMzODU4MjYyNSA2NzguMzE5NTI3NTU5MDU1MTMxOSBUZAooWy1dIEFueSBvcHRpb25hbCB3YXRlcnNwb3J0cyBvciBBeXVydmVkaWMgc3BhIHRoZXJhcGllcykgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozOS42ODUwMzkzNzAwNzg3NDA3IDY3MC41NTAyMzYyMjA0NzIzNTY4IDI1Ny45NTQ5NjA2Mjk5MjEyMzE0IC0xOS4zODg1ODI2NzcxNjUzNTYyIHJlCkIKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDg2IDAuMzk2IDAuMjA0IHJnCjQ1LjM1NDMzMDcwODY2MTQyMiA2NTguOTMwOTQ0ODgxODg5NjcyNiBUZAooWytdIFRvbGwgdGF4ZXMsIHBhcmtpbmcgZmVlcywgaW50ZXJzdGF0ZSBkcml2ZXIgYWxsb3dhbmNlcywgYW5kIGZ1ZWwgY2hhcmdlcykgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwoyOTcuNjM5OTk5OTk5OTk5OTg2NCA2NzAuNTUwMjM2MjIwNDcyMzU2OCAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMTkuMzg4NTgyNjc3MTY1MzU2MiByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjcyNSAwLjExIDAuMTEgcmcKMzAzLjMwOTI5MTMzODU4MjYyNSA2NTguOTMwOTQ0ODgxODg5NjcyNiBUZAooWy1dIFRyYXZlbCBpbnN1cmFuY2UgXChhdmFpbGFibGUgdXBvbiByZXF1ZXN0IGFzIG9wdGlvbmFsIGFkZC1vblwpKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNjUxLjE2MTY1MzU0MzMwNzAxMTIgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTE5LjM4ODU4MjY3NzE2NTM1NjIgcmUKQgpCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wODYgMC4zOTYgMC4yMDQgcmcKNDUuMzU0MzMwNzA4NjYxNDIyIDYzOS41NDIzNjIyMDQ3MjQzMjcxIFRkCihbK10gQ29tcGxpbWVudGFyeSBzcGljZSBwbGFudGF0aW9uIGd1aWRlZCB0b3VyIGluIFRoZWtrYWR5KSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjI5Ny42Mzk5OTk5OTk5OTk5ODY0IDY1MS4xNjE2NTM1NDMzMDcwMTEyIDI1Ny45NTQ5NjA2Mjk5MjEyMzE0IC0xOS4zODg1ODI2NzcxNjUzNTYyIHJlCkIKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuNzI1IDAuMTEgMC4xMSByZwozMDMuMzA5MjkxMzM4NTgyNjI1IDYzOS41NDIzNjIyMDQ3MjQzMjcxIFRkCihbLV0gNSUgR1NUIGFwcGxpY2FibGUgYXMgcGVyIGdvdmVybm1lbnQgcmVndWxhdGlvbnMpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA2MzEuNzczMDcwODY2MTQxNjY1NiAyNTcuOTU0OTYwNjI5OTIxMjMxNCAtMTkuMzg4NTgyNjc3MTY1MzU2MiByZQpCCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjA4NiAwLjM5NiAwLjIwNCByZwo0NS4zNTQzMzA3MDg2NjE0MjIgNjIwLjE1Mzc3OTUyNzU1ODk4MTUgVGQKKFsrXSBBc3Npc3RhbmNlIG9uIGFycml2YWwgYW5kIGRlcGFydHVyZSBhdCBDb2NoaW4gLyBUcml2YW5kcnVtIEFpcnBvcnQpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMjk3LjYzOTk5OTk5OTk5OTk4NjQgNjMxLjc3MzA3MDg2NjE0MTY2NTYgMjU3Ljk1NDk2MDYyOTkyMTIzMTQgLTE5LjM4ODU4MjY3NzE2NTM1NjIgcmUKQgpCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC43MjUgMC4xMSAwLjExIHJnCjMwMy4zMDkyOTEzMzg1ODI2MjUgNjIwLjE1Mzc3OTUyNzU1ODk4MTUgVGQKKCkgVGoKRVQKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjAuNzggRwowLiB3CjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKQlQKL0YyIDkuNSBUZgoxMC45MjQ5OTk5OTk5OTk5OTg5IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNTk1LjM3NjYxNDE3MzIyODI5MDQgVGQKKElURU1JWkVEIFBSSUNJTkcgJiBUQVggQlJFQUtET1dOIFwoSU4gSU5SXCkpIFRqCkVUCjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKMC4gMC4xMyAwLjIyIHJnCjAuNzggRwowLiB3CjAuIDAuMTMgMC4yMiByZwozOS42ODUwMzkzNzAwNzg3NDA3IDU4Ni44NzI2NzcxNjUzNTQyNzU1IDI4LjM0NjQ1NjY5MjkxMzM4ODggLTIxLjY3MjQ0MDk0NDg4MTg5MTggcmUKZgpCVAovRjIgOCBUZgo5LjE5OTk5OTk5OTk5OTk5OTMgVEwKMS4gZwo0NS45MjEyNTk4NDI1MTk2ODg3IDU3My44MzY0NTY2OTI5MTMzMTYxIFRkCigjKSBUagpFVAowLiAwLjEzIDAuMjIgcmcKMC43OCBHCjAuIHcKMC4gMC4xMyAwLjIyIHJnCjY4LjAzMTQ5NjA2Mjk5MjEzMyA1ODYuODcyNjc3MTY1MzU0Mjc1NSAyNTUuMTIyNTE5Njg1MDM5MjY0OSAtMjEuNjcyNDQwOTQ0ODgxODkxOCByZQpmCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAoxLiBnCjc0LjI2NzcxNjUzNTQzMzA4MSA1NzMuODM2NDU2NjkyOTEzMzE2MSBUZAooSXRlbSAvIFNlcnZpY2UgRGVzY3JpcHRpb24pIFRqCkVUCjAuIDAuMTMgMC4yMiByZwowLjc4IEcKMC4gdwowLiAwLjEzIDAuMjIgcmcKMzIzLjE1NDAxNTc0ODAzMTM4MzcgNTg2Ljg3MjY3NzE2NTM1NDI3NTUgMzkuNjg1MDM5MzcwMDc4NzQwNyAtMjEuNjcyNDQwOTQ0ODgxODkxOCByZQpmCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAoxLiBnCjMyOS4zOTAyMzYyMjA0NzIzODg2IDU3My44MzY0NTY2OTI5MTMzMTYxIFRkCihRdHkpIFRqCkVUCjAuIDAuMTMgMC4yMiByZwowLjc4IEcKMC4gdwowLiAwLjEzIDAuMjIgcmcKMzYyLjgzOTA1NTExODExMDEzODcgNTg2Ljg3MjY3NzE2NTM1NDI3NTUgODUuMDM5MzcwMDc4NzQwMTYyNyAtMjEuNjcyNDQwOTQ0ODgxODkxOCByZQpmCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAoxLiBnCjM2OS4wNzUyNzU1OTA1NTEwODY3IDU3My44MzY0NTY2OTI5MTMzMTYxIFRkCihSYXRlIFwoSU5SXCkpIFRqCkVUCjAuIDAuMTMgMC4yMiByZwowLjc4IEcKMC4gdwowLiAwLjEzIDAuMjIgcmcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA1ODYuODcyNjc3MTY1MzU0Mjc1NSAxMDcuNzE2NTM1NDMzMDcwODczOCAtMjEuNjcyNDQwOTQ0ODgxODkxOCByZQpmCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAoxLiBnCjQ1NC4xMTQ2NDU2NjkyOTEyMzUyIDU3My44MzY0NTY2OTI5MTMzMTYxIFRkCihUb3RhbCBBbW91bnQgXChJTlJcKSkgVGoKRVQKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA1NjUuMjAwMjM2MjIwNDcyMzM0IDI4LjM0NjQ1NjY5MjkxMzM4ODggLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNTEuNzk1NzY3NzE2NTM1NDQ0IDU1Mi41ODkwMTU3NDgwMzE0NDI5IFRkCigxKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjY4LjAzMTQ5NjA2Mjk5MjEzMyA1NjUuMjAwMjM2MjIwNDcyMzM0IDI1NS4xMjI1MTk2ODUwMzkyNjQ5IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjc0LjI2NzcxNjUzNTQzMzA4MSA1NTIuNTg5MDE1NzQ4MDMxNDQyOSBUZAooQmFzZSBBY2NvbW1vZGF0aW9uICYgVG91ciBQbGFuIFwoMiBBZHVsdHMsIDEgQ2hpbGRyZW4sIDEgUm9vbVwpKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjMyMy4xNTQwMTU3NDgwMzEzODM3IDU2NS4yMDAyMzYyMjA0NzIzMzQgMzkuNjg1MDM5MzcwMDc4NzQwNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwozNDAuOTM0MDM1NDMzMDcwNzg5NiA1NTIuNTg5MDE1NzQ4MDMxNDQyOSBUZAooMSkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozNjIuODM5MDU1MTE4MTEwMTM4NyA1NjUuMjAwMjM2MjIwNDcyMzM0IDg1LjAzOTM3MDA3ODc0MDE2MjcgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNDAzLjkxNzIwNDcyNDQwOTQzMDEgNTUyLjU4OTAxNTc0ODAzMTQ0MjkgVGQKKElOUiAyOCwwMDApIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA1NjUuMjAwMjM2MjIwNDcyMzM0IDEwNy43MTY1MzU0MzMwNzA4NzM4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjUxMS42MzM3NDAxNTc0ODAzMDM5IDU1Mi41ODkwMTU3NDgwMzE0NDI5IFRkCihJTlIgMjgsMDAwKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNTQ0LjEwMjc5NTI3NTU5MDU1MTcgMjguMzQ2NDU2NjkyOTEzMzg4OCAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MS43OTU3Njc3MTY1MzU0NDQgNTMxLjQ5MTU3NDgwMzE0OTU0NjggVGQKKDIpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNjguMDMxNDk2MDYyOTkyMTMzIDU0NC4xMDI3OTUyNzU1OTA1NTE3IDI1NS4xMjI1MTk2ODUwMzkyNjQ5IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjc0LjI2NzcxNjUzNTQzMzA4MSA1MzEuNDkxNTc0ODAzMTQ5NTQ2OCBUZAooRGVkaWNhdGVkIFByaXZhdGUgVHJhbnNwb3J0YXRpb24gJiBTaWdodHNlZWluZyBUcmFuc2ZlcnMpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzIzLjE1NDAxNTc0ODAzMTM4MzcgNTQ0LjEwMjc5NTI3NTU5MDU1MTcgMzkuNjg1MDM5MzcwMDc4NzQwNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwozNDAuOTM0MDM1NDMzMDcwNzg5NiA1MzEuNDkxNTc0ODAzMTQ5NTQ2OCBUZAooMSkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozNjIuODM5MDU1MTE4MTEwMTM4NyA1NDQuMTAyNzk1Mjc1NTkwNTUxNyA4NS4wMzkzNzAwNzg3NDAxNjI3IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjQwOC4wNDIyMDQ3MjQ0MDk0MzAxIDUzMS40OTE1NzQ4MDMxNDk1NDY4IFRkCihJTlIgNSwwMDApIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA1NDQuMTAyNzk1Mjc1NTkwNTUxNyAxMDcuNzE2NTM1NDMzMDcwODczOCAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMiA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MTUuNzU4NzQwMTU3NDgwMjQ3IDUzMS40OTE1NzQ4MDMxNDk1NDY4IFRkCihJTlIgNSwwMDApIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA1MjMuMDA1MzU0MzMwNzA4NjU1NyAyOC4zNDY0NTY2OTI5MTMzODg4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjUxLjc5NTc2NzcxNjUzNTQ0NCA1MTAuMzk0MTMzODU4MjY3NzA3NiBUZAooMykgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo2OC4wMzE0OTYwNjI5OTIxMzMgNTIzLjAwNTM1NDMzMDcwODY1NTcgMjU1LjEyMjUxOTY4NTAzOTI2NDkgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNzQuMjY3NzE2NTM1NDMzMDgxIDUxMC4zOTQxMzM4NTgyNjc3MDc2IFRkCihQZWFrIFNlYXNvbiAvIERlc3RpbmF0aW9uIEVudmlyb25tZW50YWwgJiBQZXJtaXQgU3VyY2hhcmdlcykgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozMjMuMTU0MDE1NzQ4MDMxMzgzNyA1MjMuMDA1MzU0MzMwNzA4NjU1NyAzOS42ODUwMzkzNzAwNzg3NDA3IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjM0MC45MzQwMzU0MzMwNzA3ODk2IDUxMC4zOTQxMzM4NTgyNjc3MDc2IFRkCigxKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM2Mi44MzkwNTUxMTgxMTAxMzg3IDUyMy4wMDUzNTQzMzA3MDg2NTU3IDg1LjAzOTM3MDA3ODc0MDE2MjcgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNDA4LjA0MjIwNDcyNDQwOTQzMDEgNTEwLjM5NDEzMzg1ODI2NzcwNzYgVGQKKElOUiAxLDAwMCkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo0NDcuODc4NDI1MTk2ODUwMzQ0IDUyMy4wMDUzNTQzMzA3MDg2NTU3IDEwNy43MTY1MzU0MzMwNzA4NzM4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjUxNS43NTg3NDAxNTc0ODAyNDcgNTEwLjM5NDEzMzg1ODI2NzcwNzYgVGQKKElOUiAxLDAwMCkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozOS42ODUwMzkzNzAwNzg3NDA3IDUwMS45MDc5MTMzODU4MjY3NTk2IDI4LjM0NjQ1NjY5MjkxMzM4ODggLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjY4LjAzMTQ5NjA2Mjk5MjEzMyA1MDEuOTA3OTEzMzg1ODI2NzU5NiAyNTUuMTIyNTE5Njg1MDM5MjY0OSAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo3NC4yNjc3MTY1MzU0MzMwODEgNDg5LjI5NjY5MjkxMzM4NTgxMTYgVGQKKEdyb3NzIFN1YnRvdGFsKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjMyMy4xNTQwMTU3NDgwMzEzODM3IDUwMS45MDc5MTMzODU4MjY3NTk2IDM5LjY4NTAzOTM3MDA3ODc0MDcgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM2Mi44MzkwNTUxMTgxMTAxMzg3IDUwMS45MDc5MTMzODU4MjY3NTk2IDg1LjAzOTM3MDA3ODc0MDE2MjcgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjQ0Ny44Nzg0MjUxOTY4NTAzNDQgNTAxLjkwNzkxMzM4NTgyNjc1OTYgMTA3LjcxNjUzNTQzMzA3MDg3MzggLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjIgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNTExLjYzMzc0MDE1NzQ4MDMwMzkgNDg5LjI5NjY5MjkxMzM4NTgxMTYgVGQKKElOUiAzNCwwMDApIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA0ODAuODEwNDcyNDQwOTQ0ODA2NyAyOC4zNDY0NTY2OTI5MTMzODg4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo2OC4wMzE0OTYwNjI5OTIxMzMgNDgwLjgxMDQ3MjQ0MDk0NDgwNjcgMjU1LjEyMjUxOTY4NTAzOTI2NDkgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNzQuMjY3NzE2NTM1NDMzMDgxIDQ2OC4xOTkyNTE5Njg1MDM5NzI0IFRkCihTcGVjaWFsIENsaWVudCBEaXNjb3VudCBcKFByb21vdGlvbmFsXCkpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzIzLjE1NDAxNTc0ODAzMTM4MzcgNDgwLjgxMDQ3MjQ0MDk0NDgwNjcgMzkuNjg1MDM5MzcwMDc4NzQwNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzYyLjgzOTA1NTExODExMDEzODcgNDgwLjgxMDQ3MjQ0MDk0NDgwNjcgODUuMDM5MzcwMDc4NzQwMTYyNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA0ODAuODEwNDcyNDQwOTQ0ODA2NyAxMDcuNzE2NTM1NDMzMDcwODczOCAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMiA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MTEuMTgzNzQwMTU3NDgwMzE1MiA0NjguMTk5MjUxOTY4NTAzOTcyNCBUZAooLSBJTlIgMiwwMDApIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzkuNjg1MDM5MzcwMDc4NzQwNyA0NTkuNzEzMDMxNDk2MDYyOTY3NiAyOC4zNDY0NTY2OTI5MTMzODg4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo2OC4wMzE0OTYwNjI5OTIxMzMgNDU5LjcxMzAzMTQ5NjA2Mjk2NzYgMjU1LjEyMjUxOTY4NTAzOTI2NDkgLTIxLjA5NzQ0MDk0NDg4MTg5MjUgcmUKQgpCVAovRjEgNy41IFRmCjguNjI1IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNzQuMjY3NzE2NTM1NDMzMDgxIDQ0Ny4xMDE4MTEwMjM2MjIxMzMyIFRkCihUYXhhYmxlIEFtb3VudCkgVGoKRVQKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozMjMuMTU0MDE1NzQ4MDMxMzgzNyA0NTkuNzEzMDMxNDk2MDYyOTY3NiAzOS42ODUwMzkzNzAwNzg3NDA3IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwozNjIuODM5MDU1MTE4MTEwMTM4NyA0NTkuNzEzMDMxNDk2MDYyOTY3NiA4NS4wMzkzNzAwNzg3NDAxNjI3IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKMS4gZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMS4gZwo0NDcuODc4NDI1MTk2ODUwMzQ0IDQ1OS43MTMwMzE0OTYwNjI5Njc2IDEwNy43MTY1MzU0MzMwNzA4NzM4IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YyIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjUxMS42MzM3NDAxNTc0ODAzMDM5IDQ0Ny4xMDE4MTEwMjM2MjIxMzMyIFRkCihJTlIgMzIsMDAwKSBUagpFVAoxLiBnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwoxLiBnCjM5LjY4NTAzOTM3MDA3ODc0MDcgNDM4LjYxNTU5MDU1MTE4MTA3MTUgMjguMzQ2NDU2NjkyOTEzMzg4OCAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNjguMDMxNDk2MDYyOTkyMTMzIDQzOC42MTU1OTA1NTExODEwNzE1IDI1NS4xMjI1MTk2ODUwMzkyNjQ5IC0yMS4wOTc0NDA5NDQ4ODE4OTI1IHJlCkIKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjc0LjI2NzcxNjUzNTQzMzA4MSA0MjYuMDA0MzcwMDc4NzQwMjM3MiBUZAooR29vZHMgJiBTZXJ2aWNlcyBUYXggXChHU1QgQCA1JVwpIC0gQ0dTVCBcKDIuNSVcKSArIFNHU1QgXCgyLjUlXCkpIFRqCkVUCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzIzLjE1NDAxNTc0ODAzMTM4MzcgNDM4LjYxNTU5MDU1MTE4MTA3MTUgMzkuNjg1MDM5MzcwMDc4NzQwNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKMzYyLjgzOTA1NTExODExMDEzODcgNDM4LjYxNTU5MDU1MTE4MTA3MTUgODUuMDM5MzcwMDc4NzQwMTYyNyAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCjEuIGcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjEuIGcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA0MzguNjE1NTkwNTUxMTgxMDcxNSAxMDcuNzE2NTM1NDMzMDcwODczOCAtMjEuMDk3NDQwOTQ0ODgxODkyNSByZQpCCkJUCi9GMiA3LjUgVGYKOC42MjUgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MDkuMzA4NzQwMTU3NDgwMzE1MiA0MjYuMDA0MzcwMDc4NzQwMjM3MiBUZAooKyBJTlIgMSw2MDApIFRqCkVUCjAuOTQgMC45NiAwLjk5IHJnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwowLjk0IDAuOTYgMC45OSByZwozOS42ODUwMzkzNzAwNzg3NDA3IDQxNy41MTgxNDk2MDYyOTkxNzU1IDI4LjM0NjQ1NjY5MjkxMzM4ODggLTIyLjI0NzQ0MDk0NDg4MTg5NDYgcmUKQgowLjk0IDAuOTYgMC45OSByZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMC45NCAwLjk2IDAuOTkgcmcKNjguMDMxNDk2MDYyOTkyMTMzIDQxNy41MTgxNDk2MDYyOTkxNzU1IDI1NS4xMjI1MTk2ODUwMzkyNjQ5IC0yMi4yNDc0NDA5NDQ4ODE4OTQ2IHJlCkIKQlQKL0YyIDguNSBUZgo5Ljc3NDk5OTk5OTk5OTk5ODYgVEwKMC4gMC4xMjUgMC4yMTYgcmcKNzQuMjY3NzE2NTM1NDMzMDgxIDQwNC4wNTY5MjkxMzM4NTgyNjE2IFRkCihUT1RBTCBJTlZFU1RNRU5UIFBBWUFCTEUgXChORVQgT0YgQUxMIFRBWEVTXCkpIFRqCkVUCjAuOTQgMC45NiAwLjk5IHJnCjAuNzggRwowLjI4MzQ2NDU2NjkyOTEzMzkgdwowLjk0IDAuOTYgMC45OSByZwozMjMuMTU0MDE1NzQ4MDMxMzgzNyA0MTcuNTE4MTQ5NjA2Mjk5MTc1NSAzOS42ODUwMzkzNzAwNzg3NDA3IC0yMi4yNDc0NDA5NDQ4ODE4OTQ2IHJlCkIKMC45NCAwLjk2IDAuOTkgcmcKMC43OCBHCjAuMjgzNDY0NTY2OTI5MTMzOSB3CjAuOTQgMC45NiAwLjk5IHJnCjM2Mi44MzkwNTUxMTgxMTAxMzg3IDQxNy41MTgxNDk2MDYyOTkxNzU1IDg1LjAzOTM3MDA3ODc0MDE2MjcgLTIyLjI0NzQ0MDk0NDg4MTg5NDYgcmUKQgowLjk0IDAuOTYgMC45OSByZwowLjc4IEcKMC4yODM0NjQ1NjY5MjkxMzM5IHcKMC45NCAwLjk2IDAuOTkgcmcKNDQ3Ljg3ODQyNTE5Njg1MDM0NCA0MTcuNTE4MTQ5NjA2Mjk5MTc1NSAxMDcuNzE2NTM1NDMzMDcwODczOCAtMjIuMjQ3NDQwOTQ0ODgxODk0NiByZQpCCkJUCi9GMiA4LjUgVGYKOS43NzQ5OTk5OTk5OTk5OTg2IFRMCjAuIDAuMTI1IDAuMjE2IHJnCjUwNi42MDM3NDAxNTc0ODAyNzQzIDQwNC4wNTY5MjkxMzM4NTgyNjE2IFRkCihJTlIgMzMsNjAwKSBUagpFVAowLiAwLjEzIDAuMjIgUkcKMS4xMzM4NTgyNjc3MTY1MzU2IHcKMC43OCBHCjAuIHcKMC4gMC4xMyAwLjIyIFJHCjEuMTMzODU4MjY3NzE2NTM1NiB3CjAuIDAuMTMgMC4yMiBSRwoxLjEzMzg1ODI2NzcxNjUzNTYgdwowLjk3IDAuOTggMC45OSByZwowLjkgMC45MSAwLjkzIFJHCjM5LjY4NTAzOTM3MDA3ODc0MDcgMzc4LjI2MjgzNDY0NTY2OTIxNTcgMjQ5LjQ1MTAyMzYyMjA0NzIxNjYgLTEwNy43MTY1MzU0MzMwNzA4NzM4IHJlCkIKQlQKL0YyIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuIDAuMTI1IDAuMjE2IHJnCjUxLjAyMzYyMjA0NzI0NDEwMzMgMzYyLjY3MjI4MzQ2NDU2Njg3NCBUZAooT0ZGSUNJQUwgQkFOSyBSRU1JVFRBTkNFICYgVVBJIERFVEFJTFM6KSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MS4wMjM2MjIwNDcyNDQxMDMzIDM0Ny4wODE3MzIyODM0NjQ1MzI0IFRkCihBY2NvdW50IE5hbWU6IFZhcm5pIEhvbGlkYXlzIFB2dC4gTHRkLikgVGoKRVQKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyAzMzIuOTA4NTAzOTM3MDA3ODIyMSBUZAooQmFuayBOYW1lOiBJQ0lDSSBCYW5rKSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MS4wMjM2MjIwNDcyNDQxMDMzIDMxOC43MzUyNzU1OTA1NTExNjg1IFRkCihDdXJyZW50IEEvQyBObzogMDI1NjA1MDA5ODc2KSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MS4wMjM2MjIwNDcyNDQxMDMzIDMwNC41NjIwNDcyNDQwOTQ0MDEzIFRkCihJRlNDIENvZGU6IElDSUMwMDAwMjU2IFwoQW5hbmQgU3RhdGlvbiBSb2FkIEJyYW5jaFwpKSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwo1MS4wMjM2MjIwNDcyNDQxMDMzIDI5MC4zODg4MTg4OTc2Mzc3NDc4IFRkCihVUEkgSUQ6IHZhcm5paW50ZXJuYXRpb25hbDdAb2tpY2ljaSkgVGoKRVQKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKNTEuMDIzNjIyMDQ3MjQ0MTAzMyAyNzYuMjE1NTkwNTUxMTgxMDk0MyBUZAooR1NUSU46IDI0QUFBQ1YxMjM0UDFaNSkgVGoKRVQKMC45NyAwLjk4IDAuOTkgcmcKMzA2LjE0MzkzNzAwNzg3NDAwMTIgMzc4LjI2MjgzNDY0NTY2OTIxNTcgMjQ5LjQ1MTAyMzYyMjA0NzIxNjYgLTEwNy43MTY1MzU0MzMwNzA4NzM4IHJlCkIKQlQKL0YyIDggVGYKOS4xOTk5OTk5OTk5OTk5OTkzIFRMCjAuIDAuMTI1IDAuMjE2IHJnCjMxNy40ODI1MTk2ODUwMzkzMzU0IDM2Mi42NzIyODM0NjQ1NjY4NzQgVGQKKEJPT0tJTkcgUE9MSUNZICYgVEVSTVM6KSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwozMTcuNDgyNTE5Njg1MDM5MzM1NCAzNDcuMDgxNzMyMjgzNDY0NTMyNCBUZAoolSAyNSUgYWR2YW5jZSB0b2tlbiByZXF1aXJlZCB0byBpbml0aWF0ZSByZXNlcnZhdGlvbiB2b3VjaGVycy4pIFRqCkVUCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjMxNy40ODI1MTk2ODUwMzkzMzU0IDMzMi45MDg1MDM5MzcwMDc4MjIxIFRkCiiVIDUwJSBwYXltZW50IGR1ZSB1cG9uIHJlY2VpcHQgb2YgaG90ZWwgJiB2ZWhpY2xlIGNvbmZpcm1hdGlvbnMuKSBUagpFVApCVAovRjEgNyBUZgo4LjA0OTk5OTk5OTk5OTk5ODkgVEwKMC4wOSAwLjE2OSAwLjI3MSByZwozMTcuNDgyNTE5Njg1MDM5MzM1NCAzMTguNzM1Mjc1NTkwNTUxMTY4NSBUZAoolSBCYWxhbmNlIDI1JSBwYXlhYmxlIDcgZGF5cyBwcmlvciB0byBkZXBhcnR1cmUgZGF0ZS4pIFRqCkVUCkJUCi9GMSA3IFRmCjguMDQ5OTk5OTk5OTk5OTk4OSBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjMxNy40ODI1MTk2ODUwMzkzMzU0IDMwNC41NjIwNDcyNDQwOTQ0MDEzIFRkCiiVIENhbmNlbGxhdGlvbjogMzArIGRheXM6IDEwJSBmZWUgfCAxNS0yOSBkYXlzOiAyNSUgZmVlLikgVGoKRVQKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgMjkwLjM4ODgxODg5NzYzNzc0NzggVGQKKJUgVW5kZXIgMTUgZGF5cyBvciBub24tcmVmdW5kYWJsZSBob3RlbCBibG9jazogYXMgcGVyIHN1cHBsaWVyIHJ1bGVzLikgVGoKRVQKQlQKL0YxIDcgVGYKOC4wNDk5OTk5OTk5OTk5OTg5IFRMCjAuMDkgMC4xNjkgMC4yNzEgcmcKMzE3LjQ4MjUxOTY4NTAzOTMzNTQgMjc2LjIxNTU5MDU1MTE4MTA5NDMgVGQKKJUgUXVvdGF0aW9uIHZhbGlkIGZvciA3IGRheXMgZnJvbSBkYXRlIG9mIGlzc3VlLikgVGoKRVQKMC45IDAuOTEgMC45MyBSRwozOS42ODUwMzkzNzAwNzg3NDA3IDI1My41Mzg0MjUxOTY4NTAzMTIyIG0KNTU1LjU5NDk2MDYyOTkyMTE2MDkgMjUzLjUzODQyNTE5Njg1MDMxMjIgbApTCkJUCi9GMSA3LjUgVGYKOC42MjUgVEwKMC40NDMgMC41MDIgMC41ODggcmcKMzkuNjg1MDM5MzcwMDc4NzQwNyAyMjUuMTkxOTY4NTAzOTM2ODkxNSBUZAooVGhhbmsgeW91IGZvciBnaXZpbmcgdXMgdGhlIG9wcG9ydHVuaXR5IHRvIHBsYW4geW91ciBqb3VybmV5LikgVGoKRVQKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjQ0MyAwLjUwMiAwLjU4OCByZwozOS42ODUwMzkzNzAwNzg3NDA3IDIxMS4wMTg3NDAxNTc0ODAyMzc5IFRkCihUbyBjb25maXJtIHRoaXMgcHJvcG9zYWwsIHBsZWFzZSBzaWduIG9yIHJlcGx5IHRvIG91ciBlbWFpbCB3aXRoIHlvdXIgYWNjZXB0YW5jZS4pIFRqCkVUCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAowLiAwLjEyNSAwLjIxNiByZwo0MjguMzE0OTYwNjI5OTIxMTg4MiAyMjUuMTkxOTY4NTAzOTM2ODkxNSBUZAooRk9SIFZBUk5JIEhPTElEQVlTIFBWVC4gTFRELikgVGoKRVQKQlQKL0YxIDcuNSBUZgo4LjYyNSBUTAowLjQ0MyAwLjUwMiAwLjU4OCByZwo0NDcuODk0OTYwNjI5OTIxMTcyMyAxOTQuMDEwODY2MTQxNzMyMjA4MiBUZAooW0F1dGhvcml6ZWQgRXhlY3V0aXZlIFNpZ25hdG9yeV0pIFRqCkVUCkJUCi9GMiA4IFRmCjkuMTk5OTk5OTk5OTk5OTk5MyBUTAowLjA5IDAuMTY5IDAuMjcxIHJnCjQ0MC4zMTQ5NjA2Mjk5MjExODgyIDE3OS44Mzc2Mzc3OTUyNzU1NTQ3IFRkCihOZWVsIFBhdGVsIJUgTWFuYWdpbmcgRGlyZWN0b3IpIFRqCkVUCjAuOSAwLjkxIDAuOTMgUkcKMC44NTAzOTM3MDA3ODc0MDE2IHcKMzkuNjg1MDM5MzcwMDc4NzQwNyAyOC4zNDY0NTY2OTI5MTMzODg4IG0KNTU1LjU5NDk2MDYyOTkyMTE2MDkgMjguMzQ2NDU2NjkyOTEzMzg4OCBsClMKQlQKL0YxIDYuNSBUZgo3LjQ3NDk5OTk5OTk5OTk5OTYgVEwKMC40NDMgMC41MDIgMC41ODggcmcKMzkuNjg1MDM5MzcwMDc4NzQwNyAxNy4wMDc4NzQwMTU3NDgwMjk3IFRkCihWQVJOSSBIT0xJREFZUyBQVlQuIExURC4glSAzMTcgTmFyYXlhbiBFbXBpcmUsIEFuYW5kLCBHdWphcmF0IJUgSGVscGxpbmU6ICs5MSA2MzU3MCA1MDUwNSCVIHd3dy52YXJuaWhvbGlkYXlzLmNvbSkgVGoKRVQKQlQKL0YxIDYuNSBUZgo3LjQ3NDk5OTk5OTk5OTk5OTYgVEwKMC40NDMgMC41MDIgMC41ODggcmcKNTIyLjU3NDk2MDYyOTkyMTE3OTEgMTcuMDA3ODc0MDE1NzQ4MDI5NyBUZAooUGFnZSAyIG9mIDIpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKMSAwIG9iago8PC9UeXBlIC9QYWdlcwovS2lkcyBbMyAwIFIgNSAwIFIgXQovQ291bnQgMgo+PgplbmRvYmoKNyAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0hlbHZldGljYQovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iago4IDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKOSAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0hlbHZldGljYS1PYmxpcXVlCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjEwIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGRPYmxpcXVlCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjExIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvQ291cmllcgovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxMiAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0NvdXJpZXItQm9sZAovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxMyAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0NvdXJpZXItT2JsaXF1ZQovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxNCAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0NvdXJpZXItQm9sZE9ibGlxdWUKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMTUgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9UaW1lcy1Sb21hbgovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxNiAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL1RpbWVzLUJvbGQKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMTcgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9UaW1lcy1JdGFsaWMKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMTggMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9UaW1lcy1Cb2xkSXRhbGljCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjE5IDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvWmFwZkRpbmdiYXRzCi9TdWJ0eXBlIC9UeXBlMQovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjIwIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvU3ltYm9sCi9TdWJ0eXBlIC9UeXBlMQovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL1Byb2NTZXQgWy9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUldCi9Gb250IDw8Ci9GMSA3IDAgUgovRjIgOCAwIFIKL0YzIDkgMCBSCi9GNCAxMCAwIFIKL0Y1IDExIDAgUgovRjYgMTIgMCBSCi9GNyAxMyAwIFIKL0Y4IDE0IDAgUgovRjkgMTUgMCBSCi9GMTAgMTYgMCBSCi9GMTEgMTcgMCBSCi9GMTIgMTggMCBSCi9GMTMgMTkgMCBSCi9GMTQgMjAgMCBSCj4+Ci9YT2JqZWN0IDw8Cj4+Cj4+CmVuZG9iagoyMSAwIG9iago8PAovUHJvZHVjZXIgKGpzUERGIDQuMi4xKQovQ3JlYXRpb25EYXRlIChEOjIwMjYxMTEzMTAzMjUzKzA1JzMwJykKPj4KZW5kb2JqCjIyIDAgb2JqCjw8Ci9UeXBlIC9DYXRhbG9nCi9QYWdlcyAxIDAgUgovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgo+PgplbmRvYmoKeHJlZgowIDIzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAyODg5MyAwMDAwMCBuIAowMDAwMDMwNzE4IDAwMDAwIG4gCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDE1MiAwMDAwMCBuIAowMDAwMDEwNDM4IDAwMDAwIG4gCjAwMDAwMTA1NzUgMDAwMDAgbiAKMDAwMDAyODk1NiAwMDAwMCBuIAowMDAwMDI5MDgxIDAwMDAwIG4gCjAwMDAwMjkyMTEgMDAwMDAgbiAKMDAwMDAyOTM0NCAwMDAwMCBuIAowMDAwMDI5NDgyIDAwMDAwIG4gCjAwMDAwMjk2MDYgMDAwMDAgbiAKMDAwMDAyOTczNSAwMDAwMCBuIAowMDAwMDI5ODY3IDAwMDAwIG4gCjAwMDAwMzAwMDMgMDAwMDAgbiAKMDAwMDAzMDEzMSAwMDAwMCBuIAowMDAwMDMwMjU4IDAwMDAwIG4gCjAwMDAwMzAzODcgMDAwMDAgbiAKMDAwMDAzMDUyMCAwMDAwMCBuIAowMDAwMDMwNjIyIDAwMDAwIG4gCjAwMDAwMzA5NjggMDAwMDAgbiAKMDAwMDAzMTA1NCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDIzCi9Sb290IDIyIDAgUgovSW5mbyAyMSAwIFIKL0lEIFsgPDU3NkNBQUJGMTkwMkE2NUVFQzk2MUI0MUE4MTY4MENCPiA8NTc2Q0FBQkYxOTAyQTY1RUVDOTYxQjQxQTgxNjgwQ0I+IF0KPj4Kc3RhcnR4cmVmCjMxMTU4CiUlRU9G",
+      "sentToEmail": "chirag.patel@charotar.in",
+      "sentAt": "2026-11-13T05:02:53.789Z",
+      "sentByUserId": "usr-neel-patel-superadmin",
+      "sentByName": "Neel Patel",
+      "createdAt": "2026-11-13T05:02:53.789Z"
+    }
+  ],
+  "quotationEmailLogs": [
+    {
+      "id": "qemail-1794546173791-20",
+      "quotationId": "quo-1794546173721-900",
+      "snapshotId": "qsnap-1794546173789-403",
+      "recipientEmail": "chirag.patel@charotar.in",
+      "recipientName": "Chirag Patel",
+      "subject": "Your Official Kerala Vacation Proposal - Varni Holidays",
+      "messageBody": "Namaste Chiragbhai, please find your complete quotation attached.",
+      "status": "SIMULATED",
+      "providerMessageId": "sim-1794546173791-935",
+      "attachmentFilename": "VH-QUO-202611-0002.pdf",
+      "sentByUserId": "usr-neel-patel-superadmin",
+      "sentByName": "Neel Patel",
+      "sentAt": "2026-11-13T05:02:53.791Z"
+    }
+  ],
   "bookings": [],
-  "auditLogs": [],
+  "auditLogs": [
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "QUOTATION_REVISION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173800-219",
+      "details": "Created revision VH-QUO-202611-0002-R1 from original VH-QUO-202611-0002",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173801-80",
+      "createdAt": "2026-11-13T05:02:53.801Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "QUOTATION_SENT",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173721-900",
+      "details": "Quotation VH-QUO-202611-0002 transitioned to SENT. Notes: N/A",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173799-268",
+      "createdAt": "2026-11-13T05:02:53.799Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "QUOTATION_UPDATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173794-20",
+      "details": "Updated draft quotation VH-QUO-202611-0006. New Amount: ₹19950",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173796-652",
+      "createdAt": "2026-11-13T05:02:53.796Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "Neel Patel",
+      "action": "QUOTATION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173794-20",
+      "details": "Created quotation VH-QUO-202611-0006 for customer Test Draft User (Amount: ₹15750)",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173795-360",
+      "createdAt": "2026-11-13T05:02:53.795Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "neel@varniholidays.com",
+      "action": "QUOTATION_SENT",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173721-900",
+      "details": "Quotation VH-QUO-202611-0002 transitioned to SENT. Notes: Dispatched via email to chirag.patel@charotar.in",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173792-84",
+      "createdAt": "2026-11-13T05:02:53.792Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "Neel Patel",
+      "action": "QUOTATION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173742-267",
+      "details": "Created quotation VH-QUO-202611-0005 for customer Hardik Prajapati (Amount: ₹22050)",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173746-112",
+      "createdAt": "2026-11-13T05:02:53.746Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "Neel Patel",
+      "action": "QUOTATION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173741-395",
+      "details": "Created quotation VH-QUO-202611-0004 for customer Anilbhai Shah (Amount: ₹56700)",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173741-674",
+      "createdAt": "2026-11-13T05:02:53.741Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "Neel Patel",
+      "action": "QUOTATION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173740-299",
+      "details": "Created quotation VH-QUO-202611-0003 for customer Dhaval Patel (Amount: ₹36639)",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173740-524",
+      "createdAt": "2026-11-13T05:02:53.740Z"
+    },
+    {
+      "userId": "usr-neel-patel-superadmin",
+      "userEmail": "Neel Patel",
+      "action": "QUOTATION_CREATED",
+      "entityType": "QUOTATION",
+      "entityId": "quo-1794546173721-900",
+      "details": "Created quotation VH-QUO-202611-0002 for customer Chirag Patel (Amount: ₹33600)",
+      "ipAddress": "127.0.0.1 (Internal CRM)",
+      "id": "aud-1794546173721-144",
+      "createdAt": "2026-11-13T05:02:53.721Z"
+    }
+  ],
   "packageCosts": [],
   "syncJobs": [
+    {
+      "id": "sync-1794546173800-5071",
+      "eventType": "QUOTATION_UPDATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173721-900",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0002",
+        "leadReference": "N/A",
+        "customerName": "Chirag Patel",
+        "customerPhone": "+91 9825012345",
+        "title": "Scenic Kerala & Backwaters Grand Tour",
+        "totalAmount": 33600,
+        "status": "SENT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.800Z",
+      "createdAt": "2026-11-13T05:02:53.800Z"
+    },
+    {
+      "id": "sync-1794546173795-5163",
+      "eventType": "QUOTATION_CREATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173794-20",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0006",
+        "leadReference": "N/A",
+        "customerName": "Test Draft User",
+        "customerPhone": "+91 +91 99999 11111",
+        "title": "Initial Draft Proposal",
+        "totalAmount": 15750,
+        "status": "DRAFT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.795Z",
+      "createdAt": "2026-11-13T05:02:53.795Z"
+    },
+    {
+      "id": "sync-1794546173793-6534",
+      "eventType": "QUOTATION_UPDATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173721-900",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0002",
+        "leadReference": "N/A",
+        "customerName": "Chirag Patel",
+        "customerPhone": "+91 9825012345",
+        "title": "Scenic Kerala & Backwaters Grand Tour",
+        "totalAmount": 33600,
+        "status": "SENT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.793Z",
+      "createdAt": "2026-11-13T05:02:53.793Z"
+    },
+    {
+      "id": "sync-1794546173747-6273",
+      "eventType": "QUOTATION_CREATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173742-267",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0005",
+        "leadReference": "INS-20261105-9693",
+        "customerName": "Hardik Prajapati",
+        "customerPhone": "+91 9879012345",
+        "title": "Kerala 5N/6D Winter Proposal for Enquiry",
+        "totalAmount": 22050,
+        "status": "DRAFT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.747Z",
+      "createdAt": "2026-11-13T05:02:53.747Z"
+    },
+    {
+      "id": "sync-1794546173742-3662",
+      "eventType": "QUOTATION_CREATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173741-395",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0004",
+        "leadReference": "N/A",
+        "customerName": "Anilbhai Shah",
+        "customerPhone": "+91 +91 98240 55555",
+        "title": "Bespoke Gujarat Saurashtra Temple & Wildlife Circuit",
+        "totalAmount": 56700,
+        "status": "DRAFT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.742Z",
+      "createdAt": "2026-11-13T05:02:53.742Z"
+    },
+    {
+      "id": "sync-1794546173740-6672",
+      "eventType": "QUOTATION_CREATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173740-299",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0003",
+        "leadReference": "N/A",
+        "customerName": "Dhaval Patel",
+        "customerPhone": "+91 9825123456",
+        "title": "Vembanad Lakefront Luxury Retreat Stay Package",
+        "totalAmount": 36639,
+        "status": "DRAFT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.740Z",
+      "createdAt": "2026-11-13T05:02:53.740Z"
+    },
+    {
+      "id": "sync-1794546173739-159",
+      "eventType": "QUOTATION_CREATED",
+      "targetTab": "QUOTATIONS",
+      "entityId": "quo-1794546173721-900",
+      "payload": {
+        "quotationReference": "VH-QUO-202611-0002",
+        "leadReference": "N/A",
+        "customerName": "Chirag Patel",
+        "customerPhone": "+91 9825012345",
+        "title": "Scenic Kerala & Backwaters Grand Tour",
+        "totalAmount": 33600,
+        "status": "DRAFT",
+        "validUntil": "20/11/2026",
+        "createdBy": "Neel Patel",
+        "createdAt": "13/11/2026"
+      },
+      "status": "PENDING",
+      "retryCount": 0,
+      "maxRetries": 5,
+      "scheduledAt": "2026-11-13T05:02:53.739Z",
+      "createdAt": "2026-11-13T05:02:53.739Z"
+    },
     {
       "id": "sync-1793904712380-2288",
       "eventType": "LEAD_CREATED",

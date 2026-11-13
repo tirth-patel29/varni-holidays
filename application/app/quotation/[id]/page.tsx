@@ -147,12 +147,19 @@ export default function PublicQuotationViewPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href={`/api/quotations/${quotationId}/pdf?download=1`}
+            className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 inline-flex items-center gap-1.5 transition-colors"
+          >
+            <Printer size={13} className="text-amber-400" />
+            <span>Download Official PDF</span>
+          </a>
           <button
             onClick={handlePrint}
             className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 inline-flex items-center gap-1.5 transition-colors"
           >
             <Printer size={13} className="text-amber-400" />
-            <span>Save / Print PDF</span>
+            <span>Print View</span>
           </button>
           <button
             onClick={handleShareToCustomerWhatsApp}

@@ -185,24 +185,101 @@ export interface FollowUpRecord {
   createdAt: string;
 }
 
+export interface QuotationSnapshotRecord {
+  id: string;
+  quotationId: string;
+  version: number;
+  revisionNumber: number;
+  snapshotDataJson: string;
+  totalAmountInr: number;
+  pdfBase64?: string;
+  sentToEmail: string;
+  sentAt: string;
+  sentByUserId?: string;
+  sentByName?: string;
+  createdAt: string;
+}
+
+export interface QuotationEmailLogRecord {
+  id: string;
+  quotationId: string;
+  snapshotId?: string;
+  recipientEmail: string;
+  recipientName?: string;
+  subject: string;
+  messageBody?: string;
+  status: 'SENT' | 'PROVIDER_ACCEPTED' | 'FAILED' | 'SIMULATED';
+  providerMessageId?: string;
+  errorMessage?: string;
+  attachmentFilename?: string;
+  sentByUserId?: string;
+  sentByName?: string;
+  sentAt: string;
+}
+
 export interface QuotationRecord {
   id: string;
-  quotationNumber: string; // "VH-QUO-202611-001"
+  quotationNumber: string; // "VH-QUO-202611-0001"
+  quotationType?: 'PACKAGE' | 'HOTEL' | 'CUSTOM';
+  version?: number;
+  revisionNumber?: number;
+  parentQuotationId?: string | null;
   leadId: string;
+  leadReferenceId?: string | null;
   customerId: string;
+  customerName?: string;
+  customerEmail?: string | null;
+  customerPhone?: string;
   createdByUserId: string;
   createdByName: string;
   status: 'DRAFT' | 'SENT' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED' | 'SUPERSEDED';
   title: string;
-  subtotalInr: number;
-  taxesInr: number;
+  destination?: string | null;
+  durationNights?: number | null;
+  durationDays?: number | null;
+  travelStartDate?: string | null;
+  travelEndDate?: string | null;
+  adultsCount?: number;
+  childrenCount?: number;
+  roomsCount?: number;
+  hotelCategory?: string | null;
+  mealPlan?: string | null;
+  transportType?: string | null;
+  sourcePackageSlug?: string | null;
+  sourceHotelId?: string | null;
+
+  basePriceInr?: number;
+  transportChargesInr?: number;
+  additionalServicesInr?: number;
+  extraChargesInr?: number;
+  discountType?: 'FIXED' | 'PERCENTAGE';
+  discountValue?: number;
   discountInr: number;
+  taxPercent?: number;
+  taxesInr: number;
+  subtotalInr: number;
   totalAmountInr: number;
   supplierNetCostInr?: number; // Restricted to Super Admin / Manager
   validUntil: string;
   terms: string;
   inclusions?: string[];
   exclusions?: string[];
+  itineraryDays?: Array<{
+    dayNumber: number;
+    title: string;
+    description: string;
+    meals?: string;
+    stayDestination?: string;
+  }>;
+  hotelDetails?: {
+    hotelName: string;
+    location: string;
+    roomType: string;
+    mealPlan: string;
+    checkInTime?: string;
+    checkOutTime?: string;
+    perks?: string[];
+  };
   internalNotes?: string;
   customerNotes?: string;
   immutableSnapshotJson?: string;
@@ -219,6 +296,7 @@ export interface QuotationRecord {
     totalAmountInr: number;
   }>;
   createdAt: string;
+  updatedAt?: string;
 }
 
 // ----------------------------------------------------

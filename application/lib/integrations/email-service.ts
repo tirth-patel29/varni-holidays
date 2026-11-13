@@ -27,6 +27,10 @@ export interface EmailSendOptions {
   bookingRef?: string;
   quotationRef?: string;
   metadata?: Record<string, any>;
+  attachments?: Array<{
+    filename: string;
+    content: string; // base64 encoded string
+  }>;
 }
 
 export interface EmailSendResult {
@@ -474,6 +478,125 @@ export async function sendEnquiryConfirmationEmail(params: EnquiryConfirmationPa
 }
 
 /**
+ * Builds a dedicated Branded Quotation Proposal Email HTML for Resend dispatch
+ */
+export function buildQuotationProposalEmailHtml(params: {
+  customerName: string;
+  quotationNumber: string;
+  title: string;
+  destination?: string | null;
+  totalAmountInr: number;
+  validUntil: string;
+  customMessage?: string;
+  proposalUrl: string;
+}): string {
+  const { customerName, quotationNumber, title, destination, totalAmountInr, validUntil, customMessage, proposalUrl } = params;
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official Travel Proposal - ${quotationNumber} | Varni Holidays</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F8F6F0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #35475C;">
+  <center style="width: 100%; background-color: #F8F6F0; padding: 24px 0;">
+    <div style="max-width: 620px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #E8E3D8; box-shadow: 0 4px 18px rgba(21, 54, 80, 0.08);">
+      
+      <!-- Brand Header -->
+      <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #002037; border-bottom: 3px solid #E9B95E;">
+        <tr>
+          <td style="padding: 24px 32px;">
+            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #FFFFFF; margin: 0;">VARNI HOLIDAYS</div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #E9B95E; margin-top: 4px;">YOUR GATEWAY TO JOYFUL HOLIDAYS • ANAND, GUJARAT</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Main Body -->
+      <table cellpadding="0" cellspacing="0" style="width: 100%; padding: 32px 32px 24px 32px;">
+        <tr>
+          <td>
+            <div style="font-size: 14px; font-weight: 600; color: #153650; margin-bottom: 12px;">
+              Namaste ${customerName || 'Valued Guest'} Ji 🙏
+            </div>
+
+            <h1 style="font-family: Georgia, serif; font-size: 20px; font-weight: 700; color: #153650; margin: 0 0 16px 0; line-height: 1.35;">
+              Official Travel Proposal & Quotation
+            </h1>
+
+            ${customMessage ? `<p style="font-size: 13.5px; color: #35475C; line-height: 1.6; margin: 0 0 18px 0; background-color: #F8FAFC; padding: 14px 16px; border-left: 3px solid #153650;">${customMessage.replace(/\n/g, '<br/>')}</p>` : `
+            <p style="font-size: 13.5px; color: #35475C; line-height: 1.6; margin: 0 0 18px 0;">
+              Thank you for choosing <strong>Varni Holidays</strong>. We are delighted to present your tailor-made travel proposal for <strong>${title}</strong>. An official itemized PDF document has been attached to this email for your review and records.
+            </p>`}
+
+            <!-- Proposal Highlights Card -->
+            <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #F1EEE5; border: 1px solid #E8E3D8; border-radius: 8px; margin: 20px 0;">
+              <tr>
+                <td style="padding: 18px 20px;">
+                  <table cellpadding="0" cellspacing="0" style="width: 100%; font-size: 13px; line-height: 1.8;">
+                    <tr>
+                      <td style="color: #718096; width: 140px;">Quotation Ref:</td>
+                      <td style="font-weight: 700; color: #153650; font-family: monospace;">${quotationNumber}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #718096;">Itinerary / Tour:</td>
+                      <td style="font-weight: 600; color: #153650;">${title}${destination ? ` (${destination})` : ''}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #718096;">Total Investment:</td>
+                      <td style="font-weight: 800; color: #168653; font-size: 15px;">₹${totalAmountInr.toLocaleString('en-IN')} (All Taxes Included)</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #718096;">Proposal Validity:</td>
+                      <td style="font-weight: 600; color: #D97706;">Valid until ${new Date(validUntil).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size: 12.5px; color: #666E79; line-height: 1.6; margin: 16px 0;">
+              📎 <strong>PDF Attached:</strong> Your official quotation with day-by-day itinerary, hotel details, inclusions, exclusions, tax breakdown, and payment instructions is attached to this email.
+            </p>
+
+            <!-- Actions / Button -->
+            <div style="text-align: center; margin: 28px 0 20px 0;">
+              <a href="${proposalUrl}" target="_blank" style="display: inline-block; background-color: #002037; color: #FFFFFF !important; font-size: 13px; font-weight: 700; padding: 13px 28px; border-radius: 4px; text-decoration: none; box-shadow: 0 4px 10px rgba(0, 32, 55, 0.2);">
+                View Online Proposal & Details →
+              </a>
+            </div>
+
+            <!-- Contact Box -->
+            <div style="border-top: 1px dashed #E2E8F0; padding-top: 16px; margin-top: 24px; font-size: 12px; color: #718096; line-height: 1.5;">
+              Questions about this itinerary? Reply directly to this email or call our Anand headquarters at <strong>${COMPANY_CONTACT.phone.display}</strong>.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Footer -->
+      <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #F1EEE5; border-top: 1px solid #E8E3D8; padding: 20px 32px; text-align: center;">
+        <tr>
+          <td style="font-size: 11px; color: #666E79; line-height: 1.6;">
+            <div style="font-weight: 700; color: #153650; margin-bottom: 4px;">VARNI HOLIDAYS PVT. LTD. • ANAND</div>
+            <div>${COMPANY_CONTACT.address.full}</div>
+            <div style="margin-top: 4px;">
+              Phone: ${COMPANY_CONTACT.phone.display} | WhatsApp: +91 63570 50505 | Email: ${COMPANY_CONTACT.email.primary}
+            </div>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+  </center>
+</body>
+</html>
+  `.trim();
+}
+
+/**
  * Dispatches an email via Resend API or simulates if key is absent
  * Gracefully handles domain verification 403 errors by falling back to onboarding@resend.dev
  */
@@ -494,19 +617,25 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
   // If live Resend API key is present, invoke Resend REST endpoint
   if (resendApiKey && resendApiKey.startsWith('re_')) {
     try {
+      const emailPayload: Record<string, any> = {
+        from: fromEmail,
+        reply_to: COMPANY_CONTACT.email.primary,
+        to: [options.to],
+        subject: options.subject,
+        html: renderedHtml,
+      };
+
+      if (options.attachments && options.attachments.length > 0) {
+        emailPayload.attachments = options.attachments;
+      }
+
       let response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${resendApiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          from: fromEmail,
-          reply_to: COMPANY_CONTACT.email.primary,
-          to: [options.to],
-          subject: options.subject,
-          html: renderedHtml,
-        }),
+        body: JSON.stringify(emailPayload),
       });
 
       // If domain verification error (403), automatically fallback to verified noreply@varnitours.com
@@ -516,19 +645,14 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
 
         if (response.status === 403 && (errText.includes('Domain not verified') || errText.includes('domain'))) {
           console.log('[Resend Fallback] Retrying with verified Varni Holidays <noreply@varnitours.com>...');
+          emailPayload.from = 'Varni Holidays <noreply@varnitours.com>';
           response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${resendApiKey}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              from: 'Varni Holidays <noreply@varnitours.com>',
-              reply_to: COMPANY_CONTACT.email.primary,
-              to: [options.to],
-              subject: options.subject,
-              html: renderedHtml,
-            }),
+            body: JSON.stringify(emailPayload),
           });
         }
 
