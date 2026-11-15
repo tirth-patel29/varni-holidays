@@ -77,26 +77,57 @@ export default function VisaApplicationDetailPage() {
   const [officialRefInput, setOfficialRefInput] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  // Document Upload State
-  const [docModalOpen, setDocModalOpen] = useState(false);
+  // Unified Single-Modal Architecture: strictly one primary dialog active at a time
+  type ActiveModalType = 'NONE' | 'EMAIL_COMPOSER' | 'CONFIRM_SEND' | 'DOCUMENT_UPLOAD' | 'VIEW_LOG';
+  const [activeModal, setActiveModal] = useState<ActiveModalType>('NONE');
+  const [viewLogRecord, setViewLogRecord] = useState<VisaCommunicationLogRecord | null>(null);
+
+  // Document Upload State (for Standalone Vault Upload)
   const [docType, setDocType] = useState<VisaDocumentRecord['documentType']>('PASSPORT_FRONT');
   const [docFileName, setDocFileName] = useState('');
   const [docFileDataUrl, setDocFileDataUrl] = useState('');
   const [uploadingDoc, setUploadingDoc] = useState(false);
 
   // Email Composer Modal State
-  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [selectedTemplateCode, setSelectedTemplateCode] = useState<string>('INQUIRY_RECEIVED');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [customCounselorMessage, setCustomCounselorMessage] = useState('');
   const [attachApprovedVisa, setAttachApprovedVisa] = useState(false);
+  const [selectedApprovedDocId, setSelectedApprovedDocId] = useState<string>('');
   const [activePreviewTab, setActivePreviewTab] = useState<'HTML' | 'TEXT'>('HTML');
   const [sendingEmail, setSendingEmail] = useState(false);
-  const [confirmSendOpen, setConfirmSendOpen] = useState(false);
 
-  // View Sent Email Log Modal
-  const [viewLogModal, setViewLogModal] = useState<VisaCommunicationLogRecord | null>(null);
+  // Inline Approved Visa Upload State (within Email Composer)
+  const [inlineFileName, setInlineFileName] = useState('');
+  const [inlineFileDataUrl, setInlineFileDataUrl] = useState('');
+  const [uploadingInlineDoc, setUploadingInlineDoc] = useState(false);
+
+  // Prevent background body scrolling while any modal dialog is active
+  useEffect(() => {
+    if (activeModal !== 'NONE') {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [activeModal]);
+
+  // Support Escape key to close or step-back modals cleanly
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (activeModal === 'CONFIRM_SEND') {
+          setActiveModal('EMAIL_COMPOSER'); // step back to composer without losing work
+        } else if (activeModal !== 'NONE') {
+          setActiveModal('NONE');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal]);
 
   const loadDossier = async () => {
     setLoading(true);
@@ -113,7 +144,7 @@ export default function VisaApplicationDetailPage() {
 
         // Auto-match template to status if requested via query parameter
         if (searchParams.get('tab') === 'email') {
-          setEmailModalOpen(true);
+          setActiveModal('EMAIL_COMPOSER');
         }
       } else {
         setFeedback({ type: 'error', text: res.error || 'Dossier not found' });
@@ -189,7 +220,7 @@ export default function VisaApplicationDetailPage() {
           )
         ) {
           setSelectedTemplateCode(newStatus);
-          setEmailModalOpen(true);
+          setActiveModal('EMAIL_COMPOSER');
         }
       } else {
         setFeedback({ type: 'error', text: res.error || 'Failed to update status' });
@@ -229,7 +260,7 @@ export default function VisaApplicationDetailPage() {
 
       if (res.success) {
         setFeedback({ type: 'success', text: `Document ${docFileName} added to vault.` });
-        setDocModalOpen(false);
+        setActiveModal('NONE');
         setDocFileName('');
         setDocFileDataUrl('');
         await loadDossier();
@@ -258,12 +289,59 @@ export default function VisaApplicationDetailPage() {
     }
   };
 
+  // Inline Approved Visa file selection & upload (directly inside Email Composer)
+  const handleInlineFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setInlineFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setInlineFileDataUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleInlineUploadApprovedVisa = async () => {
+    if (!app || !inlineFileName || !inlineFileDataUrl) return;
+    setUploadingInlineDoc(true);
+    try {
+      const res = await uploadVisaDocumentAction({
+        visaApplicationId: app.id,
+        documentType: 'APPROVED_VISA',
+        fileName: inlineFileName,
+        fileDataUrl: inlineFileDataUrl,
+        actorId: app.assignedUserId || 'usr-ananya-joshi-visa',
+      });
+
+      if (res.success && res.document) {
+        setFeedback({
+          type: 'success',
+          text: `Official Approved Visa (${inlineFileName}) saved to vault & auto-attached.`,
+        });
+        setInlineFileName('');
+        setInlineFileDataUrl('');
+        await loadDossier();
+        setSelectedApprovedDocId(res.document.id);
+        setAttachApprovedVisa(true);
+      } else {
+        setFeedback({ type: 'error', text: res.error || 'Failed to upload approved visa' });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'error', text: err.message });
+    } finally {
+      setUploadingInlineDoc(false);
+    }
+  };
+
   const handleDispatchEmail = async () => {
     if (!app || !recipientEmail.trim()) return;
 
     setSendingEmail(true);
-    setConfirmSendOpen(false);
     try {
+      const docToAttach = attachApprovedVisa
+        ? selectedApprovedDocId || documents.find((d) => d.documentType === 'APPROVED_VISA')?.id
+        : undefined;
+
       const res = await sendVisaEmailAction({
         applicationId: app.id,
         templateCode: selectedTemplateCode,
@@ -271,6 +349,7 @@ export default function VisaApplicationDetailPage() {
         subject: emailSubject,
         customMessage: customCounselorMessage.trim() || undefined,
         attachApprovedVisa,
+        selectedDocumentId: docToAttach,
         actorId: app.assignedUserId || 'usr-ananya-joshi-visa',
       });
 
@@ -279,7 +358,7 @@ export default function VisaApplicationDetailPage() {
           type: 'success',
           text: `Email dispatched successfully via Resend to ${recipientEmail}. Log recorded.`,
         });
-        setEmailModalOpen(false);
+        setActiveModal('NONE');
         setCustomCounselorMessage('');
         await loadDossier();
       } else {
@@ -287,13 +366,31 @@ export default function VisaApplicationDetailPage() {
           type: 'error',
           text: `Email delivery failed: ${res.error || 'Check Resend credentials'}`,
         });
+        // Return to composer so employee can review and re-dispatch
+        setActiveModal('EMAIL_COMPOSER');
       }
     } catch (err: any) {
       setFeedback({ type: 'error', text: err.message });
+      setActiveModal('EMAIL_COMPOSER');
     } finally {
       setSendingEmail(false);
     }
   };
+
+  // Filter all approved visa documents in vault
+  const approvedVisaDocs = documents.filter((d) => d.documentType === 'APPROVED_VISA');
+  const selectedApprovedDoc =
+    approvedVisaDocs.find((d) => d.id === selectedApprovedDocId) || approvedVisaDocs[0];
+
+  // Auto-sync selection when approved visa documents become available
+  useEffect(() => {
+    if (approvedVisaDocs.length > 0) {
+      if (!selectedApprovedDocId || !approvedVisaDocs.some((d) => d.id === selectedApprovedDocId)) {
+        setSelectedApprovedDocId(approvedVisaDocs[0].id);
+        setAttachApprovedVisa(true);
+      }
+    }
+  }, [documents, selectedApprovedDocId]);
 
   if (loading && !app) {
     return (
@@ -317,8 +414,6 @@ export default function VisaApplicationDetailPage() {
     );
   }
 
-  // Check if approved visa document is present in vault
-  const approvedVisaDoc = documents.find((d) => d.documentType === 'APPROVED_VISA');
 
   // Preview generation
   const emailPreview = renderVisaEmail(
@@ -401,7 +496,8 @@ export default function VisaApplicationDetailPage() {
 
             <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
               <button
-                onClick={() => setEmailModalOpen(true)}
+                type="button"
+                onClick={() => setActiveModal('EMAIL_COMPOSER')}
                 className="px-4 py-2 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none inline-flex items-center gap-1.5 transition-colors shadow-xs"
               >
                 <Mail size={13} className="text-[#E9B95E]" />
@@ -409,7 +505,8 @@ export default function VisaApplicationDetailPage() {
               </button>
 
               <button
-                onClick={() => setDocModalOpen(true)}
+                type="button"
+                onClick={() => setActiveModal('DOCUMENT_UPLOAD')}
                 className="px-3.5 py-2 bg-[#FFFFFF] hover:bg-[#F4F6F9] text-[#153650] border border-[#E5E8ED] text-xs font-bold rounded-none inline-flex items-center gap-1.5 transition-colors shadow-xs"
               >
                 <Upload size={13} className="text-[#24689B]" />
@@ -560,7 +657,8 @@ export default function VisaApplicationDetailPage() {
                   </h2>
                 </div>
                 <button
-                  onClick={() => setDocModalOpen(true)}
+                  type="button"
+                  onClick={() => setActiveModal('DOCUMENT_UPLOAD')}
                   className="px-2.5 py-1 bg-[#F4F6F9] hover:bg-[#E5E8ED] text-[#153650] text-[11px] font-bold rounded-none inline-flex items-center gap-1 transition-colors"
                 >
                   <Upload size={12} className="text-[#24689B]" />
@@ -676,7 +774,8 @@ export default function VisaApplicationDetailPage() {
               </p>
 
               <button
-                onClick={() => setEmailModalOpen(true)}
+                type="button"
+                onClick={() => setActiveModal('EMAIL_COMPOSER')}
                 className="w-full py-2.5 bg-[#E9B95E] hover:bg-[#D4A347] text-[#002037] font-bold text-xs rounded-none transition-colors inline-flex items-center justify-center gap-2"
               >
                 <Mail size={14} />
@@ -777,7 +876,10 @@ export default function VisaApplicationDetailPage() {
                           ID: {log.resendMessageId ? log.resendMessageId.slice(0, 14) + '...' : 'LOCAL'}
                         </span>
                         <button
-                          onClick={() => setViewLogModal(log)}
+                          onClick={() => {
+                            setViewLogRecord(log);
+                            setActiveModal('VIEW_LOG');
+                          }}
                           className="text-[10px] font-bold text-[#24689B] hover:underline"
                         >
                           View Email
@@ -791,15 +893,23 @@ export default function VisaApplicationDetailPage() {
           </div>
         </div>
 
-        {/* Modal 1: Document Upload */}
-        {docModalOpen && (
-          <div className="fixed inset-0 z-50 bg-[#002037]/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-md w-full p-6 shadow-xl space-y-4">
+        {/* ========================================================================= */}
+        {/* SINGLE-MODAL WORKFLOW ENGINE (Guaranteed 1 Active Dialog at any time)       */}
+        {/* ========================================================================= */}
+
+        {/* DIALOG 1: Standalone Vault Document Upload */}
+        {activeModal === 'DOCUMENT_UPLOAD' && (
+          <div className="fixed inset-0 z-50 bg-[#002037]/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-hidden">
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-md w-full p-6 shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-[#E5E8ED] pb-3">
                 <h3 className="font-headline text-base font-bold text-[#153650]">
                   Upload Dossier Document
                 </h3>
-                <button onClick={() => setDocModalOpen(false)} className="text-[#718096] hover:text-[#153650]">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('NONE')}
+                  className="text-[#718096] hover:text-[#153650]"
+                >
                   <X size={16} />
                 </button>
               </div>
@@ -845,7 +955,7 @@ export default function VisaApplicationDetailPage() {
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E8ED]">
                   <button
                     type="button"
-                    onClick={() => setDocModalOpen(false)}
+                    onClick={() => setActiveModal('NONE')}
                     className="px-3.5 py-1.5 text-xs text-[#718096] hover:text-[#153650]"
                   >
                     Cancel
@@ -868,160 +978,297 @@ export default function VisaApplicationDetailPage() {
           </div>
         )}
 
-        {/* Modal 2: Send Visa Email Composer */}
-        {emailModalOpen && (
-          <div className="fixed inset-0 z-50 bg-[#002037]/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto crm-scrollbar">
-            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-4xl w-full my-8 p-6 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-[#E5E8ED] pb-3">
+        {/* DIALOG 2: Official Visa Email Composer */}
+        {activeModal === 'EMAIL_COMPOSER' && (
+          <div className="fixed inset-0 z-50 bg-[#002037]/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl rounded-none">
+              {/* Fixed Header */}
+              <div className="shrink-0 p-4 sm:p-5 border-b border-[#E5E8ED] flex items-center justify-between">
                 <div>
-                  <h3 className="font-headline text-lg font-bold text-[#153650]">
+                  <h3 className="font-headline text-base sm:text-lg font-bold text-[#153650]">
                     Compose Official Visa Email
                   </h3>
                   <p className="text-xs text-[#718096]">
                     Template engine automatically populates customer, dossier, and counselor metadata.
                   </p>
                 </div>
-                <button onClick={() => setEmailModalOpen(false)} className="text-[#718096] hover:text-[#153650]">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('NONE')}
+                  className="p-1 text-[#718096] hover:text-[#153650] hover:bg-[#F1F5F9] transition-colors"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Template Selector Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5">
-                {Object.values(VISA_EMAIL_TEMPLATES).map((tmpl) => (
-                  <button
-                    key={tmpl.code}
-                    type="button"
-                    onClick={() => setSelectedTemplateCode(tmpl.code)}
-                    className={`p-2 text-left border rounded-none text-xs transition-colors ${
-                      selectedTemplateCode === tmpl.code
-                        ? 'border-[#153650] bg-[#153650] text-[#FFFFFF]'
-                        : 'border-[#E5E8ED] bg-[#F8FAFC] text-[#172B45] hover:bg-[#FFFFFF]'
-                    }`}
-                  >
-                    <div className="font-bold truncate text-[11px]">{tmpl.title.split(' — ')[1] || tmpl.title}</div>
-                    <div className={`text-[9px] truncate ${selectedTemplateCode === tmpl.code ? 'text-[#E9B95E]' : 'text-[#718096]'}`}>
-                      {tmpl.code}
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Inputs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Scrollable Modal Body */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 crm-scrollbar">
+                {/* Template Selector Strip */}
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
-                    Recipient Email Address <span className="text-[#D54747]">*</span>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1.5">
+                    Select Official Email Template
                   </label>
-                  <input
-                    type="email"
-                    required
-                    value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-semibold rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
-                    Email Subject Line <span className="text-[#D54747]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={emailSubject}
-                    onChange={(e) => setEmailSubject(e.target.value)}
-                    className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-semibold rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
-                  />
-                </div>
-              </div>
-
-              {/* Custom Counselor Message */}
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
-                  Optional Custom Counselor Note (Appended Safely)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Add custom travel instructions, specific meeting times, or additional requirements..."
-                  value={customCounselorMessage}
-                  onChange={(e) => setCustomCounselorMessage(e.target.value)}
-                  className="w-full p-2.5 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
-                />
-              </div>
-
-              {/* Visa Document Attachment Toggle */}
-              {selectedTemplateCode === 'VISA_APPROVED' && (
-                <div className="p-3 bg-[#F0FDF4] border border-[#BBF7D0]">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={attachApprovedVisa}
-                      onChange={(e) => setAttachApprovedVisa(e.target.checked)}
-                      disabled={!approvedVisaDoc}
-                      className="h-4 w-4 rounded-none text-[#168653] border-[#CBD5E1] focus:ring-[#168653]"
-                    />
-                    <div>
-                      <span className="text-xs font-bold text-[#166534] block">
-                        Attach Approved Visa Document from Vault
-                      </span>
-                      <span className="text-[11px] text-[#4A5568] block">
-                        {approvedVisaDoc
-                          ? `Will attach: ${approvedVisaDoc.fileName} (${approvedVisaDoc.isVerified ? 'Verified' : 'Unverified'})`
-                          : 'No APPROVED_VISA document found in vault. Upload one first to attach.'}
-                      </span>
-                    </div>
-                  </label>
-                </div>
-              )}
-
-              {/* Live Preview Tabs */}
-              <div className="border border-[#E5E8ED] rounded-none">
-                <div className="bg-[#F8FAFC] border-b border-[#E5E8ED] px-4 py-2 flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#718096]">
-                    Email Content Preview
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setActivePreviewTab('HTML')}
-                      className={`px-2.5 py-1 text-[11px] font-bold rounded-none ${
-                        activePreviewTab === 'HTML' ? 'bg-[#153650] text-[#FFFFFF]' : 'text-[#718096]'
-                      }`}
-                    >
-                      Formatted HTML
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActivePreviewTab('TEXT')}
-                      className={`px-2.5 py-1 text-[11px] font-bold rounded-none ${
-                        activePreviewTab === 'TEXT' ? 'bg-[#153650] text-[#FFFFFF]' : 'text-[#718096]'
-                      }`}
-                    >
-                      Plain Text
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5">
+                    {Object.values(VISA_EMAIL_TEMPLATES).map((tmpl) => (
+                      <button
+                        key={tmpl.code}
+                        type="button"
+                        onClick={() => setSelectedTemplateCode(tmpl.code)}
+                        className={`p-2 text-left border rounded-none text-xs transition-colors ${
+                          selectedTemplateCode === tmpl.code
+                            ? 'border-[#153650] bg-[#153650] text-[#FFFFFF]'
+                            : 'border-[#E5E8ED] bg-[#F8FAFC] text-[#172B45] hover:bg-[#FFFFFF]'
+                        }`}
+                      >
+                        <div className="font-bold truncate text-[11px]">
+                          {tmpl.title.split(' — ')[1] || tmpl.title}
+                        </div>
+                        <div
+                          className={`text-[9px] truncate ${
+                            selectedTemplateCode === tmpl.code ? 'text-[#E9B95E]' : 'text-[#718096]'
+                          }`}
+                        >
+                          {tmpl.code}
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div className="p-4 max-h-72 overflow-y-auto crm-scrollbar bg-[#F8F6F0]">
-                  {activePreviewTab === 'HTML' ? (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: emailPreview.html }}
-                      className="bg-[#FFFFFF] p-2 border border-[#E5E8ED]"
+                {/* Recipient and Subject Line Inputs */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
+                      Recipient Email Address <span className="text-[#D54747]">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={recipientEmail}
+                      onChange={(e) => setRecipientEmail(e.target.value)}
+                      className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-semibold rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
                     />
-                  ) : (
-                    <pre className="text-xs font-mono text-[#172B45] whitespace-pre-wrap bg-[#FFFFFF] p-4 border border-[#E5E8ED] leading-relaxed">
-                      {emailPreview.text}
-                    </pre>
-                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
+                      Email Subject Line <span className="text-[#D54747]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      className="w-full h-9 px-3 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] font-semibold rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
+                    />
+                  </div>
+                </div>
+
+                {/* Custom Counselor Message Note */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#718096] mb-1">
+                    Optional Custom Counselor Note (Appended Safely)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Add custom travel instructions, specific meeting times, or additional requirements..."
+                    value={customCounselorMessage}
+                    onChange={(e) => setCustomCounselorMessage(e.target.value)}
+                    className="w-full p-2.5 bg-[#F8FAFC] border border-[#E5E8ED] text-xs text-[#172B45] rounded-none focus:outline-none focus:bg-[#FFFFFF] focus:border-[#24689B]"
+                  />
+                </div>
+
+                {/* Approved Visa Document Attachment & Vault Integration */}
+                {selectedTemplateCode === 'VISA_APPROVED' && (
+                  <div className="p-4 bg-[#F0FDF4] border border-[#BBF7D0] space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Paperclip size={16} className="text-[#168653] shrink-0" />
+                        <div>
+                          <span className="text-xs font-bold text-[#166534] block">
+                            Attach Official Approved Visa PDF from Vault
+                          </span>
+                          <span className="text-[11px] text-[#4A5568]">
+                            Directly binds the physical visa document to the Resend email attachment payload.
+                          </span>
+                        </div>
+                      </div>
+                      <label className="inline-flex items-center gap-2 cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={attachApprovedVisa}
+                          onChange={(e) => setAttachApprovedVisa(e.target.checked)}
+                          disabled={approvedVisaDocs.length === 0}
+                          className="h-4 w-4 rounded-none text-[#168653] border-[#CBD5E1] focus:ring-[#168653]"
+                        />
+                        <span className="text-xs font-bold text-[#166534]">
+                          {attachApprovedVisa ? 'Attachment Active' : 'Do Not Attach'}
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* Case 1: Approved Documents Available in Vault */}
+                    {approvedVisaDocs.length > 0 ? (
+                      <div className="space-y-2 pt-2 border-t border-[#BBF7D0]/60">
+                        <span className="text-[11px] font-bold text-[#166534] uppercase tracking-wider block">
+                          Select Approved Document from Vault ({approvedVisaDocs.length} available):
+                        </span>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto crm-scrollbar pr-1">
+                          {approvedVisaDocs.map((doc) => (
+                            <label
+                              key={doc.id}
+                              className={`flex items-center justify-between p-2.5 border text-xs cursor-pointer transition-colors ${
+                                (selectedApprovedDocId || selectedApprovedDoc?.id) === doc.id
+                                  ? 'bg-[#FFFFFF] border-[#168653] shadow-xs'
+                                  : 'bg-[#F0FDF4] border-[#D1FAE5] hover:bg-[#FFFFFF]'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <input
+                                  type="radio"
+                                  name="selectedApprovedVisaDoc"
+                                  checked={(selectedApprovedDocId || selectedApprovedDoc?.id) === doc.id}
+                                  onChange={() => {
+                                    setSelectedApprovedDocId(doc.id);
+                                    setAttachApprovedVisa(true);
+                                  }}
+                                  className="text-[#168653] focus:ring-[#168653]"
+                                />
+                                <div className="min-w-0">
+                                  <span className="font-bold text-[#153650] block truncate">
+                                    {doc.fileName}
+                                  </span>
+                                  <span className="text-[10px] text-[#718096] flex items-center gap-2">
+                                    <span>Uploaded {new Date(doc.uploadedAt).toLocaleDateString('en-GB')}</span>
+                                    {doc.fileSize && <span>• {(doc.fileSize / 1024).toFixed(1)} KB</span>}
+                                    <span>• By {doc.uploadedByName}</span>
+                                  </span>
+                                </div>
+                              </div>
+                              <span
+                                className={`px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${
+                                  doc.isVerified
+                                    ? 'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC]'
+                                    : 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]'
+                                }`}
+                              >
+                                {doc.isVerified ? '✓ Verified' : 'Unverified'}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Optional Inline Uploader to add an updated PDF without closing composer */}
+                        <details className="text-[11px] text-[#166534] pt-1">
+                          <summary className="cursor-pointer font-bold hover:underline select-none">
+                            + Upload an updated or revised Visa PDF to vault
+                          </summary>
+                          <div className="mt-2 p-2.5 bg-white border border-[#BBF7D0] flex flex-col sm:flex-row items-center gap-2">
+                            <input
+                              type="file"
+                              accept=".pdf,.png,.jpg,.jpeg"
+                              onChange={handleInlineFileSelect}
+                              className="w-full text-xs text-[#718096] file:mr-2 file:py-1 file:px-2.5 file:border-0 file:bg-[#153650] file:text-[#FFFFFF] file:text-xs file:font-bold hover:file:bg-[#24689B]"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleInlineUploadApprovedVisa}
+                              disabled={uploadingInlineDoc || !inlineFileName}
+                              className="w-full sm:w-auto px-3.5 py-1.5 bg-[#168653] hover:bg-[#147246] text-[#FFFFFF] text-xs font-bold shrink-0 inline-flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                            >
+                              {uploadingInlineDoc ? (
+                                <RotateCw size={12} className="animate-spin text-white" />
+                              ) : (
+                                <Upload size={12} />
+                              )}
+                              <span>Upload & Select</span>
+                            </button>
+                          </div>
+                        </details>
+                      </div>
+                    ) : (
+                      /* Case 2: Zero Approved Documents in Vault -> Direct Inline Uploader */
+                      <div className="p-3 bg-[#FFFFFF] border border-[#D1FAE5] space-y-2">
+                        <div className="flex items-center gap-2 text-xs text-[#92400E]">
+                          <AlertTriangle size={14} className="shrink-0" />
+                          <span>
+                            No APPROVED_VISA document found in vault. Select and upload the official PDF directly below:
+                          </span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                          <input
+                            type="file"
+                            accept=".pdf,.png,.jpg,.jpeg"
+                            onChange={handleInlineFileSelect}
+                            className="w-full text-xs text-[#718096] file:mr-2 file:py-1 file:px-2.5 file:border-0 file:bg-[#153650] file:text-[#FFFFFF] file:text-xs file:font-bold hover:file:bg-[#24689B]"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleInlineUploadApprovedVisa}
+                            disabled={uploadingInlineDoc || !inlineFileName}
+                            className="w-full sm:w-auto px-3.5 py-1.5 bg-[#168653] hover:bg-[#147246] text-[#FFFFFF] text-xs font-bold shrink-0 inline-flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                          >
+                            {uploadingInlineDoc ? (
+                              <RotateCw size={12} className="animate-spin text-white" />
+                            ) : (
+                              <Upload size={12} />
+                            )}
+                            <span>Upload & Attach Now</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Live Preview Tabs */}
+                <div className="border border-[#E5E8ED] rounded-none">
+                  <div className="bg-[#F8FAFC] border-b border-[#E5E8ED] px-4 py-2 flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#718096]">
+                      Email Content Preview
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setActivePreviewTab('HTML')}
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded-none ${
+                          activePreviewTab === 'HTML' ? 'bg-[#153650] text-[#FFFFFF]' : 'text-[#718096]'
+                        }`}
+                      >
+                        Formatted HTML
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePreviewTab('TEXT')}
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded-none ${
+                          activePreviewTab === 'TEXT' ? 'bg-[#153650] text-[#FFFFFF]' : 'text-[#718096]'
+                        }`}
+                      >
+                        Plain Text
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-4 max-h-64 overflow-y-auto crm-scrollbar bg-[#F8F6F0]">
+                    {activePreviewTab === 'HTML' ? (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: emailPreview.html }}
+                        className="bg-[#FFFFFF] p-2 border border-[#E5E8ED]"
+                      />
+                    ) : (
+                      <pre className="text-xs font-mono text-[#172B45] whitespace-pre-wrap bg-[#FFFFFF] p-4 border border-[#E5E8ED] leading-relaxed">
+                        {emailPreview.text}
+                      </pre>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#E5E8ED]">
+              {/* Fixed Footer Actions - Transitions smoothly without overlapping */}
+              <div className="shrink-0 p-4 sm:p-5 border-t border-[#E5E8ED] bg-[#F8FAFC] flex items-center justify-between">
                 <button
                   type="button"
-                  onClick={() => setEmailModalOpen(false)}
+                  onClick={() => setActiveModal('NONE')}
                   className="text-xs font-bold text-[#718096] hover:text-[#153650]"
                 >
                   Cancel
@@ -1029,7 +1276,7 @@ export default function VisaApplicationDetailPage() {
 
                 <button
                   type="button"
-                  onClick={() => setConfirmSendOpen(true)}
+                  onClick={() => setActiveModal('CONFIRM_SEND')}
                   disabled={!recipientEmail.trim() || sendingEmail}
                   className="px-5 py-2.5 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none inline-flex items-center gap-2 transition-colors shadow-xs"
                 >
@@ -1041,9 +1288,9 @@ export default function VisaApplicationDetailPage() {
           </div>
         )}
 
-        {/* Modal 3: Employee Confirmation Modal before sending */}
-        {confirmSendOpen && (
-          <div className="fixed inset-0 z-60 bg-[#002037]/80 backdrop-blur-xs flex items-center justify-center p-4">
+        {/* DIALOG 3: Single-Modal Confirmation View (Replaces Composer without Stacking) */}
+        {activeModal === 'CONFIRM_SEND' && (
+          <div className="fixed inset-0 z-50 bg-[#002037]/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-hidden">
             <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-md w-full p-6 shadow-2xl space-y-4">
               <div className="w-12 h-12 bg-[#FFFBEB] border border-[#FDE68A] text-[#D97706] flex items-center justify-center mx-auto">
                 <AlertTriangle size={24} />
@@ -1059,20 +1306,31 @@ export default function VisaApplicationDetailPage() {
                 <div className="my-3 p-2 bg-[#F8FAFC] border border-[#E5E8ED] font-mono font-bold text-xs text-[#153650]">
                   {recipientEmail}
                 </div>
-                <div className="text-[11px] text-[#718096] text-left space-y-1">
-                  <div>• Template: <strong>{selectedTemplateCode}</strong></div>
-                  <div>• Subject: <strong>{emailSubject}</strong></div>
-                  {attachApprovedVisa && <div className="text-[#168653] font-bold">• Attached: Approved Visa Document</div>}
+                <div className="text-[11px] text-[#718096] text-left space-y-1 bg-[#F8FAFC] p-3 border border-[#E5E8ED]">
+                  <div>
+                    • Template: <strong>{selectedTemplateCode}</strong>
+                  </div>
+                  <div className="truncate">
+                    • Subject: <strong>{emailSubject}</strong>
+                  </div>
+                  {attachApprovedVisa && (
+                    <div className="text-[#168653] font-bold flex items-center gap-1 mt-1">
+                      <Paperclip size={12} />
+                      <span>
+                        Attached: {selectedApprovedDoc?.fileName || 'Approved Visa PDF'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E8ED]">
                 <button
                   type="button"
-                  onClick={() => setConfirmSendOpen(false)}
-                  className="px-3 py-1.5 text-xs text-[#718096] hover:text-[#153650]"
+                  onClick={() => setActiveModal('EMAIL_COMPOSER')}
+                  className="px-3.5 py-1.5 text-xs font-semibold text-[#718096] hover:text-[#153650]"
                 >
-                  Cancel
+                  Back to Edit
                 </button>
                 <button
                   type="button"
@@ -1092,32 +1350,39 @@ export default function VisaApplicationDetailPage() {
           </div>
         )}
 
-        {/* Modal 4: View Sent Email Modal */}
-        {viewLogModal && (
-          <div className="fixed inset-0 z-50 bg-[#002037]/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-3xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto crm-scrollbar">
-              <div className="flex items-center justify-between border-b border-[#E5E8ED] pb-3">
+        {/* DIALOG 4: View Sent Communication Log Modal */}
+        {activeModal === 'VIEW_LOG' && viewLogRecord && (
+          <div className="fixed inset-0 z-50 bg-[#002037]/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-hidden">
+            <div className="bg-[#FFFFFF] border border-[#E5E8ED] max-w-3xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+              <div className="flex items-center justify-between border-b border-[#E5E8ED] pb-3 shrink-0">
                 <div>
                   <h3 className="font-headline text-base font-bold text-[#153650]">
-                    {viewLogModal.subject}
+                    {viewLogRecord.subject}
                   </h3>
                   <div className="text-[11px] text-[#718096] mt-0.5">
-                    Dispatched on {new Date(viewLogModal.sentAt).toLocaleString('en-GB')} by {viewLogModal.sentByName}
+                    Dispatched on {new Date(viewLogRecord.sentAt).toLocaleString('en-GB')} by {viewLogRecord.sentByName}
                   </div>
                 </div>
-                <button onClick={() => setViewLogModal(null)} className="text-[#718096] hover:text-[#153650]">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('NONE')}
+                  className="text-[#718096] hover:text-[#153650]"
+                >
                   <X size={16} />
                 </button>
               </div>
 
-              <div
-                dangerouslySetInnerHTML={{ __html: viewLogModal.messageHtml }}
-                className="bg-[#FFFFFF] p-2 border border-[#E5E8ED]"
-              />
+              <div className="flex-1 overflow-y-auto crm-scrollbar">
+                <div
+                  dangerouslySetInnerHTML={{ __html: viewLogRecord.messageHtml }}
+                  className="bg-[#FFFFFF] p-4 border border-[#E5E8ED]"
+                />
+              </div>
 
-              <div className="flex justify-end pt-2 border-t border-[#E5E8ED]">
+              <div className="flex justify-end pt-2 border-t border-[#E5E8ED] shrink-0">
                 <button
-                  onClick={() => setViewLogModal(null)}
+                  type="button"
+                  onClick={() => setActiveModal('NONE')}
                   className="px-4 py-2 bg-[#153650] text-[#FFFFFF] text-xs font-bold rounded-none"
                 >
                   Close

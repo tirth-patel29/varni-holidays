@@ -594,6 +594,7 @@ export interface VisaDocumentRecord {
   fileSize?: number;
   mimeType?: string;
   fileDataUrl?: string; // base64 or secure link
+  filePath?: string; // secure vault disk storage path
   isVerified: boolean;
   verifiedAt?: string | null;
   uploadedByUserId: string;

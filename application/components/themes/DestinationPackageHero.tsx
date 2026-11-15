@@ -34,8 +34,11 @@ export default function DestinationPackageHero({
     <section className="relative mb-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         
-        {/* Main Hero Artwork Frame (8 Cols) */}
-        <div className="lg:col-span-8 relative min-h-[500px] md:min-h-[560px] rounded-[2rem] overflow-hidden flex flex-col justify-between p-6 md:p-10 text-white shadow-2xl border border-white/20 group">
+        {/* Main Hero Artwork Frame (8 Cols) - with solid fallback background in theme color to guarantee 100% text contrast if image is loading */}
+        <div
+          className="lg:col-span-8 relative min-h-[500px] md:min-h-[560px] rounded-[2rem] overflow-hidden flex flex-col justify-between p-6 md:p-10 text-white shadow-2xl border border-white/20 group"
+          style={{ backgroundColor: theme.colors.primary }}
+        >
           
           {/* Background Image - Explicit z-0 with Next.js Image for optimal crisp rendering */}
           <div className="absolute inset-0 z-0">

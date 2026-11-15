@@ -151,16 +151,19 @@ async function runVisaAutomationTests() {
     assert(verifyRes.success && verifyRes.document?.isVerified === true, 'Document marked as verified');
 
     // Add Approved Visa Document
+    const dummyPdfBase64 = 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqIDIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iag==';
     const approvedDocRes = await uploadVisaDocumentAction({
       visaApplicationId: appId,
       documentType: 'APPROVED_VISA',
       fileName: 'Official_UK_Visa_Approval.pdf',
-      fileDataUrl: 'data:application/pdf;base64,JVBERi0xLjQK...',
+      fileDataUrl: dummyPdfBase64,
     });
     assert(approvedDocRes.success && approvedDocRes.document?.documentType === 'APPROVED_VISA', 'Approved visa document recorded in vault');
+    assert(Boolean(approvedDocRes.document?.filePath), `Disk vault path recorded: ${approvedDocRes.document?.filePath}`);
+    assert(approvedDocRes.document?.isVerified === true, 'Approved visa document auto-verified upon staff upload');
 
-    // TEST 7: Resend Client Email Dispatch & Communication Log
-    console.log('\n--- TEST 7: Client Email Dispatch & Log Recording ---');
+    // TEST 7: Resend Client Email Dispatch & Communication Log with Document Selection
+    console.log('\n--- TEST 7: Client Email Dispatch & Document Attachment ---');
     const emailRes = await sendVisaEmailAction({
       applicationId: appId,
       templateCode: 'VISA_APPROVED',
@@ -168,6 +171,7 @@ async function runVisaAutomationTests() {
       subject: 'Congratulations! Your UK Visa Has Been Approved – Varni Holidays',
       customMessage: 'Your passport is ready for pickup at our Anand office.',
       attachApprovedVisa: true,
+      selectedDocumentId: approvedDocRes.document!.id,
       actorId: 'usr-ananya-joshi-visa',
     });
 
@@ -175,6 +179,41 @@ async function runVisaAutomationTests() {
     assert(Boolean(emailRes.messageId), `Resend message ID or simulated ID returned: ${emailRes.messageId}`);
     assert(Boolean(emailRes.log), 'Communication log recorded in CRM');
     assert(emailRes.log?.recipientEmail === 'dhaval.patel@example.com', 'Communication log records correct recipient');
+    assert(
+      Array.isArray(emailRes.log?.attachmentNames) && emailRes.log?.attachmentNames.includes('Official_UK_Visa_Approval.pdf'),
+      `Attachment name recorded in log: ${JSON.stringify(emailRes.log?.attachmentNames)}`
+    );
+
+    // TEST 7B: Security - Unauthorized Cross-Application Document Attachment Blocked
+    console.log('\n--- TEST 7B: Security & Ownership Boundary Checks ---');
+    const secondAppRes = await createVisaApplicationAction({
+      customerName: 'Foreign Customer',
+      customerEmail: 'foreign@example.com',
+      customerPhone: '+91 99999 88888',
+      destinationCountry: 'Singapore',
+      visaType: 'Tourist 30-Day',
+      visaCategory: 'TOURIST',
+      applicantCount: 1,
+    });
+    const foreignDocRes = await uploadVisaDocumentAction({
+      visaApplicationId: secondAppRes.application!.id,
+      documentType: 'APPROVED_VISA',
+      fileName: 'Foreign_Visa.pdf',
+      fileDataUrl: dummyPdfBase64,
+    });
+    const unauthorizedAttachRes = await sendVisaEmailAction({
+      applicationId: appId,
+      templateCode: 'VISA_APPROVED',
+      recipientEmail: 'dhaval.patel@example.com',
+      subject: 'Test Subject',
+      attachApprovedVisa: true,
+      selectedDocumentId: foreignDocRes.document!.id,
+    });
+    assert(
+      unauthorizedAttachRes.success === false &&
+        Boolean(unauthorizedAttachRes.error?.includes('not an authorized approved visa document for this dossier')),
+      'Cross-application document attachment strictly rejected with authorization mismatch error'
+    );
 
     // TEST 8: Dashboard Metrics
     console.log('\n--- TEST 8: Dashboard Metrics & Filtering ---');

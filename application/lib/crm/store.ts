@@ -1957,6 +1957,10 @@ class CrmRepository {
     return (this.state.visaDocuments || []).filter((d) => d.visaApplicationId === visaApplicationId);
   }
 
+  public getVisaDocumentById(docId: string): VisaDocumentRecord | null {
+    return (this.state.visaDocuments || []).find((d) => d.id === docId) || null;
+  }
+
   public verifyVisaDocument(
     docId: string,
     isVerified: boolean,
