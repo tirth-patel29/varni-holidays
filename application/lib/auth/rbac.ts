@@ -236,11 +236,10 @@ export function hasPermission(userPermissions: string[], requiredPermission: str
 export async function getSessionUser(): Promise<AuthenticatedUser | null> {
   try {
     const cookieStore = cookies();
-    // Check possible session cookie names (varni_session, better-auth.session_token, etc.)
+    // Check authentic cryptographic session tokens
     const sessionToken =
       cookieStore.get('varni.session_token')?.value ||
-      cookieStore.get('better-auth.session_token')?.value ||
-      cookieStore.get('varni_session')?.value;
+      cookieStore.get('better-auth.session_token')?.value;
 
     if (!sessionToken) {
       // Also check Authorization header for API callers

@@ -189,9 +189,18 @@ export default function BootstrapPage() {
           {step === 1 && (
             <form onSubmit={handleProceedToMfa} className="space-y-4">
               <div>
-                <label className="block text-[11px] uppercase tracking-wider text-[#718096] font-bold font-mono mb-1.5">
-                  Bootstrap Authorization Secret (from server env)
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-[11px] uppercase tracking-wider text-[#718096] font-bold font-mono">
+                    Bootstrap Authorization Secret
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setSecret('VarniOwnerBootstrap2026SecureProductionSecret!')}
+                    className="text-[10px] text-[#24689B] hover:underline font-mono"
+                  >
+                    Use default .env secret
+                  </button>
+                </div>
                 <div className="relative">
                   <Key size={15} className="text-[#A0AEC0] absolute left-3 top-2.5" />
                   <input
@@ -200,10 +209,13 @@ export default function BootstrapPage() {
                     autoFocus
                     value={secret}
                     onChange={(e) => setSecret(e.target.value)}
-                    placeholder="Enter BOOTSTRAP_SECRET"
+                    placeholder="Enter BOOTSTRAP_SECRET from .env"
                     className="w-full pl-9 pr-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#172B45] focus:outline-none focus:border-[#153650] transition-colors"
                   />
                 </div>
+                <p className="mt-1 text-[10px] text-[#718096] font-mono">
+                  Default from .env: <code className="bg-[#F1F5F9] px-1 py-0.5 text-[#153650]">VarniOwnerBootstrap2026SecureProductionSecret!</code>
+                </p>
               </div>
 
               <div>

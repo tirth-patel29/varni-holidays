@@ -31,11 +31,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Inspect Session Cookie
+  // 3. Inspect Session Cookie - ONLY accept genuine cryptographic tokens
   const sessionToken =
     request.cookies.get('varni.session_token')?.value ||
-    request.cookies.get('better-auth.session_token')?.value ||
-    request.cookies.get('varni_session')?.value;
+    request.cookies.get('better-auth.session_token')?.value;
 
   const mfaPendingToken = request.cookies.get('varni.mfa_pending')?.value;
 
@@ -52,7 +51,12 @@ export function middleware(request: NextRequest) {
   if (!sessionToken) {
     const loginUrl = new URL('/admin/login', request.url);
     loginUrl.searchParams.set('next', pathname);
-    return NextResponse.redirect(loginUrl);
+    const response = NextResponse.redirect(loginUrl);
+    // Purge any stale legacy demo cookies if present
+    if (request.cookies.get('varni_session')) {
+      response.cookies.delete('varni_session');
+    }
+    return response;
   }
 
   return NextResponse.next();

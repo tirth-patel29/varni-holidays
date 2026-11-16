@@ -142,15 +142,17 @@ export default function AdminHeader({
             {actions && <div className="hidden sm:flex items-center gap-2">{actions}</div>}
 
             {/* GLOBAL QUICK ACTION BUTTON (PHASE 3) */}
-            <button
-              type="button"
-              onClick={() => openQuickAction('enquiry')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none shadow-xs transition-colors"
-              title="Create new enquiry, booking, payment or follow-up"
-            >
-              <Plus size={14} className="text-[#E9B95E]" />
-              <span className="hidden sm:inline">Quick Action</span>
-            </button>
+            {currentUser?.id ? (
+              <button
+                type="button"
+                onClick={() => openQuickAction('enquiry')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#153650] hover:bg-[#24689B] text-[#FFFFFF] text-xs font-bold rounded-none shadow-xs transition-colors"
+                title="Create new enquiry, booking, payment or follow-up"
+              >
+                <Plus size={14} className="text-[#E9B95E]" />
+                <span className="hidden sm:inline">Quick Action</span>
+              </button>
+            ) : null}
 
             {/* Anand HQ Office Badge */}
             <div className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[#F7F8FA] border border-[#E5E8ED] text-xs font-semibold text-[#153650] rounded-none">
