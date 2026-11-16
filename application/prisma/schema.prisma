@@ -20,32 +20,33 @@ enum UserStatus {
 }
 
 model User {
-  id               String          @id @default(uuid())
-  email            String          @unique
-  fullName         String
-  phone            String?
-  passwordHash     String
-  status           UserStatus      @default(ACTIVE)
-  avatarUrl        String?
-  lastLoginAt      DateTime?
-  
-  // Soft Delete
-  isDeleted        Boolean         @default(false)
-  deletedAt        DateTime?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id           String     @id @default(uuid())
+  email        String     @unique
+  fullName     String
+  phone        String?
+  passwordHash String
+  status       UserStatus @default(ACTIVE)
+  avatarUrl    String?
+  lastLoginAt  DateTime?
 
-  userRoles        UserRole[]
-  assignedLeads    Lead[]          @relation("LeadAssignee")
-  leadActivities   LeadActivity[]
-  customerUpdates  CustomerUpdate[]
-  followUps        FollowUp[]
-  createdQuotes    Quotation[]     @relation("QuotationCreator")
-  managedBookings  Booking[]       @relation("BookingManager")
-  recordedPayments PaymentRecord[] @relation("PaymentRecorder")
-  customerMerges   Customer[]      @relation("CustomerMerger")
-  auditLogs        AuditLog[]
-  assignedVisaApps VisaApplication[] @relation("VisaAssignee")
+  // Soft Delete
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userRoles            UserRole[]
+  assignedLeads        Lead[]                 @relation("LeadAssignee")
+  leadActivities       LeadActivity[]
+  customerUpdates      CustomerUpdate[]
+  followUps            FollowUp[]
+  createdQuotes        Quotation[]            @relation("QuotationCreator")
+  managedBookings      Booking[]              @relation("BookingManager")
+  recordedPayments     PaymentRecord[]        @relation("PaymentRecorder")
+  customerMerges       Customer[]             @relation("CustomerMerger")
+  auditLogs            AuditLog[]
+  assignedVisaApps     VisaApplication[]      @relation("VisaAssignee")
+  WhatsAppConversation WhatsAppConversation[]
 
   @@map("users")
 }
@@ -64,7 +65,7 @@ model Role {
 model Permission {
   id              String           @id @default(uuid())
   code            String           @unique // e.g. "VIEW_SUPPLIER_COSTS", "APPROVE_PRICING", "EXPORT_FINANCIALS"
-  category        String           // "FINANCE", "LEADS", "PACKAGES", "SYSTEM", "SECURITY"
+  category        String // "FINANCE", "LEADS", "PACKAGES", "SYSTEM", "SECURITY"
   description     String?
   rolePermissions RolePermission[]
 
@@ -72,12 +73,12 @@ model Permission {
 }
 
 model RolePermission {
-  id           String     @id @default(uuid())
+  id           String @id @default(uuid())
   roleId       String
   permissionId String
 
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
   @@map("role_permissions")
@@ -90,8 +91,8 @@ model UserRole {
   assignedAt DateTime @default(now())
   assignedBy String?
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role       Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Restrict)
 
   @@unique([userId, roleId])
   @@map("user_roles")
@@ -102,41 +103,42 @@ model UserRole {
 // ====================================================
 
 model Customer {
-  id                   String           @id @default(uuid())
-  fullName             String
-  email                String?
-  phoneCountryCode     String           @default("+91")
-  phoneNumber          String
-  normalizedPhone      String           // Non-unique: families may share phones
-  normalizedEmail      String?
-  city                 String?
-  state                String?
-  country              String           @default("India")
-  dateOfBirth          DateTime?
-  notes                String?
-  marketingConsent     Boolean          @default(false)
+  id               String    @id @default(uuid())
+  fullName         String
+  email            String?
+  phoneCountryCode String    @default("+91")
+  phoneNumber      String
+  normalizedPhone  String // Non-unique: families may share phones
+  normalizedEmail  String?
+  city             String?
+  state            String?
+  country          String    @default("India")
+  dateOfBirth      DateTime?
+  notes            String?
+  marketingConsent Boolean   @default(false)
 
   // Deduplication & Merge Audit
-  duplicateWarning     Boolean          @default(false)
+  duplicateWarning     Boolean    @default(false)
   duplicateNotes       String?
   mergedIntoCustomerId String?
   mergedAt             DateTime?
   mergedByUserId       String?
-  mergedBy             User?            @relation("CustomerMerger", fields: [mergedByUserId], references: [id], onDelete: SetNull)
-  mergedInto           Customer?        @relation("CustomerMerges", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
-  mergedSubordinates   Customer[]       @relation("CustomerMerges")
+  mergedBy             User?      @relation("CustomerMerger", fields: [mergedByUserId], references: [id], onDelete: SetNull)
+  mergedInto           Customer?  @relation("CustomerMerges", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
+  mergedSubordinates   Customer[] @relation("CustomerMerges")
 
   // Soft Deletion
-  isDeleted            Boolean          @default(false)
-  deletedAt            DateTime?
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   leads                Lead[]
   quotations           Quotation[]
   updates              CustomerUpdate[]
   bookings             Booking[]
   visaApplications     VisaApplication[]
+  WhatsAppConversation WhatsAppConversation[]
 
   @@index([normalizedPhone])
   @@index([normalizedEmail])
@@ -157,11 +159,11 @@ enum ServiceType {
 }
 
 enum PipelineStage {
-  REQUESTS       // Fresh website submission
-  GENERAL        // Contacted / enquiry qualified
-  PRIORITY       // High purchase intent / bespoke requirements
-  CONVERTED      // Explicitly converted to Booking
-  CLOSED         // Lost / Unresponsive / Cancelled
+  REQUESTS // Fresh website submission
+  GENERAL // Contacted / enquiry qualified
+  PRIORITY // High purchase intent / bespoke requirements
+  CONVERTED // Explicitly converted to Booking
+  CLOSED // Lost / Unresponsive / Cancelled
 }
 
 enum PriorityLevel {
@@ -172,42 +174,43 @@ enum PriorityLevel {
 }
 
 model Lead {
-  id                   String                 @id @default(uuid())
-  referenceId          String                 @unique // e.g. "FLT-20261104-0012", "PKG-20261104-0045"
-  serviceType          ServiceType
-  stage                PipelineStage          @default(REQUESTS)
-  priorityLevel        PriorityLevel          @default(MEDIUM)
-  source               String                 @default("WEBSITE")
-  
-  customerId           String
-  customer             Customer               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  id            String        @id @default(uuid())
+  referenceId   String        @unique // e.g. "FLT-20261104-0012", "PKG-20261104-0045"
+  serviceType   ServiceType
+  stage         PipelineStage @default(REQUESTS)
+  priorityLevel PriorityLevel @default(MEDIUM)
+  source        String        @default("WEBSITE")
 
-  assignedUserId       String?
-  assignedTo           User?                  @relation("LeadAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  assignedUserId String?
+  assignedTo     User?   @relation("LeadAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
 
   // Service-Specific Joined Details
-  flightDetail         FlightEnquiryDetail?
-  packageDetail        PackageEnquiryDetail?
-  visaDetail           VisaEnquiryDetail?
-  customHolidayDetail  CustomHolidayDetail?
-  insuranceDetail      TravelInsuranceDetail?
+  flightDetail        FlightEnquiryDetail?
+  packageDetail       PackageEnquiryDetail?
+  visaDetail          VisaEnquiryDetail?
+  customHolidayDetail CustomHolidayDetail?
+  insuranceDetail     TravelInsuranceDetail?
 
   // Activities & Lifecycle
-  activities           LeadActivity[]
-  followUps            FollowUp[]
-  customerUpdates      CustomerUpdate[]
-  quotations           Quotation[]
-  booking              Booking?
-  visaApplications     VisaApplication[]
+  activities       LeadActivity[]
+  followUps        FollowUp[]
+  customerUpdates  CustomerUpdate[]
+  quotations       Quotation[]
+  booking          Booking?
+  visaApplications VisaApplication[]
 
-  closeReason          String?
-  closedAt             DateTime?
+  closeReason String?
+  closedAt    DateTime?
 
   // Soft Deletion
   isDeleted            Boolean                @default(false)
   deletedAt            DateTime?
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
+  WhatsAppConversation WhatsAppConversation[]
 
   @@index([stage])
   @@index([serviceType])
@@ -234,15 +237,15 @@ enum CabinClass {
 }
 
 model FlightEnquiryDetail {
-  id                  String          @id @default(uuid())
-  leadId              String          @unique
-  lead                Lead            @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  tripType            TripType        @default(ROUND_TRIP)
-  adultsCount         Int             @default(1)
-  childrenCount       Int             @default(0)
-  infantsCount        Int             @default(0)
-  cabinClass          CabinClass      @default(ECONOMY)
+  tripType            TripType   @default(ROUND_TRIP)
+  adultsCount         Int        @default(1)
+  childrenCount       Int        @default(0)
+  infantsCount        Int        @default(0)
+  cabinClass          CabinClass @default(ECONOMY)
   specialRequirements String?
 
   // Preferences & Special Assistance (Phase 3.1)
@@ -251,21 +254,21 @@ model FlightEnquiryDetail {
   wheelchairAssistanceCode        String?
   wheelchairAssistanceDescription String?
 
-  segments            FlightSegment[]
+  segments FlightSegment[]
 
   @@map("flight_enquiry_details")
 }
 
 model FlightSegment {
-  id                  String              @id @default(uuid())
-  flightEnquiryId     String
-  flightEnquiry       FlightEnquiryDetail @relation(fields: [flightEnquiryId], references: [id], onDelete: Cascade)
+  id              String              @id @default(uuid())
+  flightEnquiryId String
+  flightEnquiry   FlightEnquiryDetail @relation(fields: [flightEnquiryId], references: [id], onDelete: Cascade)
 
-  segmentOrder        Int                 // 1 for outbound, 2 for return, 1..N for multi-city
-  originAirport       String              // e.g. "Ahmedabad (AMD)"
-  destinationAirport  String              // e.g. "London Heathrow (LHR)"
+  segmentOrder        Int // 1 for outbound, 2 for return, 1..N for multi-city
+  originAirport       String // e.g. "Ahmedabad (AMD)"
+  destinationAirport  String // e.g. "London Heathrow (LHR)"
   departureDate       DateTime
-  preferredTimeWindow String?             // e.g. "Morning", "Evening", "Anytime"
+  preferredTimeWindow String? // e.g. "Morning", "Evening", "Anytime"
 
   @@index([flightEnquiryId, segmentOrder])
   @@map("flight_segments")
@@ -278,38 +281,38 @@ enum PricingStatus {
 }
 
 model PackageEnquiryDetail {
-  id                    String                @id @default(uuid())
-  leadId                String                @unique
-  lead                  Lead                  @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  packageId             String
-  package               Package               @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Restrict)
 
-  hotelTierId           String?
-  hotelTier             HotelTier?            @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
+  hotelTierId String?
+  hotelTier   HotelTier? @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
 
   pricingStatus         PricingStatus         @default(EXACT_MATCH)
   sourcePricingMatrixId String?
   pricingMatrix         PackagePricingMatrix? @relation(fields: [sourcePricingMatrixId], references: [id], onDelete: SetNull)
 
-  preferredTravelDate   DateTime?
-  adultsCount           Int                   @default(2)
-  childrenWithBedCount  Int                   @default(0)
-  childrenNoBedCount    Int                   @default(0)
-  infantsCount          Int                   @default(0)
-  childAges             Int[]                 @default([])
-  roomsCount            Int                   @default(1)
-  vehicleType           String?
-  vehicleConfigCode     String?
+  preferredTravelDate  DateTime?
+  adultsCount          Int       @default(2)
+  childrenWithBedCount Int       @default(0)
+  childrenNoBedCount   Int       @default(0)
+  infantsCount         Int       @default(0)
+  childAges            Int[]     @default([])
+  roomsCount           Int       @default(1)
+  vehicleType          String?
+  vehicleConfigCode    String?
 
   // Financial Price Snapshot (Nullable if pricing status is not EXACT_MATCH)
-  quotedUnitPriceInr    Decimal?              @db.Decimal(10, 2)
-  quotedTotalPriceInr   Decimal?              @db.Decimal(10, 2)
-  currency              String                @default("INR")
-  rateBasis             String?
-  priceSnapshotJson     Json?                 // Immutable snapshot of active matrix row & supplements
+  quotedUnitPriceInr  Decimal? @db.Decimal(10, 2)
+  quotedTotalPriceInr Decimal? @db.Decimal(10, 2)
+  currency            String   @default("INR")
+  rateBasis           String?
+  priceSnapshotJson   Json? // Immutable snapshot of active matrix row & supplements
 
-  specialRequests       String?
+  specialRequests String?
 
   @@map("package_enquiry_details")
 }
@@ -324,14 +327,14 @@ enum VisaCategory {
 }
 
 model VisaEnquiryDetail {
-  id                   String       @id @default(uuid())
-  leadId               String       @unique
-  lead                 Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
   destinationCountry   String
   otherCountryName     String?
   visaCategory         VisaCategory @default(TOURIST)
-  visaType             String?      // Country-dependent subtype (e.g. "B1/B2 Visitor Visa", "Super Visa")
+  visaType             String? // Country-dependent subtype (e.g. "B1/B2 Visitor Visa", "Super Visa")
   travelPurpose        String?
   applicantNationality String       @default("Indian")
   residenceCountry     String       @default("India")
@@ -344,51 +347,51 @@ model VisaEnquiryDetail {
 }
 
 model CustomHolidayDetail {
-  id                        String    @id @default(uuid())
-  leadId                    String    @unique
-  lead                      Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  departureDate             DateTime
-  returnDate                DateTime
-  destinations              String
-  adultsCount               Int       @default(2)
-  childrenCount             Int       @default(0)
-  infantsCount              Int       @default(0)
-  mealPlan                  String    // "CPAI" | "MAP" | "APAI"
-  hotelCategory             String    // "3_STAR" | "4_STAR" | "5_STAR" | "FLEXIBLE"
-  transferPreference        String    // "SHARING" | "PRIVATE" | "RECOMMEND"
-  specialRequirements       String?   @db.Text
-  visaAssistanceRequired    Boolean   @default(false)
-  flightAssistanceRequired  Boolean   @default(false)
-  travelInsuranceRequired   Boolean   @default(false)
+  departureDate            DateTime
+  returnDate               DateTime
+  destinations             String
+  adultsCount              Int      @default(2)
+  childrenCount            Int      @default(0)
+  infantsCount             Int      @default(0)
+  mealPlan                 String // "CPAI" | "MAP" | "APAI"
+  hotelCategory            String // "3_STAR" | "4_STAR" | "5_STAR" | "FLEXIBLE"
+  transferPreference       String // "SHARING" | "PRIVATE" | "RECOMMEND"
+  specialRequirements      String?  @db.Text
+  visaAssistanceRequired   Boolean  @default(false)
+  flightAssistanceRequired Boolean  @default(false)
+  travelInsuranceRequired  Boolean  @default(false)
 
   // Physical Register Operational Follow-Up Fields
-  confirmedFlightDetails    String?   @db.Text
-  confirmedHotelDetails     String?   @db.Text
-  confirmedVisaDetails      String?   @db.Text
-  invoiceReference          String?
-  itineraryNotes            String?   @db.Text
+  confirmedFlightDetails String? @db.Text
+  confirmedHotelDetails  String? @db.Text
+  confirmedVisaDetails   String? @db.Text
+  invoiceReference       String?
+  itineraryNotes         String? @db.Text
 
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("custom_holiday_details")
 }
 
 model TravelInsuranceDetail {
-  id                          String    @id @default(uuid())
-  leadId                      String    @unique
-  lead                        Lead      @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String @unique
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  travelDate                  DateTime
-  destinationCountry          String
-  dateOfBirth                 DateTime
-  hasPreExistingDisease       Boolean   @default(false)
-  preExistingDiseaseDetails   String?   @db.Text // Sensitive medical data: restricted
-  consentGiven                Boolean   @default(true)
+  travelDate                DateTime
+  destinationCountry        String
+  dateOfBirth               DateTime
+  hasPreExistingDisease     Boolean  @default(false)
+  preExistingDiseaseDetails String?  @db.Text // Sensitive medical data: restricted
+  consentGiven              Boolean  @default(true)
 
-  createdAt                   DateTime  @default(now())
-  updatedAt                   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("travel_insurance_details")
 }
@@ -411,140 +414,140 @@ enum PriceApprovalStatus {
 }
 
 model Package {
-  id             String                 @id @default(uuid())
-  slug           String                 @unique // e.g. "kerala-6n7d-winter"
-  title          String                 // e.g. "Scenic Kerala & Backwaters Grand Tour"
-  destination    String                 // e.g. "Kerala, India"
-  region         String                 // e.g. "South India"
-  durationNights Int                    // e.g. 6
-  durationDays   Int                    // e.g. 7
-  pickupLocation String                 // e.g. "Cochin (COK)"
-  dropLocation   String                 // e.g. "Trivandrum (TRV) / Cochin (COK)"
-  overview       String                 @db.Text
+  id             String        @id @default(uuid())
+  slug           String        @unique // e.g. "kerala-6n7d-winter"
+  title          String // e.g. "Scenic Kerala & Backwaters Grand Tour"
+  destination    String // e.g. "Kerala, India"
+  region         String // e.g. "South India"
+  durationNights Int // e.g. 6
+  durationDays   Int // e.g. 7
+  pickupLocation String // e.g. "Cochin (COK)"
+  dropLocation   String // e.g. "Trivandrum (TRV) / Cochin (COK)"
+  overview       String        @db.Text
   heroImageUrl   String
   galleryImages  String[]
   inclusions     String[]
   exclusions     String[]
   importantNotes String[]
-  status         PackageStatus          @default(DRAFT)
-  featured       Boolean                @default(false)
-  
-  // Soft Deletion
-  isDeleted      Boolean                @default(false)
-  deletedAt      DateTime?
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
+  status         PackageStatus @default(DRAFT)
+  featured       Boolean       @default(false)
 
-  itineraries    PackageItineraryDay[]
-  pricingMatrix  PackagePricingMatrix[]
-  supplements    PackageSupplement[]
-  enquiries      PackageEnquiryDetail[]
+  // Soft Deletion
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  itineraries   PackageItineraryDay[]
+  pricingMatrix PackagePricingMatrix[]
+  supplements   PackageSupplement[]
+  enquiries     PackageEnquiryDetail[]
 
   @@map("packages")
 }
 
 model PackageItineraryDay {
-  id              String   @id @default(uuid())
-  packageId       String
-  package         Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
 
   dayNumber       Int
-  title           String   // e.g. "Day 1: Arrival Cochin & Transfer to Munnar"
-  description     String   @db.Text
-  mealsIncluded   String?  // e.g. "Breakfast"
-  stayDestination String   // e.g. "Munnar"
-  hotelOptions    Json?    // Array of hotel names per tier
+  title           String // e.g. "Day 1: Arrival Cochin & Transfer to Munnar"
+  description     String  @db.Text
+  mealsIncluded   String? // e.g. "Breakfast"
+  stayDestination String // e.g. "Munnar"
+  hotelOptions    Json? // Array of hotel names per tier
 
   @@unique([packageId, dayNumber])
   @@map("package_itinerary_days")
 }
 
 model HotelTier {
-  id            String                 @id @default(uuid())
-  code          String                 @unique // "STANDARD", "DELUXE", "SUPER_DELUXE", "PREMIUM", "LUXURY"
-  name          String                 // "Package - 1 Standard", "Package - 2 Deluxe", etc.
-  sortOrder     Int                    @default(0)
+  id        String @id @default(uuid())
+  code      String @unique // "STANDARD", "DELUXE", "SUPER_DELUXE", "PREMIUM", "LUXURY"
+  name      String // "Package - 1 Standard", "Package - 2 Deluxe", etc.
+  sortOrder Int    @default(0)
 
-  pricingRows   PackagePricingMatrix[]
-  supplements   PackageSupplement[]
-  enquiries     PackageEnquiryDetail[]
+  pricingRows PackagePricingMatrix[]
+  supplements PackageSupplement[]
+  enquiries   PackageEnquiryDetail[]
 
   @@map("hotel_tiers")
 }
 
 model PackagePricingMatrix {
-  id                     String              @id @default(uuid())
-  packageId              String
-  package                Package             @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  id        String  @id @default(uuid())
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Restrict)
 
-  hotelTierId            String
-  hotelTier              HotelTier           @relation(fields: [hotelTierId], references: [id], onDelete: Restrict)
+  hotelTierId String
+  hotelTier   HotelTier @relation(fields: [hotelTierId], references: [id], onDelete: Restrict)
 
-  durationCode           String              @default("6N/7D")
-  minPax                 Int                 // 2, 4, 6, 8, 10
-  roomCount              Int                 // 1, 2, 3, 4, 5
-  vehicleType            String              // "AC Sedan", "Innova Crysta", "12-Seater AC Tempo Traveller"
-  vehicleConfigCode      String              // Distinguishes 6-pax Innova vs 6-pax Traveller
+  durationCode      String @default("6N/7D")
+  minPax            Int // 2, 4, 6, 8, 10
+  roomCount         Int // 1, 2, 3, 4, 5
+  vehicleType       String // "AC Sedan", "Innova Crysta", "12-Seater AC Tempo Traveller"
+  vehicleConfigCode String // Distinguishes 6-pax Innova vs 6-pax Traveller
 
   // Financial Layer Separation
-  supplierCostInr        Decimal             @db.Decimal(10, 2) // CONFIDENTIAL: Never exposed to public/agent
-  sourceRackRateInr      Decimal             @db.Decimal(10, 2) // Explicit source catalogue amount
-  varniSellingPriceInr   Decimal             @db.Decimal(10, 2) // Approved Public Selling Price
-  markupAmountInr        Decimal             @db.Decimal(10, 2) // Selling - Supplier
-  markupPercent          Decimal             @db.Decimal(5, 2)  // Actual percentage
+  supplierCostInr      Decimal @db.Decimal(10, 2) // CONFIDENTIAL: Never exposed to public/agent
+  sourceRackRateInr    Decimal @db.Decimal(10, 2) // Explicit source catalogue amount
+  varniSellingPriceInr Decimal @db.Decimal(10, 2) // Approved Public Selling Price
+  markupAmountInr      Decimal @db.Decimal(10, 2) // Selling - Supplier
+  markupPercent        Decimal @db.Decimal(5, 2) // Actual percentage
 
   // Source Document Traceability
-  sourceDocumentName     String              // e.g. "Travel-e (Kerala Winter Ready Packages) V6.docx"
-  sourceDocumentVersion  String              @default("V6")
-  sourceTableIndex       Int?
-  sourceRowIndex         Int?
-  sourceRateLayer        String              @default("RACK_RATE_15_PERCENT")
-  sourceImportedAt       DateTime            @default(now())
+  sourceDocumentName    String // e.g. "Travel-e (Kerala Winter Ready Packages) V6.docx"
+  sourceDocumentVersion String   @default("V6")
+  sourceTableIndex      Int?
+  sourceRowIndex        Int?
+  sourceRateLayer       String   @default("RACK_RATE_15_PERCENT")
+  sourceImportedAt      DateTime @default(now())
 
   // Approval & Versioning
-  approvalStatus         PriceApprovalStatus @default(PENDING_APPROVAL)
-  approvedByUserId       String?
-  approvedAt             DateTime?
-  version                Int                 @default(1)
+  approvalStatus   PriceApprovalStatus @default(PENDING_APPROVAL)
+  approvedByUserId String?
+  approvedAt       DateTime?
+  version          Int                 @default(1)
 
   // Seasonality
-  validityStart          DateTime            @db.Date
-  validityEnd            DateTime            @db.Date
-  blackoutStart          DateTime?           @db.Date
-  blackoutEnd            DateTime?           @db.Date
+  validityStart DateTime  @db.Date
+  validityEnd   DateTime  @db.Date
+  blackoutStart DateTime? @db.Date
+  blackoutEnd   DateTime? @db.Date
 
-  isActive               Boolean             @default(true)
-  createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  enquiries              PackageEnquiryDetail[]
+  enquiries PackageEnquiryDetail[]
 
   @@index([packageId, hotelTierId, minPax, vehicleConfigCode])
   @@map("package_pricing_matrix")
 }
 
 model PackageSupplement {
-  id                    String              @id @default(uuid())
-  packageId             String
-  package               Package             @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  id        String  @id @default(uuid())
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Restrict)
 
-  hotelTierId           String?
-  hotelTier             HotelTier?          @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
+  hotelTierId String?
+  hotelTier   HotelTier? @relation(fields: [hotelTierId], references: [id], onDelete: SetNull)
 
-  supplementType        String              // "EXTRA_ADULT_BED", "CHILD_WITH_BED", "CHILD_NO_BED", "INFANT", "MEAL_PLAN", "HOUSEBOAT_UPGRADE", "DAY_TRIP", "HONEYMOON"
-  description           String
-  basisUnit             String              // "PER_PERSON", "PER_VEHICLE", "PER_COUPLE"
-  
-  supplierCostInr       Decimal             @db.Decimal(10, 2)
-  sourceRackRateInr     Decimal             @db.Decimal(10, 2)
-  varniSellingPriceInr  Decimal             @db.Decimal(10, 2)
-  markupAmountInr       Decimal             @db.Decimal(10, 2)
-  markupPercent         Decimal             @db.Decimal(5, 2)
+  supplementType String // "EXTRA_ADULT_BED", "CHILD_WITH_BED", "CHILD_NO_BED", "INFANT", "MEAL_PLAN", "HOUSEBOAT_UPGRADE", "DAY_TRIP", "HONEYMOON"
+  description    String
+  basisUnit      String // "PER_PERSON", "PER_VEHICLE", "PER_COUPLE"
 
-  sourceDocumentName    String?
-  sourceRateLayer       String?
-  approvalStatus        PriceApprovalStatus @default(APPROVED)
-  isActive              Boolean             @default(true)
+  supplierCostInr      Decimal @db.Decimal(10, 2)
+  sourceRackRateInr    Decimal @db.Decimal(10, 2)
+  varniSellingPriceInr Decimal @db.Decimal(10, 2)
+  markupAmountInr      Decimal @db.Decimal(10, 2)
+  markupPercent        Decimal @db.Decimal(5, 2)
+
+  sourceDocumentName String?
+  sourceRateLayer    String?
+  approvalStatus     PriceApprovalStatus @default(APPROVED)
+  isActive           Boolean             @default(true)
 
   @@map("package_supplements")
 }
@@ -563,80 +566,80 @@ enum QuotationStatus {
 }
 
 model Quotation {
-  id                  String             @id @default(uuid())
-  quotationReference  String             @unique // e.g. "VH-QUO-202611-0001"
-  quotationType       String             @default("PACKAGE") // "PACKAGE" | "HOTEL" | "CUSTOM"
-  version             Int                @default(1)
-  revisionNumber      Int                @default(0) // 0 for original, 1 for R1, 2 for R2...
-  parentQuotationId   String?
-  parentQuotation     Quotation?         @relation("QuotationRevisions", fields: [parentQuotationId], references: [id], onDelete: SetNull)
-  revisions           Quotation[]        @relation("QuotationRevisions")
+  id                 String      @id @default(uuid())
+  quotationReference String      @unique // e.g. "VH-QUO-202611-0001"
+  quotationType      String      @default("PACKAGE") // "PACKAGE" | "HOTEL" | "CUSTOM"
+  version            Int         @default(1)
+  revisionNumber     Int         @default(0) // 0 for original, 1 for R1, 2 for R2...
+  parentQuotationId  String?
+  parentQuotation    Quotation?  @relation("QuotationRevisions", fields: [parentQuotationId], references: [id], onDelete: SetNull)
+  revisions          Quotation[] @relation("QuotationRevisions")
 
-  leadId              String?
-  lead                Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
-  customerId          String
-  customer            Customer           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
-  createdByUserId     String
-  createdByUser       User               @relation("QuotationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  createdByUserId String
+  createdByUser   User   @relation("QuotationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
 
-  status              QuotationStatus    @default(DRAFT)
-  validUntil          DateTime
-  currency            String             @default("INR")
+  status     QuotationStatus @default(DRAFT)
+  validUntil DateTime
+  currency   String          @default("INR")
 
-  title               String             @default("Travel Proposal")
-  destination         String?
-  durationNights      Int?
-  durationDays        Int?
-  travelStartDate     DateTime?
-  travelEndDate       DateTime?
-  adultsCount         Int                @default(2)
-  childrenCount       Int                @default(0)
-  roomsCount          Int                @default(1)
-  hotelCategory       String?
-  mealPlan            String?
-  transportType       String?
+  title           String    @default("Travel Proposal")
+  destination     String?
+  durationNights  Int?
+  durationDays    Int?
+  travelStartDate DateTime?
+  travelEndDate   DateTime?
+  adultsCount     Int       @default(2)
+  childrenCount   Int       @default(0)
+  roomsCount      Int       @default(1)
+  hotelCategory   String?
+  mealPlan        String?
+  transportType   String?
 
-  sourcePackageSlug   String?
-  sourceHotelId       String?
+  sourcePackageSlug String?
+  sourceHotelId     String?
 
-  basePriceAmountInr  Decimal            @default(0.00) @db.Decimal(10, 2)
-  transportAmountInr  Decimal            @default(0.00) @db.Decimal(10, 2)
-  extraChargesAmountInr Decimal          @default(0.00) @db.Decimal(10, 2)
-  discountType        String             @default("FIXED") // "FIXED" | "PERCENTAGE"
-  discountValue       Decimal            @default(0.00) @db.Decimal(10, 2)
-  discountAmountInr   Decimal            @default(0.00) @db.Decimal(10, 2)
-  taxPercent          Decimal            @default(5.00) @db.Decimal(5, 2)
-  subtotalAmountInr   Decimal            @db.Decimal(10, 2)
-  taxAmountInr        Decimal            @default(0.00) @db.Decimal(10, 2)
-  feeAmountInr        Decimal            @default(0.00) @db.Decimal(10, 2)
-  totalAmountInr      Decimal            @db.Decimal(10, 2)
+  basePriceAmountInr    Decimal @default(0.00) @db.Decimal(10, 2)
+  transportAmountInr    Decimal @default(0.00) @db.Decimal(10, 2)
+  extraChargesAmountInr Decimal @default(0.00) @db.Decimal(10, 2)
+  discountType          String  @default("FIXED") // "FIXED" | "PERCENTAGE"
+  discountValue         Decimal @default(0.00) @db.Decimal(10, 2)
+  discountAmountInr     Decimal @default(0.00) @db.Decimal(10, 2)
+  taxPercent            Decimal @default(5.00) @db.Decimal(5, 2)
+  subtotalAmountInr     Decimal @db.Decimal(10, 2)
+  taxAmountInr          Decimal @default(0.00) @db.Decimal(10, 2)
+  feeAmountInr          Decimal @default(0.00) @db.Decimal(10, 2)
+  totalAmountInr        Decimal @db.Decimal(10, 2)
 
-  termsAndConditions  String?            @db.Text
-  customerNotes       String?            @db.Text
-  internalNotes       String?            @db.Text
-  inclusions          String[]           @default([])
-  exclusions          String[]           @default([])
-  itineraryJson       Json?
-  hotelDetailsJson    Json?
+  termsAndConditions String?  @db.Text
+  customerNotes      String?  @db.Text
+  internalNotes      String?  @db.Text
+  inclusions         String[] @default([])
+  exclusions         String[] @default([])
+  itineraryJson      Json?
+  hotelDetailsJson   Json?
 
   customerAcceptedAt  DateTime?
   customerRejectedAt  DateTime?
   rejectionReason     String?
   sentAt              DateTime?
-  pricingSnapshotJson Json               // Complete calculation trace
+  pricingSnapshotJson Json // Complete calculation trace
 
   // Soft Deletion
-  isDeleted           Boolean            @default(false)
-  deletedAt           DateTime?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  lineItems           QuotationLineItem[]
-  snapshots           QuotationSnapshot[]
-  emailLogs           QuotationEmailLog[]
-  booking             Booking?
+  lineItems QuotationLineItem[]
+  snapshots QuotationSnapshot[]
+  emailLogs QuotationEmailLog[]
+  booking   Booking?
 
   @@index([leadId])
   @@index([customerId])
@@ -645,68 +648,68 @@ model Quotation {
 }
 
 model QuotationSnapshot {
-  id               String      @id @default(uuid())
-  quotationId      String
-  quotation        Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 
-  version          Int         @default(1)
-  revisionNumber   Int         @default(0)
+  version          Int      @default(1)
+  revisionNumber   Int      @default(0)
   snapshotDataJson Json
-  totalAmountInr   Decimal     @db.Decimal(10, 2)
-  pdfBase64        String?     @db.Text
+  totalAmountInr   Decimal  @db.Decimal(10, 2)
+  pdfBase64        String?  @db.Text
   sentToEmail      String
-  sentAt           DateTime    @default(now())
+  sentAt           DateTime @default(now())
   sentByUserId     String?
 
-  createdAt        DateTime    @default(now())
+  createdAt DateTime @default(now())
 
-  emailLogs        QuotationEmailLog[]
+  emailLogs QuotationEmailLog[]
 
   @@index([quotationId])
   @@map("quotation_snapshots")
 }
 
 model QuotationEmailLog {
-  id                 String             @id @default(uuid())
-  quotationId        String
-  quotation          Quotation          @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 
-  snapshotId         String?
-  snapshot           QuotationSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+  snapshotId String?
+  snapshot   QuotationSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
 
   recipientEmail     String
   recipientName      String?
   subject            String
-  messageBody        String?            @db.Text
-  status             String             @default("SENT") // "SENT" | "PROVIDER_ACCEPTED" | "FAILED" | "SIMULATED"
+  messageBody        String? @db.Text
+  status             String  @default("SENT") // "SENT" | "PROVIDER_ACCEPTED" | "FAILED" | "SIMULATED"
   providerMessageId  String?
   errorMessage       String?
   attachmentFilename String?
 
-  sentByUserId       String?
-  sentAt             DateTime           @default(now())
+  sentByUserId String?
+  sentAt       DateTime @default(now())
 
   @@index([quotationId])
   @@map("quotation_email_logs")
 }
 
 model QuotationLineItem {
-  id                         String      @id @default(uuid())
-  quotationId                String
-  quotation                  Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 
-  itemOrder                  Int
-  serviceType                ServiceType
-  title                      String
-  description                String?
-  quantity                   Int         @default(1)
-  
-  unitCostInr                Decimal?    @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
-  unitPriceInr               Decimal     @db.Decimal(10, 2) // Customer selling price
-  totalPriceInr              Decimal     @db.Decimal(10, 2)
+  itemOrder   Int
+  serviceType ServiceType
+  title       String
+  description String?
+  quantity    Int         @default(1)
 
-  isOptional                 Boolean     @default(false)
-  pricingMatrixReferenceId   String?
+  unitCostInr   Decimal? @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
+  unitPriceInr  Decimal  @db.Decimal(10, 2) // Customer selling price
+  totalPriceInr Decimal  @db.Decimal(10, 2)
+
+  isOptional               Boolean @default(false)
+  pricingMatrixReferenceId String?
 
   @@index([quotationId, itemOrder])
   @@map("quotation_line_items")
@@ -726,41 +729,41 @@ enum BookingStatus {
 }
 
 model Booking {
-  id                  String                    @id @default(uuid())
-  bookingReference    String                    @unique // e.g. "VH-BKG-202611-0008"
-  leadId              String?                   @unique
-  lead                Lead?                     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  id               String  @id @default(uuid())
+  bookingReference String  @unique // e.g. "VH-BKG-202611-0008"
+  leadId           String? @unique
+  lead             Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
-  customerId          String
-  customer            Customer                  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
-  quotationId         String?                   @unique
-  quotation           Quotation?                @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+  quotationId String?    @unique
+  quotation   Quotation? @relation(fields: [quotationId], references: [id], onDelete: SetNull)
 
-  managedByUserId     String
-  managedBy           User                      @relation("BookingManager", fields: [managedByUserId], references: [id], onDelete: Restrict)
+  managedByUserId String
+  managedBy       User   @relation("BookingManager", fields: [managedByUserId], references: [id], onDelete: Restrict)
 
-  status              BookingStatus             @default(DRAFT) // NEVER default to CONFIRMED
-  totalAmountInr      Decimal                   @db.Decimal(10, 2)
-  paidAmountInr       Decimal                   @default(0.00) @db.Decimal(10, 2)
-  balanceAmountInr    Decimal                   @db.Decimal(10, 2)
+  status           BookingStatus @default(DRAFT) // NEVER default to CONFIRMED
+  totalAmountInr   Decimal       @db.Decimal(10, 2)
+  paidAmountInr    Decimal       @default(0.00) @db.Decimal(10, 2)
+  balanceAmountInr Decimal       @db.Decimal(10, 2)
 
-  bookingDate         DateTime                  @default(now())
-  confirmedAt         DateTime?
-  confirmedByUserId   String?
-  travelStartDate     DateTime
-  travelEndDate       DateTime
-  cancellationReason  String?
-  cancelledAt         DateTime?
+  bookingDate        DateTime  @default(now())
+  confirmedAt        DateTime?
+  confirmedByUserId  String?
+  travelStartDate    DateTime
+  travelEndDate      DateTime
+  cancellationReason String?
+  cancelledAt        DateTime?
 
   // Soft Deletion
-  isDeleted           Boolean                   @default(false)
-  deletedAt           DateTime?
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime                  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  payments            PaymentRecord[]
-  services            BookingServiceComponent[]
+  payments PaymentRecord[]
+  services BookingServiceComponent[]
 
   @@index([customerId])
   @@index([managedByUserId])
@@ -784,28 +787,28 @@ enum PaymentStatus {
 }
 
 model PaymentRecord {
-  id                   String        @id @default(uuid())
-  paymentReference     String        @unique // e.g. "VH-PAY-202611-0012"
-  bookingId            String
-  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  id               String  @id @default(uuid())
+  paymentReference String  @unique // e.g. "VH-PAY-202611-0012"
+  bookingId        String
+  booking          Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
 
-  amount               Decimal       @db.Decimal(10, 2)
-  currency             String        @default("INR")
-  paymentMethod        PaymentMethod
-  paymentStatus        PaymentStatus @default(PENDING)
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("INR")
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(PENDING)
 
-  transactionReference String?       // Bank UTR, UPI ref, Cheque number
+  transactionReference String? // Bank UTR, UPI ref, Cheque number
   receivedDate         DateTime?
   recordedByUserId     String
-  recordedBy           User          @relation("PaymentRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+  recordedBy           User      @relation("PaymentRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
 
-  refundReference      String?
-  refundedAmount       Decimal?      @db.Decimal(10, 2)
-  refundedAt           DateTime?
+  refundReference String?
+  refundedAmount  Decimal?  @db.Decimal(10, 2)
+  refundedAt      DateTime?
 
-  notes                String?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([bookingId])
   @@map("payment_records")
@@ -836,28 +839,28 @@ enum BookingServiceStatus {
 }
 
 model BookingServiceComponent {
-  id                             String                 @id @default(uuid())
-  bookingId                      String
-  booking                        Booking                @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  id        String  @id @default(uuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
 
-  category                       BookingServiceCategory
-  serviceName                    String                 // e.g. "Las Palms Resort Munnar"
-  supplierName                   String?                // B2B Supplier / Hotelier
+  category     BookingServiceCategory
+  serviceName  String // e.g. "Las Palms Resort Munnar"
+  supplierName String? // B2B Supplier / Hotelier
 
-  supplierConfirmationReference  String?                // Internal supplier booking code
-  customerConfirmationReference  String?                // Customer visible voucher / PNR
-  serviceStatus                  BookingServiceStatus   @default(REQUESTED)
+  supplierConfirmationReference String? // Internal supplier booking code
+  customerConfirmationReference String? // Customer visible voucher / PNR
+  serviceStatus                 BookingServiceStatus @default(REQUESTED)
 
-  costAmountInr                  Decimal                @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
-  sellingAmountInr               Decimal                @db.Decimal(10, 2) // Customer billable price
+  costAmountInr    Decimal @db.Decimal(10, 2) // CONFIDENTIAL: Supplier net rate
+  sellingAmountInr Decimal @db.Decimal(10, 2) // Customer billable price
 
-  startDate                      DateTime?
-  endDate                        DateTime?
-  serviceDetailsJson             Json?
-  voucherDocumentUrl             String?
+  startDate          DateTime?
+  endDate            DateTime?
+  serviceDetailsJson Json?
+  voucherDocumentUrl String?
 
-  createdAt                      DateTime               @default(now())
-  updatedAt                      DateTime               @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([bookingId, category])
   @@map("booking_service_components")
@@ -887,12 +890,12 @@ enum CallOutcome {
 }
 
 model LeadActivity {
-  id               String       @id @default(uuid())
-  leadId           String
-  lead             Lead         @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  userId           String
-  user             User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   activityType     ActivityType
   summary          String
@@ -900,7 +903,7 @@ model LeadActivity {
   callOutcome      CallOutcome?
   nextFollowUpDate DateTime?
 
-  createdAt        DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   @@index([leadId])
   @@index([userId])
@@ -914,12 +917,12 @@ enum FollowUpStatus {
 }
 
 model FollowUp {
-  id          String         @id @default(uuid())
-  leadId      String
-  lead        Lead           @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id     String @id @default(uuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  userId      String
-  user        User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   dueDate     DateTime
   title       String
@@ -927,7 +930,7 @@ model FollowUp {
   status      FollowUpStatus @default(PENDING)
   completedAt DateTime?
 
-  createdAt   DateTime       @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId, status, dueDate])
   @@map("follow_ups")
@@ -951,36 +954,36 @@ enum CommunicationStatus {
 }
 
 model CustomerUpdate {
-  id                      String              @id @default(uuid())
-  leadId                  String?
-  lead                    Lead?               @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  id     String  @id @default(uuid())
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
-  customerId              String
-  customer                Customer            @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
-  sentByUserId            String
-  sentBy                  User                @relation(fields: [sentByUserId], references: [id], onDelete: Restrict)
+  sentByUserId String
+  sentBy       User   @relation(fields: [sentByUserId], references: [id], onDelete: Restrict)
 
-  category                String              // "WELCOME", "HOTEL_RESERVATION", "FLIGHT_RESERVATION", "ITINERARY_READY", "VISA_SUBMITTED", "CONFIRMATION"
-  channel                 DeliveryChannel     @default(EMAIL)
-  status                  CommunicationStatus @default(RECORD_CREATED)
+  category String // "WELCOME", "HOTEL_RESERVATION", "FLIGHT_RESERVATION", "ITINERARY_READY", "VISA_SUBMITTED", "CONFIRMATION"
+  channel  DeliveryChannel     @default(EMAIL)
+  status   CommunicationStatus @default(RECORD_CREATED)
 
-  subject                 String?
-  messageContent          String              @db.Text
-  templateCode            String?
+  subject        String?
+  messageContent String  @db.Text
+  templateCode   String?
 
-  providerName            String?             // "RESEND", "META_WHATSAPP", "CLICK_TO_CHAT"
-  providerMessageId       String?
-  providerResponseJson    Json?
-  failureReason           String?
+  providerName         String? // "RESEND", "META_WHATSAPP", "CLICK_TO_CHAT"
+  providerMessageId    String?
+  providerResponseJson Json?
+  failureReason        String?
 
   // Discrete Timestamps
-  createdAt               DateTime            @default(now())
-  sendInitiatedAt         DateTime?
-  sentAt                  DateTime?
-  deliveredAt             DateTime?
-  failedAt                DateTime?
-  clickToChatTriggeredAt  DateTime?
+  createdAt              DateTime  @default(now())
+  sendInitiatedAt        DateTime?
+  sentAt                 DateTime?
+  deliveredAt            DateTime?
+  failedAt               DateTime?
+  clickToChatTriggeredAt DateTime?
 
   @@index([leadId])
   @@index([customerId])
@@ -992,19 +995,19 @@ model CustomerUpdate {
 // ====================================================
 
 model AuditLog {
-  id             String   @id @default(uuid())
-  userId         String?
-  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  action         String   // "LOGIN", "LEAD_STAGE_CHANGE", "PRICE_MATRIX_UPDATE", "MERGE_CUSTOMERS", "EXPORT_REPORT"
-  entityType     String   // "Lead", "User", "PackagePricingMatrix", "Customer", etc.
+  action         String // "LOGIN", "LEAD_STAGE_CHANGE", "PRICE_MATRIX_UPDATE", "MERGE_CUSTOMERS", "EXPORT_REPORT"
+  entityType     String // "Lead", "User", "PackagePricingMatrix", "Customer", etc.
   entityId       String?
   beforeDataJson Json?
   afterDataJson  Json?
   ipAddress      String?
   userAgent      String?
 
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([action])
   @@index([entityType, entityId])
@@ -1062,44 +1065,44 @@ enum VisaApplicationStatus {
 }
 
 model VisaApplication {
-  id                    String                @id @default(uuid())
-  applicationReference  String                @unique // e.g. "VH-VIS-202611-0001"
-  leadId                String?
-  lead                  Lead?                 @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  id                   String  @id @default(uuid())
+  applicationReference String  @unique // e.g. "VH-VIS-202611-0001"
+  leadId               String?
+  lead                 Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
-  customerId            String
-  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
-  assignedUserId        String?
-  assignedTo            User?                 @relation("VisaAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  assignedUserId String?
+  assignedTo     User?   @relation("VisaAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
 
-  destinationCountry    String
-  visaType              String
-  visaCategory          VisaCategory          @default(TOURIST)
-  applicantCount        Int                   @default(1)
-  travelPlannedDate     DateTime?
-  stayDurationDays      Int?
-  
-  status                VisaApplicationStatus @default(INQUIRY_RECEIVED)
-  officialReferenceNo   String?               // VFS / Embassy portal tracking code
-  inquiryDate           DateTime              @default(now())
-  documentReceivedDate  DateTime?
-  submissionDate        DateTime?
-  decisionDate          DateTime?
-  completionDate        DateTime?
+  destinationCountry String
+  visaType           String
+  visaCategory       VisaCategory @default(TOURIST)
+  applicantCount     Int          @default(1)
+  travelPlannedDate  DateTime?
+  stayDurationDays   Int?
 
-  internalNotes         String?               @db.Text
-  specialInstructions   String?               @db.Text
+  status               VisaApplicationStatus @default(INQUIRY_RECEIVED)
+  officialReferenceNo  String? // VFS / Embassy portal tracking code
+  inquiryDate          DateTime              @default(now())
+  documentReceivedDate DateTime?
+  submissionDate       DateTime?
+  decisionDate         DateTime?
+  completionDate       DateTime?
+
+  internalNotes       String? @db.Text
+  specialInstructions String? @db.Text
 
   // Soft Deletion
-  isDeleted             Boolean               @default(false)
-  deletedAt             DateTime?
-  createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  statusHistory         VisaStatusHistory[]
-  documents             VisaDocument[]
-  communicationLogs     VisaCommunicationLog[]
+  statusHistory     VisaStatusHistory[]
+  documents         VisaDocument[]
+  communicationLogs VisaCommunicationLog[]
 
   @@index([status])
   @@index([customerId])
@@ -1109,72 +1112,195 @@ model VisaApplication {
 }
 
 model VisaStatusHistory {
-  id                  String                @id @default(uuid())
-  visaApplicationId   String
-  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+  id                String          @id @default(uuid())
+  visaApplicationId String
+  visaApplication   VisaApplication @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
 
-  fromStatus          VisaApplicationStatus?
-  toStatus            VisaApplicationStatus
-  changedByUserId     String?
-  changedByName       String?
-  notes               String?               @db.Text
-  createdAt           DateTime              @default(now())
+  fromStatus      VisaApplicationStatus?
+  toStatus        VisaApplicationStatus
+  changedByUserId String?
+  changedByName   String?
+  notes           String?                @db.Text
+  createdAt       DateTime               @default(now())
 
   @@index([visaApplicationId])
   @@map("visa_status_history")
 }
 
 model VisaDocument {
-  id                  String                @id @default(uuid())
-  visaApplicationId   String
-  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+  id                String          @id @default(uuid())
+  visaApplicationId String
+  visaApplication   VisaApplication @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
 
-  documentType        String                // "PASSPORT_FRONT", "PASSPORT_BACK", "PHOTO", "FINANCIAL_PROOF", "EMPLOYMENT_PROOF", "APPROVED_VISA", "OTHER"
-  fileName            String
-  fileSize            Int?
-  mimeType            String?
-  fileDataUrl         String?               @db.Text // Secure base64 or storage URL
-  isVerified          Boolean               @default(false)
-  verifiedAt          DateTime?
-  uploadedByUserId    String?
-  uploadedAt          DateTime              @default(now())
+  documentType     String // "PASSPORT_FRONT", "PASSPORT_BACK", "PHOTO", "FINANCIAL_PROOF", "EMPLOYMENT_PROOF", "APPROVED_VISA", "OTHER"
+  fileName         String
+  fileSize         Int?
+  mimeType         String?
+  fileDataUrl      String?   @db.Text // Secure base64 or storage URL
+  isVerified       Boolean   @default(false)
+  verifiedAt       DateTime?
+  uploadedByUserId String?
+  uploadedAt       DateTime  @default(now())
 
   @@index([visaApplicationId])
   @@map("visa_documents")
 }
 
 model VisaEmailTemplate {
-  id                  String                @id @default(uuid())
-  code                String                @unique // "INQUIRY_RECEIVED", "DOCUMENTS_RECEIVED", "FILE_SUBMITTED", "VISA_APPROVED", "ADDITIONAL_INFO", "VISA_REJECTED", "COMPLETED"
-  title               String
-  triggerStage        VisaApplicationStatus
-  defaultSubject      String
-  bodyTemplate        String                @db.Text
-  isActive            Boolean               @default(true)
-  updatedAt           DateTime              @updatedAt
+  id             String                @id @default(uuid())
+  code           String                @unique // "INQUIRY_RECEIVED", "DOCUMENTS_RECEIVED", "FILE_SUBMITTED", "VISA_APPROVED", "ADDITIONAL_INFO", "VISA_REJECTED", "COMPLETED"
+  title          String
+  triggerStage   VisaApplicationStatus
+  defaultSubject String
+  bodyTemplate   String                @db.Text
+  isActive       Boolean               @default(true)
+  updatedAt      DateTime              @updatedAt
 
   @@map("visa_email_templates")
 }
 
 model VisaCommunicationLog {
-  id                  String                @id @default(uuid())
-  visaApplicationId   String
-  visaApplication     VisaApplication       @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
+  id                String          @id @default(uuid())
+  visaApplicationId String
+  visaApplication   VisaApplication @relation(fields: [visaApplicationId], references: [id], onDelete: Cascade)
 
-  templateCode        String?
-  recipientEmail      String
-  recipientName       String?
-  subject             String
-  messageHtml         String                @db.Text
-  messageText         String?               @db.Text
-  status              String                @default("SENT") // "SENT" | "PROVIDER_ACCEPTED" | "FAILED" | "SIMULATED"
-  resendMessageId     String?
-  errorMessage        String?
-  attachmentNames     String[]              @default([])
-  sentByUserId        String?
-  sentByName          String?
-  sentAt              DateTime              @default(now())
+  templateCode    String?
+  recipientEmail  String
+  recipientName   String?
+  subject         String
+  messageHtml     String   @db.Text
+  messageText     String?  @db.Text
+  status          String   @default("SENT") // "SENT" | "PROVIDER_ACCEPTED" | "FAILED" | "SIMULATED"
+  resendMessageId String?
+  errorMessage    String?
+  attachmentNames String[] @default([])
+  sentByUserId    String?
+  sentByName      String?
+  sentAt          DateTime @default(now())
 
   @@index([visaApplicationId])
   @@map("visa_communication_logs")
+}
+
+// ====================================================
+// WHATSAPP CLOUD API & AI CHATBOT AUTOMATION MODELS
+// ====================================================
+
+enum WhatsAppConversationStatus {
+  BOT_ACTIVE
+  REQUIRES_HUMAN
+  HUMAN_ACTIVE
+  CLOSED
+}
+
+enum WhatsAppMessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum WhatsAppSenderType {
+  CUSTOMER
+  BOT
+  HUMAN_AGENT
+}
+
+enum WhatsAppMessageStatus {
+  RECEIVED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model WhatsAppConversation {
+  id            String    @id @default(uuid())
+  customerPhone String    @unique // Normalized digits without + (e.g. 916357050505)
+  customerName  String
+  customerId    String?
+  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  leadId        String?
+  lead          Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  status        WhatsAppConversationStatus @default(BOT_ACTIVE)
+  currentFlow   String                     @default("NONE") // "NONE", "TOUR_PACKAGE", "HOTEL", "VISA", "BOOKING_LOOKUP", "HUMAN_REQUEST"
+  flowStep      String                     @default("INITIAL")
+  collectedData Json? // Stores preferences during multi-step conversation
+
+  assignedUserId   String?
+  assignedUserName String?
+  assignedTo       User?   @relation(fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  unreadCount           Int       @default(0)
+  lastCustomerMessageAt DateTime?
+  lastBotMessageAt      DateTime?
+  internalNotes         Json? // Array of { id, authorName, text, createdAt }
+
+  messages  WhatsAppMessage[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([customerPhone])
+  @@index([status])
+  @@index([assignedUserId])
+  @@map("whatsapp_conversations")
+}
+
+model WhatsAppMessage {
+  id             String               @id @default(uuid())
+  conversationId String
+  conversation   WhatsAppConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  metaMessageId String?                  @unique // Meta wamid.HBg...
+  direction     WhatsAppMessageDirection
+  senderType    WhatsAppSenderType
+  senderId      String // Phone number or user ID
+  senderName    String
+
+  messageType     String  @default("text") // "text", "interactive", "image", "document", "template", "button"
+  content         String  @db.Text
+  interactiveData Json? // For button replies, list selections, template params
+  mediaUrl        String? @db.Text
+  mediaType       String?
+
+  status       WhatsAppMessageStatus @default(RECEIVED)
+  errorMessage String?
+  timestamp    DateTime              @default(now())
+  rawPayload   Json?
+
+  @@index([conversationId])
+  @@index([metaMessageId])
+  @@index([timestamp])
+  @@map("whatsapp_messages")
+}
+
+model WhatsAppWebhookEvent {
+  id          String    @id @default(uuid())
+  metaEventId String    @unique // For idempotency & deduplication
+  eventType   String // "message", "status"
+  fromPhone   String?
+  payload     Json
+  processed   Boolean   @default(false)
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([metaEventId])
+  @@index([createdAt])
+  @@map("whatsapp_webhook_events")
+}
+
+model WhatsAppTemplate {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  category         String   @default("UTILITY") // "UTILITY", "MARKETING", "AUTHENTICATION"
+  language         String   @default("en")
+  status           String   @default("APPROVED") // "APPROVED", "PENDING", "REJECTED"
+  headerText       String?
+  bodyText         String   @db.Text
+  footerText       String?
+  buttonsJson      Json?
+  exampleVariables String[] @default([])
+  updatedAt        DateTime @updatedAt
+
+  @@map("whatsapp_templates")
 }
