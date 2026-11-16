@@ -2,13 +2,14 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { twoFactor } from 'better-auth/plugins/two-factor';
 import prisma from '@/lib/prisma';
+import { getAppBaseUrl } from '@/lib/config/app-url';
 
 /**
  * Better Auth Central Configuration for Varni Holidays
  * Integrated with PostgreSQL (Neon) and Prisma ORM
  */
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const APP_URL = getAppBaseUrl();
 const AUTH_SECRET = process.env.BETTER_AUTH_SECRET || 'VARNI_HOLIDAYS_STRICT_ENTERPRISE_SECRET_2026_PROD';
 
 export const auth = betterAuth({

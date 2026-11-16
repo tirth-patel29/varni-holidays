@@ -3,8 +3,8 @@ import { generateSecureToken, hashToken, hashPassword, validatePasswordStrength 
 import { recordSecurityEvent } from './audit';
 import { revokeAllUserSessions } from './session-service';
 import { checkRateLimit, resetRateLimit } from './rate-limit';
+import { getPasswordResetUrl, PRODUCTION_APP_URL } from '@/lib/config/app-url';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 const RESET_TOKEN_EXPIRY_MINUTES = 60; // 1 hour
 
 /**
@@ -20,6 +20,14 @@ async function sendPasswordResetEmail(toEmail: string, resetUrl: string, fullNam
   if (!apiKey) {
     console.warn('[Resend API Key Missing]: Skipping real email dispatch; logged reset URL:', resetUrl);
     return true;
+  }
+
+  // Strict Defense: Outbound password reset emails must never point to localhost
+  let safeResetUrl = resetUrl;
+  if (safeResetUrl.includes('localhost') || safeResetUrl.includes('127.0.0.1')) {
+    if (process.env.ALLOW_LOCAL_EMAIL_URLS !== 'true') {
+      safeResetUrl = safeResetUrl.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, PRODUCTION_APP_URL);
+    }
   }
 
   const emailHtml = `
@@ -38,13 +46,16 @@ async function sendPasswordResetEmail(toEmail: string, resetUrl: string, fullNam
             We received a request to reset the password for your Varni Holidays administrative account. Click the button below to establish a new password.
           </p>
           <div style="text-align: center; margin: 32px 0;">
-            <a href="${resetUrl}" style="background-color: #E9B95E; color: #0B0D0F; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 13px; font-weight: 700; display: inline-block;">
+            <a href="${safeResetUrl}" style="background-color: #E9B95E; color: #0B0D0F; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 13px; font-weight: 700; display: inline-block;">
               Reset Account Password &rarr;
             </a>
           </div>
           <p style="font-size: 12px; line-height: 1.5; color: #64748B;">
             This single-use link expires in 60 minutes. If you did not request this change, please ignore this email; your existing password will remain unchanged.
           </p>
+          <div style="background-color: #F1F5F9; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 4px; word-break: break-all; font-family: monospace; font-size: 11px; color: #1E293B; margin-bottom: 24px;">
+            <a href="${safeResetUrl}" style="color: #24689B; text-decoration: none;">${safeResetUrl}</a>
+          </div>
           <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 28px 0;" />
           <p style="font-size: 11px; color: #94A3B8; margin: 0; text-align: center;">
             Varni Holidays Travel Management Desk &bull; Anand, Gujarat
@@ -129,7 +140,7 @@ export async function requestPasswordReset(
       },
     });
 
-    const resetUrl = `${APP_URL}/admin/reset-password?token=${rawToken}`;
+    const resetUrl = getPasswordResetUrl(rawToken);
     await sendPasswordResetEmail(cleanEmail, resetUrl, user.fullName);
 
     await recordSecurityEvent({

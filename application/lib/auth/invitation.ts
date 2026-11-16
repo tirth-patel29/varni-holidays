@@ -3,6 +3,13 @@ import { generateSecureToken, hashToken, hashPassword, validatePasswordStrength,
 import { verifyTotpCode } from './totp';
 import { recordSecurityEvent } from './audit';
 import { AuthenticatedUser } from './rbac';
+import {
+  getAppBaseUrl,
+  getEmployeeInvitationUrl,
+  PRODUCTION_APP_URL,
+} from '@/lib/config/app-url';
+
+export { getAppBaseUrl, getEmployeeInvitationUrl, PRODUCTION_APP_URL };
 
 /**
  * Enterprise Owner-Only Employee Invitation & Onboarding Engine for Varni Holidays
@@ -50,22 +57,6 @@ export function getVerifiedSenderEmail(): string {
   return fromEmail;
 }
 
-/**
- * Get absolute public application URL for invitations.
- * Never generates localhost links in production environments.
- */
-export function getAppBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('localhost')) {
-    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, '');
-  }
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://varni-holidays.vercel.app';
-  }
-  return 'http://localhost:3000';
-}
 
 /**
  * Generate high-conversion, professional HTML email for staff onboarding
@@ -241,11 +232,19 @@ export async function sendInvitationEmail(params: {
     timeZone: 'Asia/Kolkata',
   });
 
+  // Strict Defense: Outbound emails must never point to localhost
+  let safeInviteUrl = inviteUrl;
+  if (safeInviteUrl.includes('localhost') || safeInviteUrl.includes('127.0.0.1')) {
+    if (process.env.ALLOW_LOCAL_EMAIL_URLS !== 'true') {
+      safeInviteUrl = safeInviteUrl.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, PRODUCTION_APP_URL);
+    }
+  }
+
   const { html, text } = buildInvitationEmailHtml({
     fullName,
     inviterName,
     roleName,
-    inviteUrl,
+    inviteUrl: safeInviteUrl,
     expiresAtFormatted,
   });
 
@@ -376,8 +375,7 @@ export async function createEmployeeInvitation(
     const rawToken = generateSecureToken(32);
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + INVITATION_EXPIRY_HOURS * 60 * 60 * 1000);
-    const baseUrl = getAppBaseUrl();
-    const inviteUrl = `${baseUrl}/admin/onboarding?token=${rawToken}`;
+    const inviteUrl = getEmployeeInvitationUrl(rawToken);
 
     // 5. Look up human-readable role name
     const roleRecord = await prisma.role.findUnique({ where: { code: roleCode.trim() } });
@@ -474,8 +472,7 @@ export async function resendEmployeeInvitation(
     const rawToken = generateSecureToken(32);
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + INVITATION_EXPIRY_HOURS * 60 * 60 * 1000);
-    const baseUrl = getAppBaseUrl();
-    const inviteUrl = `${baseUrl}/admin/onboarding?token=${rawToken}`;
+    const inviteUrl = getEmployeeInvitationUrl(rawToken);
 
     const roleRecord = await prisma.role.findUnique({ where: { code: existing.roleCode } });
     const roleName = roleRecord?.name || existing.roleCode.replace(/_/g, ' ');
