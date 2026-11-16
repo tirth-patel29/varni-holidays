@@ -244,29 +244,24 @@ export default function AdminHeader({
                     </span>
                   </div>
 
-                  {/* Switch Active Session */}
-                  <div className="p-2 border-b border-[#E5E8ED]">
-                    <span className="text-[10px] font-bold uppercase text-[#718096] px-2 block mb-1">
-                      Active Consultant Session
-                    </span>
-                    <div className="space-y-0.5">
-                      {allUsers.map((u) => (
-                        <button
-                          key={u.id}
-                          type="button"
-                          onClick={() => {
-                            setCurrentUserId(u.id);
-                            setProfileDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-2 py-1 text-xs flex items-center justify-between rounded-none hover:bg-[#F4F6F9] ${
-                            u.id === currentUser.id ? 'font-bold text-[#24689B]' : 'text-[#172B45]'
-                          }`}
-                        >
-                          <span className="truncate">{u.fullName}</span>
-                          <span className="text-[10px] font-mono text-[#718096]">{u.role}</span>
-                        </button>
-                      ))}
-                    </div>
+                  {/* Security & Settings Links */}
+                  <div className="p-1 space-y-0.5 border-b border-[#E5E8ED]">
+                    <Link
+                      href="/admin/settings/security"
+                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F4F6F9] text-[#172B45] rounded-none"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      <Shield size={14} className="text-[#153650]" />
+                      <span>Security & Active Sessions</span>
+                    </Link>
+                    <Link
+                      href="/admin/users"
+                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F4F6F9] text-[#172B45] rounded-none"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      <Users size={14} className="text-[#153650]" />
+                      <span>Team & Permissions</span>
+                    </Link>
                   </div>
 
                   {/* Links */}
@@ -280,14 +275,19 @@ export default function AdminHeader({
                       <ExternalLink size={14} className="text-[#718096]" />
                       <span>View Public Website</span>
                     </Link>
-                    <Link
-                      href="/employee/dashboard"
-                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#F4F6F9] text-[#172B45] rounded-none"
-                      onClick={() => setProfileDropdownOpen(false)}
+
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const { logoutAction } = await import('@/app/actions/auth');
+                        await logoutAction();
+                        router.push('/admin/login');
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[#FEE2E2] text-[#DC2626] font-bold rounded-none text-left transition-colors"
                     >
-                      <Layers size={14} className="text-[#718096]" />
-                      <span>Employee Desk</span>
-                    </Link>
+                      <LogOut size={14} />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
                 </div>
               )}

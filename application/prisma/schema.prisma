@@ -23,11 +23,17 @@ model User {
   id           String     @id @default(uuid())
   email        String     @unique
   fullName     String
+  name         String?
   phone        String?
-  passwordHash String
+  passwordHash String?
   status       UserStatus @default(ACTIVE)
   avatarUrl    String?
+  image        String?
   lastLoginAt  DateTime?
+
+  // Better Auth & MFA
+  emailVerified    Boolean  @default(false)
+  twoFactorEnabled Boolean? @default(false)
 
   // Soft Delete
   isDeleted Boolean   @default(false)
@@ -35,27 +41,98 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  userRoles            UserRole[]
-  assignedLeads        Lead[]                 @relation("LeadAssignee")
-  leadActivities       LeadActivity[]
-  customerUpdates      CustomerUpdate[]
-  followUps            FollowUp[]
-  createdQuotes        Quotation[]            @relation("QuotationCreator")
-  managedBookings      Booking[]              @relation("BookingManager")
-  recordedPayments     PaymentRecord[]        @relation("PaymentRecorder")
-  customerMerges       Customer[]             @relation("CustomerMerger")
-  auditLogs            AuditLog[]
-  assignedVisaApps     VisaApplication[]      @relation("VisaAssignee")
-  WhatsAppConversation WhatsAppConversation[]
+  userRoles               UserRole[]
+  userPermissionOverrides UserPermissionOverride[]
+  sessions                Session[]
+  accounts                Account[]
+  twoFactors              TwoFactor[]
+  assignedLeads           Lead[]                   @relation("LeadAssignee")
+  leadActivities          LeadActivity[]
+  customerUpdates         CustomerUpdate[]
+  followUps               FollowUp[]
+  createdQuotes           Quotation[]              @relation("QuotationCreator")
+  managedBookings         Booking[]                @relation("BookingManager")
+  recordedPayments        PaymentRecord[]          @relation("PaymentRecorder")
+  customerMerges          Customer[]               @relation("CustomerMerger")
+  auditLogs               AuditLog[]
+  securityAuditLogs       SecurityAuditLog[]
+  assignedVisaApps        VisaApplication[]        @relation("VisaAssignee")
+  invitationsCreated      EmployeeInvitation[]     @relation("InvitedBy")
+  WhatsAppConversation    WhatsAppConversation[]
 
   @@map("users")
 }
 
+model Session {
+  id             String   @id @default(uuid())
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model TwoFactor {
+  id                      String    @id @default(uuid())
+  secret                  String    @db.Text // Encrypted TOTP secret
+  backupCodes             String    @db.Text // Encrypted/hashed recovery codes JSON
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean   @default(false)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
+
+  @@index([userId])
+  @@map("two_factors")
+}
+
 model Role {
   id              String           @id @default(uuid())
-  code            String           @unique // "SUPER_ADMIN", "FLIGHTS_AGENT", "PACKAGES_AGENT", "VISA_AGENT"
+  code            String           @unique // "OWNER", "SUPER_ADMIN", "ADMIN", "SALES_MANAGER", "SALES_EXECUTIVE", "OPERATIONS_MANAGER", "OPERATIONS_EXECUTIVE"
   name            String
   description     String?
+  isSystem        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
   userRoles       UserRole[]
   rolePermissions RolePermission[]
 
@@ -63,11 +140,14 @@ model Role {
 }
 
 model Permission {
-  id              String           @id @default(uuid())
-  code            String           @unique // e.g. "VIEW_SUPPLIER_COSTS", "APPROVE_PRICING", "EXPORT_FINANCIALS"
-  category        String // "FINANCE", "LEADS", "PACKAGES", "SYSTEM", "SECURITY"
-  description     String?
-  rolePermissions RolePermission[]
+  id                      String                   @id @default(uuid())
+  code                    String                   @unique // e.g. "leads.create", "quotations.send"
+  category                String // "DASHBOARD", "EMPLOYEES", "ROLES", "LEADS", "CUSTOMERS", "BOOKINGS", "QUOTATIONS", "VISA", "FINANCE", "SECURITY"
+  description             String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @default(now()) @updatedAt
+  rolePermissions         RolePermission[]
+  userPermissionOverrides UserPermissionOverride[]
 
   @@map("permissions")
 }
@@ -96,6 +176,76 @@ model UserRole {
 
   @@unique([userId, roleId])
   @@map("user_roles")
+}
+
+model UserPermissionOverride {
+  id           String   @id @default(uuid())
+  userId       String
+  permissionId String
+  isGranted    Boolean  @default(true) // true = granted, false = revoked
+  assignedAt   DateTime @default(now())
+  assignedBy   String?
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@map("user_permission_overrides")
+}
+
+model EmployeeInvitation {
+  id                String    @id @default(uuid())
+  email             String
+  fullName          String
+  roleCode          String
+  tokenHash         String    @unique // SHA-256 hash of single-use invitation token
+  status            String    @default("PENDING") // "PENDING", "ACCEPTED", "REVOKED", "EXPIRED"
+  expiresAt         DateTime
+  invitedByUserId   String
+  invitedBy         User      @relation("InvitedBy", fields: [invitedByUserId], references: [id])
+  acceptedAt        DateTime?
+  customPermissions Json? // Optional array of granted permission codes
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("employee_invitations")
+}
+
+model SecurityAuditLog {
+  id              String   @id @default(uuid())
+  eventType       String // "LOGIN_SUCCESS", "LOGIN_FAILED", "MFA_VERIFY_SUCCESS", "MFA_VERIFY_FAILED", "PASSWORD_RESET_REQUEST", "PASSWORD_CHANGED", "EMPLOYEE_INVITED", "INVITATION_ACCEPTED", "SESSION_REVOKED", "OWNER_BOOTSTRAP"
+  severity        String   @default("INFO") // "INFO", "WARNING", "CRITICAL"
+  actorId         String?
+  actorEmail      String?
+  actorRole       String?
+  targetUserId    String?
+  targetUserEmail String?
+  outcome         String // "SUCCESS", "FAILURE", "BLOCKED"
+  details         String?  @db.Text
+  metadata        Json?
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([eventType])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("security_audit_logs")
+}
+
+model RateLimitRecord {
+  id             String   @id @default(uuid())
+  key            String   @unique // e.g. "login:ip:127.0.0.1", "mfa:user:email"
+  count          Int      @default(1)
+  firstAttemptAt DateTime @default(now())
+  expiresAt      DateTime
+
+  @@index([expiresAt])
+  @@map("rate_limit_records")
 }
 
 // ====================================================

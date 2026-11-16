@@ -187,16 +187,17 @@ function AdminSidebarInner({
       icon: Settings,
       defaultHref: '/admin/users',
       children: [
-        { label: 'Team Members', href: '/admin/users', requiredPermission: currentUser.canManageUsers },
+        { label: 'Team Members', href: '/admin/users' },
+        { label: 'Security & Sessions', href: '/admin/settings/security' },
         { label: 'Roles & Permissions', href: '/admin/settings/roles' },
         { label: 'Business Profile', href: '/admin/settings/profile' },
         { label: 'Service Configuration', href: '/admin/packages' },
         { label: 'Email Configuration', href: '/admin/settings/email' },
         { label: 'WhatsApp Configuration', href: '/admin/settings/whatsapp' },
         { label: 'Google Sheets Integration', href: '/admin/google-sheets' },
-        { label: 'Customer Deduplication', href: '/admin/deduplication', requiredPermission: currentUser.canMergeCustomers },
-        { label: 'System Activity Logs', href: '/admin/audit-logs', requiredPermission: currentUser.canViewAuditLogs },
-      ].filter((i) => i.requiredPermission === undefined || i.requiredPermission === true),
+        { label: 'Customer Deduplication', href: '/admin/deduplication' },
+        { label: 'System Activity Logs', href: '/admin/audit-logs' },
+      ],
     },
   ];
 

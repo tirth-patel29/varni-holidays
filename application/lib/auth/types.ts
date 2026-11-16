@@ -6,7 +6,12 @@ export type UserRoleCode =
   | 'PACKAGES_AGENT'
   | 'VISA_AGENT'
   | 'ACCOUNTANT'
-  | 'OPERATIONS';
+  | 'OPERATIONS'
+  | 'OWNER'
+  | 'SALES_MANAGER'
+  | 'SALES_EXECUTIVE'
+  | 'OPERATIONS_MANAGER'
+  | 'OPERATIONS_EXECUTIVE';
 
 export type ServiceTypeCode = 'FLIGHT' | 'PACKAGE' | 'VISA' | 'GENERAL' | 'CUSTOM_HOLIDAY' | 'TRAVEL_INSURANCE';
 
