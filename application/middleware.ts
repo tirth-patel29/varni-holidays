@@ -12,7 +12,6 @@ const PUBLIC_ADMIN_AUTH_PATHS = [
   '/admin/forgot-password',
   '/admin/reset-password',
   '/admin/onboarding',
-  '/admin/bootstrap',
   '/employee/login',
 ];
 

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { loginWithPasswordAction, checkBootstrapStatusAction } from '@/app/actions/auth';
-import { Lock, Mail, ArrowRight, Shield, AlertCircle, Sparkles } from 'lucide-react';
+import { loginWithPasswordAction } from '@/app/actions/auth';
+import { Lock, Mail, ArrowRight, Shield, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -15,19 +15,6 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [bootstrapNeeded, setBootstrapNeeded] = useState(false);
-
-  useEffect(() => {
-    async function checkBootstrap() {
-      try {
-        const res = await checkBootstrapStatusAction();
-        setBootstrapNeeded(Boolean(res.bootstrapNeeded));
-      } catch (e) {
-        console.warn('Bootstrap status check failed:', e);
-      }
-    }
-    checkBootstrap();
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,20 +57,6 @@ export default function AdminLoginPage() {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-[#FFFFFF] p-6 sm:p-8 border border-[#E5E8ED] shadow-sm space-y-6">
-          
-          {bootstrapNeeded && (
-            <div className="p-3.5 bg-[#EFF6FF] border border-[#BFDBFE] text-xs text-[#1E40AF] flex items-start gap-2.5">
-              <Sparkles size={16} className="text-[#2563EB] shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold block">First-Time Setup Required</span>
-                <span>No Owner account exists yet. </span>
-                <Link href="/admin/bootstrap" className="underline font-bold hover:text-[#1D4ED8]">
-                  Initialize First Owner Account &rarr;
-                </Link>
-              </div>
-            </div>
-          )}
-
           {error && (
             <div className="p-3.5 bg-[#FEF2F2] border border-[#FECACA] text-xs text-[#DC2626] flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />

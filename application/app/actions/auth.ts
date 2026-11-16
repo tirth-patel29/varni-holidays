@@ -41,11 +41,6 @@ import {
   revokeAllUserSessions,
 } from '@/lib/auth/session-service';
 import {
-  isBootstrapNeeded,
-  executeOwnerBootstrap,
-  BootstrapOwnerInput,
-} from '@/lib/auth/bootstrap';
-import {
   createEmployeeInvitation,
   verifyInvitationToken,
   acceptEmployeeInvitation,
@@ -506,30 +501,6 @@ export async function requestPasswordResetAction(email: string) {
 export async function completePasswordResetAction(token: string, newPassword: string) {
   const context = getClientContext();
   return await completePasswordReset(token, newPassword, context);
-}
-
-// ====================================================
-// 7. OWNER BOOTSTRAP (ONE-TIME INITIAL SETUP)
-// ====================================================
-export async function checkBootstrapStatusAction() {
-  const needed = await isBootstrapNeeded();
-  return { bootstrapNeeded: needed };
-}
-
-export async function generateBootstrapTotpDataAction(email: string) {
-  const secret = generateTotpSecret();
-  const uri = generateTotpUri(email.trim().toLowerCase(), secret);
-  const qrCodeDataUrl = await generateQrCodeDataUrl(uri);
-  return { secret, uri, qrCodeDataUrl };
-}
-
-export async function executeBootstrapAction(input: BootstrapOwnerInput) {
-  const context = getClientContext();
-  return await executeOwnerBootstrap({
-    ...input,
-    ipAddress: context.ipAddress,
-    userAgent: context.userAgent,
-  });
 }
 
 // ====================================================

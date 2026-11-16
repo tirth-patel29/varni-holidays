@@ -1,13 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { CrmProvider } from '@/components/crm/CrmContext';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 
+const AUTH_PATHS = [
+  '/admin/login',
+  '/admin/mfa',
+  '/admin/forgot-password',
+  '/admin/reset-password',
+  '/admin/onboarding',
+];
+
 export default function AdminLayoutWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isAuthPage = AUTH_PATHS.some((p) => pathname?.startsWith(p));
+
+  if (isAuthPage) {
+    return <div className="min-h-screen bg-[#F7F8FA]">{children}</div>;
+  }
 
   return (
     <CrmProvider>
