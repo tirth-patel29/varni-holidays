@@ -5,6 +5,9 @@ import PageHeader from '@/components/admin/PageHeader';
 import {
   getEmployeesListAction,
   inviteEmployeeAction,
+  resendEmployeeInvitationAction,
+  revokeEmployeeInvitationAction,
+  checkInvitationDeliveryStatusAction,
   updateEmployeeRoleAction,
   toggleEmployeeStatusAction,
   getRolesAndPermissionsDataAction,
@@ -27,6 +30,9 @@ import {
   Ban,
   CheckCircle2,
   Sliders,
+  Copy,
+  Send,
+  AlertTriangle,
 } from 'lucide-react';
 
 export default function StaffManagementPage() {
@@ -37,19 +43,34 @@ export default function StaffManagementPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'active' | 'invitations'>('active');
 
+  // Action feedback states
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [feedbackToast, setFeedbackToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
   // Invite modal
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [inviteFullName, setInviteFullName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRoleCode, setInviteRoleCode] = useState('SALES_EXECUTIVE');
   const [inviteSubmitting, setInviteSubmitting] = useState(false);
-  const [inviteSuccessMessage, setInviteSuccessMessage] = useState<string | null>(null);
+  const [inviteSuccessData, setInviteSuccessData] = useState<{
+    message: string;
+    email: string;
+    resendEmailId?: string;
+    inviteUrl?: string;
+  } | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
   // Edit Role modal
   const [editUserModal, setEditUserModal] = useState<any | null>(null);
   const [editRoleCode, setEditRoleCode] = useState('');
   const [editSubmitting, setEditSubmitting] = useState(false);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setFeedbackToast({ message, type });
+    setTimeout(() => setFeedbackToast(null), 4000);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -82,7 +103,7 @@ export default function StaffManagementPage() {
     e.preventDefault();
     setInviteSubmitting(true);
     setInviteError(null);
-    setInviteSuccessMessage(null);
+    setInviteSuccessData(null);
 
     try {
       const res = await inviteEmployeeAction({
@@ -94,7 +115,12 @@ export default function StaffManagementPage() {
       if (!res.success) {
         setInviteError(res.error || 'Failed to dispatch invitation.');
       } else {
-        setInviteSuccessMessage(`Invitation dispatched to ${inviteEmail} via Resend. The link expires in 48 hours.`);
+        setInviteSuccessData({
+          message: `Invitation successfully dispatched to ${inviteEmail} via Resend. The link is single-use and expires in 48 hours.`,
+          email: inviteEmail,
+          resendEmailId: res.resendEmailId,
+          inviteUrl: res.inviteUrl,
+        });
         setInviteFullName('');
         setInviteEmail('');
         await loadData();
@@ -104,6 +130,65 @@ export default function StaffManagementPage() {
     } finally {
       setInviteSubmitting(false);
     }
+  };
+
+  const handleResendInvitation = async (invitationId: string, email: string) => {
+    if (!confirm(`Resend a fresh invitation email to ${email}? This will invalidate any previous link.`)) return;
+    setActionLoadingId(`resend-${invitationId}`);
+    try {
+      const res = await resendEmployeeInvitationAction(invitationId);
+      if (res.success) {
+        showToast(`Fresh invitation email dispatched to ${email}! Resend ID: ${res.resendEmailId || 'generated'}`, 'success');
+        await loadData();
+      } else {
+        showToast(res.error || 'Failed to resend invitation.', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Resend request failed.', 'error');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleRevokeInvitation = async (invitationId: string, email: string) => {
+    if (!confirm(`Revoke the invitation for ${email}? They will no longer be able to use the link to onboard.`)) return;
+    setActionLoadingId(`revoke-${invitationId}`);
+    try {
+      const res = await revokeEmployeeInvitationAction(invitationId);
+      if (res.success) {
+        showToast(`Invitation for ${email} has been revoked.`, 'success');
+        await loadData();
+      } else {
+        showToast(res.error || 'Failed to revoke invitation.', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Revoke request failed.', 'error');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCheckDelivery = async (invitationId: string) => {
+    setActionLoadingId(`check-${invitationId}`);
+    try {
+      const res = await checkInvitationDeliveryStatusAction(invitationId);
+      if (res.success) {
+        showToast(`Updated live delivery status: ${res.deliveryStatus}`, 'success');
+        await loadData();
+      } else {
+        showToast(res.error || 'Could not sync Resend delivery status.', 'error');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Status sync failed.', 'error');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCopyText = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2500);
   };
 
   const handleToggleStatus = async (user: any) => {
@@ -165,7 +250,7 @@ export default function StaffManagementPage() {
               type="button"
               onClick={() => {
                 setInviteModalOpen(true);
-                setInviteSuccessMessage(null);
+                setInviteSuccessData(null);
                 setInviteError(null);
               }}
               className="px-3.5 py-1.5 bg-[#153650] hover:bg-[#1E4565] text-[#FFFFFF] text-xs font-bold rounded-none inline-flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
@@ -320,52 +405,158 @@ export default function StaffManagementPage() {
           </div>
         )}
 
-        {/* TAB 2: PENDING INVITATIONS TABLE */}
+        {/* TAB 2: INVITATIONS MANAGEMENT TABLE */}
         {activeTab === 'invitations' && (
           <div className="bg-[#FFFFFF] border border-[#E5E8ED] shadow-xs overflow-hidden">
+            {feedbackToast && (
+              <div
+                className={`p-3 text-xs font-semibold flex items-center justify-between border-b ${
+                  feedbackToast.type === 'success'
+                    ? 'bg-[#DEF7EC] text-[#168653] border-[#BCF0DA]'
+                    : 'bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {feedbackToast.type === 'success' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
+                  <span>{feedbackToast.message}</span>
+                </div>
+                <button type="button" onClick={() => setFeedbackToast(null)} className="text-current hover:opacity-75">
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[#F8FAFC] text-[#718096] uppercase text-[10px] font-bold tracking-wider border-b border-[#E5E8ED]">
                   <tr>
                     <th className="px-4 py-3">Invitee</th>
                     <th className="px-4 py-3">Assigned Role</th>
-                    <th className="px-4 py-3">Dispatched Date</th>
-                    <th className="px-4 py-3">Expires At</th>
-                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Dispatched / Expiry</th>
+                    <th className="px-4 py-3">Resend Delivery Status</th>
+                    <th className="px-4 py-3">Resend ID</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E5E8ED]">
                   {pendingInvitations.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-xs text-[#718096]">
-                        No pending invitations. All invited staff members have completed onboarding.
+                      <td colSpan={6} className="px-4 py-10 text-center text-xs text-[#718096]">
+                        No invitations on record. Click <strong>&quot;Invite Employee&quot;</strong> above to dispatch staff onboarding invitations.
                       </td>
                     </tr>
                   ) : (
-                    pendingInvitations.map((inv) => (
-                      <tr key={inv.id} className="hover:bg-[#F8FAFC]">
-                        <td className="px-4 py-3">
-                          <span className="font-bold text-[#153650] block">{inv.fullName}</span>
-                          <span className="text-[11px] text-[#718096]">{inv.email}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#EFF6FF] text-[#1E40AF]">
-                            {inv.roleCode.replace(/_/g, ' ')}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-[#64748B]">
-                          {new Date(inv.createdAt).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 text-[#64748B]">
-                          {new Date(inv.expiresAt).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-[#FEF3C7] text-[#D97706]">
-                            {inv.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    pendingInvitations.map((inv) => {
+                      const isExpired = new Date(inv.expiresAt) < new Date();
+                      const isActionLoading = actionLoadingId?.includes(inv.id);
+
+                      return (
+                        <tr key={inv.id} className="hover:bg-[#F8FAFC]">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-[#153650] block">{inv.fullName}</span>
+                            <span className="text-[11px] text-[#718096] font-mono">{inv.email}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]">
+                              {inv.roleCode.replace(/_/g, ' ')}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-[#64748B] text-[11px]">
+                            <div>Dispatched: {new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className={`mt-0.5 font-semibold ${isExpired ? 'text-[#DC2626]' : 'text-[#718096]'}`}>
+                              {isExpired ? 'Expired' : `Expires: ${new Date(inv.expiresAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {inv.status === 'ACCEPTED' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-[#DEF7EC] text-[#168653] border border-[#BCF0DA]">
+                                <Check size={12} /> Accepted & Active
+                              </span>
+                            ) : inv.status === 'REVOKED' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0]">
+                                <Ban size={12} /> Revoked
+                              </span>
+                            ) : inv.deliveryStatus === 'DELIVERED' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-[#DEF7EC] text-[#168653] border border-[#BCF0DA]">
+                                <CheckCircle2 size={12} /> Delivered
+                              </span>
+                            ) : inv.deliveryStatus === 'FAILED' || inv.deliveryStatus === 'BOUNCED' ? (
+                              <div>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]">
+                                  <AlertTriangle size={12} /> {inv.deliveryStatus}
+                                </span>
+                                {inv.deliveryError && (
+                                  <span className="block text-[10px] text-[#DC2626] max-w-[200px] truncate mt-0.5" title={inv.deliveryError}>
+                                    {inv.deliveryError}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]">
+                                <Send size={11} /> Sent via Resend
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {inv.resendEmailId ? (
+                              <div className="flex items-center gap-1">
+                                <span className="font-mono text-[10px] text-[#64748B] bg-[#F1F5F9] px-1.5 py-0.5 border border-[#E2E8F0]">
+                                  {inv.resendEmailId.slice(0, 12)}...
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyText(inv.resendEmailId, `id-${inv.id}`)}
+                                  className="text-[#718096] hover:text-[#153650]"
+                                  title="Copy Resend Message ID"
+                                >
+                                  {copiedId === `id-${inv.id}` ? <Check size={12} className="text-[#168653]" /> : <Copy size={12} />}
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-[#A0AEC0] font-mono">—</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <div className="inline-flex items-center gap-1.5">
+                              {inv.resendEmailId && inv.status !== 'ACCEPTED' && (
+                                <button
+                                  type="button"
+                                  disabled={isActionLoading}
+                                  onClick={() => handleCheckDelivery(inv.id)}
+                                  className="p-1 text-[#24689B] hover:bg-[#EFF6FF] border border-[#BFDBFE] disabled:opacity-50"
+                                  title="Check Live Delivery Status via Resend API"
+                                >
+                                  <RefreshCw size={12} className={actionLoadingId === `check-${inv.id}` ? 'animate-spin' : ''} />
+                                </button>
+                              )}
+
+                              {inv.status !== 'ACCEPTED' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isActionLoading}
+                                    onClick={() => handleResendInvitation(inv.id, inv.email)}
+                                    className="px-2 py-1 text-[11px] font-semibold text-[#153650] hover:bg-[#F1F5F9] border border-[#CBD5E1] disabled:opacity-50"
+                                  >
+                                    {actionLoadingId === `resend-${inv.id}` ? 'Resending...' : 'Resend'}
+                                  </button>
+                                  {inv.status !== 'REVOKED' && (
+                                    <button
+                                      type="button"
+                                      disabled={isActionLoading}
+                                      onClick={() => handleRevokeInvitation(inv.id, inv.email)}
+                                      className="px-2 py-1 text-[11px] font-semibold text-[#DC2626] hover:bg-[#FEF2F2] border border-[#FECACA] disabled:opacity-50"
+                                    >
+                                      Revoke
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -378,7 +569,7 @@ export default function StaffManagementPage() {
       {/* INVITE EMPLOYEE MODAL */}
       {inviteModalOpen && (
         <div className="fixed inset-0 bg-[#000000]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#FFFFFF] border border-[#E5E8ED] shadow-xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-[#FFFFFF] border border-[#E5E8ED] shadow-xl max-w-lg w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-[#E5E8ED] pb-3">
               <h2 className="text-sm font-bold text-[#153650] font-headline flex items-center gap-1.5">
                 <UserPlus size={16} className="text-[#153650]" />
@@ -393,28 +584,72 @@ export default function StaffManagementPage() {
               </button>
             </div>
 
-            {inviteSuccessMessage ? (
-              <div className="space-y-4 text-center py-4">
-                <div className="w-10 h-10 bg-[#DEF7EC] text-[#168653] flex items-center justify-center rounded-full mx-auto">
-                  <CheckCircle2 size={22} />
+            {inviteSuccessData ? (
+              <div className="space-y-4 py-2">
+                <div className="p-3 bg-[#DEF7EC] border border-[#BCF0DA] text-xs text-[#168653] flex items-start gap-2.5">
+                  <CheckCircle2 size={18} className="shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">Invitation Dispatched via Resend</span>
+                    <span>An official onboarding invitation email was successfully delivered to <strong>{inviteSuccessData.email}</strong>.</span>
+                    {inviteSuccessData.resendEmailId && (
+                      <span className="block mt-1 font-mono text-[10px] text-[#0E7090]">
+                        Resend Tracking ID: {inviteSuccessData.resendEmailId}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-[#168653] font-bold leading-relaxed">
-                  {inviteSuccessMessage}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setInviteModalOpen(false)}
-                  className="px-4 py-2 bg-[#153650] text-[#FFFFFF] text-xs font-bold"
-                >
-                  Close
-                </button>
+
+                {inviteSuccessData.inviteUrl && (
+                  <div className="p-3 bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
+                    <span className="text-[11px] font-bold text-[#153650] block">
+                      Direct Onboarding Link (Backup / Instant Access):
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        readOnly
+                        value={inviteSuccessData.inviteUrl}
+                        className="w-full px-2.5 py-1.5 bg-[#FFFFFF] border border-[#CBD5E1] text-[11px] font-mono text-[#1E293B]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText(inviteSuccessData.inviteUrl!, 'modal-link')}
+                        className="px-3 py-1.5 bg-[#153650] text-[#FFFFFF] text-xs font-bold shrink-0 flex items-center gap-1"
+                      >
+                        {copiedId === 'modal-link' ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copiedId === 'modal-link' ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-[#64748B]">
+                      You can also share this link directly with the staff member via WhatsApp.
+                    </p>
+                  </div>
+                )}
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInviteModalOpen(false);
+                      setInviteSuccessData(null);
+                    }}
+                    className="px-5 py-2 bg-[#153650] text-[#FFFFFF] text-xs font-bold"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleInviteSubmit} className="space-y-3.5">
                 {inviteError && (
-                  <div className="p-2.5 bg-[#FEF2F2] border border-[#FECACA] text-xs text-[#DC2626] flex items-center gap-2">
-                    <AlertCircle size={14} className="shrink-0" />
-                    <span>{inviteError}</span>
+                  <div className="p-3 bg-[#FEF2F2] border border-[#FECACA] text-xs text-[#DC2626] space-y-1">
+                    <div className="flex items-center gap-2 font-bold">
+                      <AlertCircle size={15} className="shrink-0" />
+                      <span>Invitation Dispatch Failed</span>
+                    </div>
+                    <p className="text-[11px] text-[#B91C1C] pl-6 leading-relaxed">
+                      {inviteError}
+                    </p>
                   </div>
                 )}
 
@@ -441,7 +676,7 @@ export default function StaffManagementPage() {
                     required
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="priya@varniholidays.com"
+                    placeholder="employee@varnitours.com"
                     className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#172B45] focus:outline-none focus:border-[#153650]"
                   />
                 </div>
@@ -464,7 +699,7 @@ export default function StaffManagementPage() {
                 </div>
 
                 <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] text-[11px] text-[#64748B]">
-                  &bull; A single-use 48-hour onboarding link will be sent via Resend.<br />
+                  &bull; A single-use 48-hour onboarding link will be sent via verified Resend domain.<br />
                   &bull; The employee will be required to configure mandatory TOTP MFA.
                 </div>
 

@@ -12,7 +12,10 @@ const RESET_TOKEN_EXPIRY_MINUTES = 60; // 1 hour
  */
 async function sendPasswordResetEmail(toEmail: string, resetUrl: string, fullName: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Varni Holidays <contact@varnitours.com>';
+  let fromEmail = process.env.RESEND_FROM_EMAIL || 'Varni Holidays <contact@varnitours.com>';
+  if (fromEmail.includes('@varniholidays.com')) {
+    fromEmail = fromEmail.replace('@varniholidays.com', '@varnitours.com');
+  }
 
   if (!apiKey) {
     console.warn('[Resend API Key Missing]: Skipping real email dispatch; logged reset URL:', resetUrl);

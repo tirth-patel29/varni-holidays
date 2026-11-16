@@ -205,11 +205,16 @@ model EmployeeInvitation {
   invitedBy         User      @relation("InvitedBy", fields: [invitedByUserId], references: [id])
   acceptedAt        DateTime?
   customPermissions Json? // Optional array of granted permission codes
+  resendEmailId     String? // External Resend message identifier
+  deliveryStatus    String?   @default("PENDING") // "PENDING", "SENT", "DELIVERED", "BOUNCED", "FAILED"
+  deliveryError     String? // Detailed failure reason from Resend
+  lastSentAt        DateTime? @default(now())
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   @@index([email])
   @@index([status])
+  @@index([resendEmailId])
   @@map("employee_invitations")
 }
 

@@ -42,6 +42,9 @@ import {
 } from '@/lib/auth/session-service';
 import {
   createEmployeeInvitation,
+  resendEmployeeInvitation,
+  revokeEmployeeInvitation,
+  syncInvitationDeliveryStatus,
   verifyInvitationToken,
   acceptEmployeeInvitation,
   InviteEmployeeInput,
@@ -516,6 +519,21 @@ export async function inviteEmployeeAction(input: InviteEmployeeInput) {
   });
 }
 
+export async function resendEmployeeInvitationAction(invitationId: string) {
+  const user = await requirePermission('employees.invite');
+  return await resendEmployeeInvitation(user, invitationId);
+}
+
+export async function revokeEmployeeInvitationAction(invitationId: string) {
+  const user = await requirePermission('employees.invite');
+  return await revokeEmployeeInvitation(user, invitationId);
+}
+
+export async function checkInvitationDeliveryStatusAction(invitationId: string) {
+  await requirePermission('employees.view');
+  return await syncInvitationDeliveryStatus(invitationId);
+}
+
 export async function verifyInvitationAction(token: string) {
   return await verifyInvitationToken(token);
 }
@@ -569,7 +587,6 @@ export async function getEmployeesListAction() {
     });
 
     const pendingInvitations = await prisma.employeeInvitation.findMany({
-      where: { status: 'PENDING' },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -594,6 +611,10 @@ export async function getEmployeesListAction() {
         fullName: i.fullName,
         roleCode: i.roleCode,
         status: i.status,
+        deliveryStatus: i.deliveryStatus || 'PENDING',
+        deliveryError: i.deliveryError || null,
+        resendEmailId: i.resendEmailId || null,
+        lastSentAt: i.lastSentAt || i.createdAt,
         expiresAt: i.expiresAt,
         createdAt: i.createdAt,
       })),
