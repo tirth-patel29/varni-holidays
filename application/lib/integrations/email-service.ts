@@ -113,9 +113,9 @@ export function buildVarniEmailHtml(options: EmailSendOptions): string {
       <!-- Brand Header -->
       <table class="header-table" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
         <tr>
-          <td style="padding: 26px 32px;">
-            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
+          <td style="padding: 22px 32px;">
+            <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="42" style="height: 42px; width: auto; max-width: 180px; display: block; border: 0;" />
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 6px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
           </td>
         </tr>
       </table>
@@ -270,9 +270,9 @@ export function buildEnquiryConfirmationEmailHtml(params: EnquiryConfirmationPar
       <!-- Brand Header (Light Theme) -->
       <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
         <tr>
-          <td style="padding: 26px 32px;">
-            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
+          <td style="padding: 22px 32px;">
+            <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="42" style="height: 42px; width: auto; max-width: 180px; display: block; border: 0;" />
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 6px;">Anand, Gujarat • Bespoke Journeys & Hospitality</div>
           </td>
         </tr>
       </table>
@@ -387,9 +387,9 @@ export function buildNewsletterWelcomeEmailHtml(email: string): string {
       <!-- Brand Header -->
       <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #FFFFFF; border-bottom: 2px solid #E9B95E;">
         <tr>
-          <td style="padding: 26px 32px;">
-            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #153650; margin: 0;">VARNI HOLIDAYS</div>
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 3px;">Varni Travel Gazette • Anand, Gujarat</div>
+          <td style="padding: 22px 32px;">
+            <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="42" style="height: 42px; width: auto; max-width: 180px; display: block; border: 0;" />
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #C28B2B; margin-top: 6px;">Varni Travel Gazette • Anand, Gujarat</div>
           </td>
         </tr>
       </table>
@@ -508,7 +508,9 @@ export function buildQuotationProposalEmailHtml(params: {
       <table cellpadding="0" cellspacing="0" style="width: 100%; background-color: #002037; border-bottom: 3px solid #E9B95E;">
         <tr>
           <td style="padding: 24px 32px;">
-            <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 800; letter-spacing: 1px; color: #FFFFFF; margin: 0;">VARNI HOLIDAYS</div>
+            <div style="background-color: #FFFFFF; border-radius: 8px; padding: 8px 16px; display: inline-block; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+              <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="38" style="height: 38px; width: auto; max-width: 170px; display: block; border: 0;" />
+            </div>
             <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #E9B95E; margin-top: 4px;">YOUR GATEWAY TO JOYFUL HOLIDAYS • ANAND, GUJARAT</div>
           </td>
         </tr>

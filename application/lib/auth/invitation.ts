@@ -90,8 +90,9 @@ function buildInvitationEmailHtml(params: {
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="center">
-                    <div style="display: inline-block; width: 40px; height: 40px; background-color: #E9B95E; color: #153650; font-weight: 800; font-size: 20px; line-height: 40px; text-align: center; border-radius: 4px; margin-bottom: 8px;">V</div>
-                    <h1 style="color: #FFFFFF; font-size: 20px; font-weight: 800; margin: 0; letter-spacing: 0.5px;">VARNI HOLIDAYS</h1>
+                    <div style="background-color: #FFFFFF; border-radius: 8px; padding: 8px 18px; display: inline-block; box-shadow: 0 2px 6px rgba(0,0,0,0.15); margin-bottom: 8px;">
+                      <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="38" style="height: 38px; width: auto; max-width: 170px; display: block; border: 0;" />
+                    </div>
                     <p style="color: #CBD5E1; font-size: 11px; margin: 4px 0 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">Enterprise Administrative & Operations Desk</p>
                   </td>
                 </tr>

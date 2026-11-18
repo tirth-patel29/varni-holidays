@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { completePasswordResetAction } from '@/app/actions/auth';
 import { Lock, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -72,11 +73,18 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-[#172B45] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#E9B95E]/30 selection:text-[#153650]">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="w-14 h-14 bg-[#153650] text-[#E9B95E] flex items-center justify-center font-bold text-xl mx-auto mb-4 shadow-md border border-[#153650]">
-          V
-        </div>
-        <h1 className="text-2xl font-black tracking-tight text-[#153650] font-headline">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center flex flex-col items-center">
+        <Link href="/" className="inline-block mb-3" aria-label="Varni Holidays">
+          <Image
+            src="/logo.webp"
+            alt="Varni Holidays"
+            width={220}
+            height={120}
+            priority
+            className="h-12 w-auto object-contain mx-auto"
+          />
+        </Link>
+        <h1 className="text-xl font-bold tracking-tight text-[#153650] font-headline">
           NEW STAFF PASSWORD
         </h1>
         <p className="mt-1 text-xs uppercase tracking-widest text-[#718096] font-mono">

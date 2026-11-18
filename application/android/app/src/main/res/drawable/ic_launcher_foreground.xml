@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="0"
+        android:translateY="0">
+        <!-- V Monogram in Gold #E9B95E -->
+        <path
+            android:fillColor="#E9B95E"
+            android:pathData="M34,34 L45,34 L54,63 L63,34 L74,34 L60,74 L48,74 Z" />
+        <!-- Subtle accent dot or travel wing mark -->
+        <path
+            android:fillColor="#F6D389"
+            android:pathData="M54,28 A4,4 0 1,1 54,28.01 Z" />
+    </group>
+</vector>

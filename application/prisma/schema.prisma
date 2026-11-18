@@ -294,10 +294,48 @@ model Customer {
   bookings             Booking[]
   visaApplications     VisaApplication[]
   WhatsAppConversation WhatsAppConversation[]
+  customerAccounts     CustomerAccount[]
+  customerSessions     CustomerSession[]
+  avatarUrl            String?
 
   @@index([normalizedPhone])
   @@index([normalizedEmail])
   @@map("customers")
+}
+
+// Dedicated Customer OAuth Accounts (Google, Apple)
+model CustomerAccount {
+  id                String    @id @default(uuid())
+  customerId        String
+  customer          Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  provider          String    // "google" | "apple"
+  providerAccountId String    // Google sub or Apple sub
+  email             String?
+  name              String?
+  avatarUrl         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([customerId])
+  @@map("customer_accounts")
+}
+
+// Dedicated Hashed Customer Sessions (Separate from Staff Sessions)
+model CustomerSession {
+  id               String    @id @default(uuid())
+  customerId       String
+  customer         Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  sessionTokenHash String    @unique // SHA-256 hash of random session token
+  ipAddress        String?
+  userAgent        String?
+  expiresAt        DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([customerId])
+  @@index([expiresAt])
+  @@map("customer_sessions")
 }
 
 // ====================================================

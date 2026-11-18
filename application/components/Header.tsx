@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { COMPANY_CONTACT } from "@/lib/config/contact";
 
@@ -24,19 +25,16 @@ export default function Header() {
       <div className="max-w-[1380px] mx-auto w-full">
         <div className="pointer-events-auto h-16 sm:h-20 bg-surface-container-lowest/95 backdrop-blur-xl rounded-full px-3.5 sm:px-6 md:px-8 flex items-center justify-between shadow-clay-card border border-white/60">
           
-          {/* Brand Identity */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary-container flex items-center justify-center text-gold-deep shadow-sm shrink-0">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">travel_explore</span>
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-headline text-base sm:text-lg md:text-xl font-bold text-primary leading-none tracking-tight truncate">
-                VARNI HOLIDAYS
-              </span>
-              <span className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-gold-deep tracking-wider uppercase mt-0.5 truncate">
-                Your Gateway to Joyful Holidays
-              </span>
-            </div>
+          {/* Brand Identity - Official Varni Holidays Logo */}
+          <Link href="/" className="flex items-center group shrink-0" aria-label="Varni Holidays">
+            <Image
+              src="/logo.webp"
+              alt="Varni Holidays"
+              width={180}
+              height={98}
+              priority
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop Navigation Pills */}

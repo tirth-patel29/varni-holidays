@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useCrm } from '@/components/crm/CrmContext';
 import {
@@ -252,20 +253,29 @@ function AdminSidebarInner({
         <Link
           href="/admin"
           onClick={onCloseMobile}
-          className="flex items-center gap-3 min-w-0 group"
+          className="flex items-center gap-2.5 min-w-0 group"
+          aria-label="Varni Holidays Admin Portal"
         >
-          <div className="w-8 h-8 rounded-none bg-[#153650] flex items-center justify-center text-[#E9B95E] font-bold text-sm shrink-0 border border-[#153650] shadow-xs">
-            V
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <span className="text-xs font-bold tracking-wider text-[#153650] block uppercase truncate font-mono">
-                VARNI HOLIDAYS
-              </span>
-              <span className="text-[10px] text-[#718096] block truncate font-medium">
-                Unified Travel Management
-              </span>
+          {collapsed ? (
+            <div className="w-8 h-8 flex items-center justify-center overflow-hidden shrink-0">
+              <Image
+                src="/logo.webp"
+                alt="Varni Holidays"
+                width={32}
+                height={32}
+                priority
+                className="w-8 h-8 object-contain object-left"
+              />
             </div>
+          ) : (
+            <Image
+              src="/logo.webp"
+              alt="Varni Holidays"
+              width={160}
+              height={88}
+              priority
+              className="h-8 w-auto object-contain transition-transform group-hover:scale-102"
+            />
           )}
         </Link>
 

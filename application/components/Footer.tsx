@@ -99,14 +99,15 @@ export default function Footer() {
           
           {/* Brand & Accreditation Column */}
           <div className="lg:col-span-4 flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-md">
-                <span className="material-symbols-outlined text-[22px]">travel_explore</span>
-              </div>
-              <span className="font-headline text-2xl font-extrabold tracking-wide text-white drop-shadow-md">
-                VARNI HOLIDAYS
-              </span>
-            </div>
+            <Link href="/" className="inline-block bg-white/95 backdrop-blur-md rounded-2xl px-4 py-2 w-fit shadow-lg border border-white/40 hover:bg-white transition-all group" aria-label="Varni Holidays Home">
+              <Image
+                src="/logo.webp"
+                alt="Varni Holidays"
+                width={190}
+                height={104}
+                className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+              />
+            </Link>
             <p className="text-sm text-slate-200 leading-relaxed max-w-sm drop-shadow-xs font-normal">
               Bespoke holiday curation, domestic and international journeys, and unforgettable leisure designed with genuine Gujarat hospitality. Your Gateway to Joyful Holidays.
             </p>

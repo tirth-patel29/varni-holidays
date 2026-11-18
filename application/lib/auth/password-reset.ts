@@ -37,8 +37,10 @@ async function sendPasswordResetEmail(toEmail: string, resetUrl: string, fullNam
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8FAFC; color: #1E293B; margin: 0; padding: 40px 20px;">
       <div style="max-width: 560px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
         <div style="background-color: #153650; padding: 24px 32px; text-align: center;">
-          <h1 style="color: #FFFFFF; font-size: 20px; font-weight: 700; margin: 0;">VARNI HOLIDAYS</h1>
-          <p style="color: #E2E8F0; font-size: 11px; margin: 4px 0 0; text-transform: uppercase; letter-spacing: 1.5px;">Security & Account Recovery</p>
+          <div style="background-color: #FFFFFF; border-radius: 8px; padding: 8px 18px; display: inline-block; box-shadow: 0 2px 6px rgba(0,0,0,0.15); margin-bottom: 8px;">
+            <img src="https://varni-holidays.vercel.app/logo.webp" alt="Varni Holidays" height="36" style="height: 36px; width: auto; max-width: 170px; display: block; border: 0;" />
+          </div>
+          <p style="color: #E2E8F0; font-size: 11px; margin: 4px 0 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">Security & Account Recovery</p>
         </div>
         <div style="padding: 32px;">
           <p style="font-size: 14px; margin-top: 0; line-height: 1.6;">Hello <strong>${fullName}</strong>,</p>
