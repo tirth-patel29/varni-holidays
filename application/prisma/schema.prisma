@@ -59,6 +59,12 @@ model User {
   assignedVisaApps        VisaApplication[]        @relation("VisaAssignee")
   invitationsCreated      EmployeeInvitation[]     @relation("InvitedBy")
   WhatsAppConversation    WhatsAppConversation[]
+  assignedFlightHolds     FlightHoldPNR[]          @relation("FlightHoldAssignee")
+  issuedFlightHolds       FlightHoldPNR[]          @relation("FlightHoldIssuer")
+  cancelledFlightHolds    FlightHoldPNR[]          @relation("FlightHoldCanceller")
+  flightHoldActions       FlightHoldActionHistory[]
+  flightHoldExtensions    FlightHoldExtension[]
+  flightHoldReminders     FlightHoldReminder[]
 
   @@map("users")
 }
@@ -297,6 +303,7 @@ model Customer {
   customerAccounts     CustomerAccount[]
   customerSessions     CustomerSession[]
   avatarUrl            String?
+  flightHolds          FlightHoldPNR[]
 
   @@index([normalizedPhone])
   @@index([normalizedEmail])
@@ -957,6 +964,7 @@ model Booking {
 
   payments PaymentRecord[]
   services BookingServiceComponent[]
+  flightHolds FlightHoldPNR[]
 
   @@index([customerId])
   @@index([managedByUserId])
@@ -1496,4 +1504,157 @@ model WhatsAppTemplate {
   updatedAt        DateTime @updatedAt
 
   @@map("whatsapp_templates")
+}
+
+// ====================================================
+// FLIGHT HOLD BOOKING QUEUE & PNR ACTION MANAGEMENT
+// ====================================================
+
+enum FlightHoldStatus {
+  ON_HOLD
+  ISSUED
+  CANCELLED
+  RELEASED_NO_ACTION
+}
+
+enum FlightHoldPlatform {
+  AMADEUS
+  CT
+  RC
+  AIRLINE
+  OTHER
+}
+
+enum FlightHoldPaymentMode {
+  BANK_TRANSFER
+  UPI
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  CREDIT_PAY_LATER
+  OTHER
+}
+
+model FlightHoldPNR {
+  id                  String             @id @default(uuid())
+  pnr                 String             // PNR / Booking Reference (uppercase, trimmed)
+  passengerName       String?            // Lead passenger name
+  travelRoute         String?            // e.g. BOM - DXB - BOM
+  travelDate          DateTime           // Travel Date
+  platform            FlightHoldPlatform @default(AMADEUS)
+  platformOtherName   String?            // Required if platform == OTHER
+  holdDateTime        DateTime           @default(now()) // When hold was placed
+  holdTillDateTime    DateTime           // Mandatory deadline (in IST)
+  internalNotes       String?            @db.Text
+
+  status              FlightHoldStatus   @default(ON_HOLD)
+
+  // Assigned Staff Member
+  assignedStaffId     String?
+  assignedStaff       User?              @relation("FlightHoldAssignee", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+
+  // Issuance Details (populated when status -> ISSUED)
+  paymentMode         FlightHoldPaymentMode?
+  paymentModeOther    String?
+  issuedFrom          String?            // "Amadeus" | "CT" | "RC" | "Airline Direct" | "Other"
+  issuedFromOther     String?
+  issuanceAmountInr   Decimal?           @db.Decimal(10, 2)
+  airlineTicketNumber String?
+  issuedByUserId      String?
+  issuedByUser        User?              @relation("FlightHoldIssuer", fields: [issuedByUserId], references: [id], onDelete: SetNull)
+  issuedAt            DateTime?
+
+  // Cancellation Details (populated when status -> CANCELLED)
+  cancellationReason  String?            @db.Text
+  cancelledByUserId   String?
+  cancelledByUser     User?              @relation("FlightHoldCanceller", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  cancelledAt         DateTime?
+
+  // Auto-Release Details (populated when status -> RELEASED_NO_ACTION)
+  releasedAt          DateTime?
+  releaseReason       String?            @default("Internal queue hold deadline expired with no issuance or cancellation action.")
+
+  // Related Booking / Customer (optional link into core CRM)
+  bookingId           String?
+  booking             Booking?           @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  customerId          String?
+  customer            Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  // Related Action Logs & Extensions
+  actionHistory       FlightHoldActionHistory[]
+  extensions          FlightHoldExtension[]
+  reminders           FlightHoldReminder[]
+
+  isDeleted           Boolean            @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([pnr])
+  @@index([status])
+  @@index([holdTillDateTime])
+  @@index([assignedStaffId])
+  @@index([travelDate])
+  @@map("flight_hold_pnrs")
+}
+
+model FlightHoldActionHistory {
+  id                String        @id @default(uuid())
+  flightHoldId      String
+  flightHold        FlightHoldPNR @relation(fields: [flightHoldId], references: [id], onDelete: Cascade)
+
+  actionType        String        // "CREATED", "EDITED", "EXTENDED", "ISSUED", "CANCELLED", "RELEASED", "REMINDER_SENT"
+  details           String        @db.Text
+  metadata          Json?         // Snapshot of changed fields or context
+
+  performedByUserId String?
+  performedByUser   User?         @relation(fields: [performedByUserId], references: [id], onDelete: SetNull)
+  performedByName   String?
+  performedByRole   String?
+
+  createdAt         DateTime      @default(now())
+
+  @@index([flightHoldId])
+  @@index([createdAt])
+  @@map("flight_hold_action_histories")
+}
+
+model FlightHoldExtension {
+  id               String        @id @default(uuid())
+  flightHoldId     String
+  flightHold       FlightHoldPNR @relation(fields: [flightHoldId], references: [id], onDelete: Cascade)
+
+  previousHoldTill DateTime
+  newHoldTill      DateTime
+  extensionReason  String?       @db.Text
+
+  extendedByUserId String?
+  extendedByUser   User?         @relation(fields: [extendedByUserId], references: [id], onDelete: SetNull)
+  extendedByName   String?
+
+  createdAt        DateTime      @default(now())
+
+  @@index([flightHoldId])
+  @@map("flight_hold_extensions")
+}
+
+model FlightHoldReminder {
+  id              String        @id @default(uuid())
+  flightHoldId    String
+  flightHold      FlightHoldPNR @relation(fields: [flightHoldId], references: [id], onDelete: Cascade)
+
+  reminderType    String        @default("TEN_HOUR_WARNING") // "TEN_HOUR_WARNING", "URGENT_IMMEDIATE", "RELEASE_NOTICE"
+  scheduledFor    DateTime
+  triggeredAt     DateTime?
+  status          String        @default("PENDING") // "PENDING", "TRIGGERED", "DISMISSED", "SUPPRESSED"
+  channel         String        @default("IN_APP") // "IN_APP", "WHATSAPP", "EMAIL"
+
+  recipientUserId String?
+  recipientUser   User?         @relation(fields: [recipientUserId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime      @default(now())
+
+  @@index([flightHoldId])
+  @@index([status, scheduledFor])
+  @@map("flight_hold_reminders")
 }

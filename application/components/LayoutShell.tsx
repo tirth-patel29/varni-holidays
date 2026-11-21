@@ -10,8 +10,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const pathname = usePathname() || '';
   const isDedicatedShell = Boolean(
     pathname.startsWith('/employee') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/app')
+    pathname.startsWith('/admin')
   );
 
   if (isDedicatedShell) {

@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Varni Holidays</string>
-    <string name="title_activity_main">Varni Holidays</string>
-    <string name="package_name">com.varniholidays.app</string>
-    <string name="custom_url_scheme">com.varniholidays.app</string>
-</resources>

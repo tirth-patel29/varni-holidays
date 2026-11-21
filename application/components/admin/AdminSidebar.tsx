@@ -128,7 +128,9 @@ function AdminSidebarInner({
       defaultHref: '/admin/bookings',
       children: [
         { label: 'All Bookings', href: '/admin/bookings' },
-        { label: 'Flight Bookings', href: '/admin/bookings?service=FLIGHT' },
+        { label: 'Flight Bookings', href: '/admin/bookings/flights' },
+        { label: 'Flight Hold Queue', href: '/admin/bookings/flights/hold-queue' },
+        { label: 'Issuance Reminders', href: '/admin/bookings/flights/reminders' },
         { label: 'Hotel Bookings', href: '/admin/bookings?service=HOTEL' },
         { label: 'Tour Package Bookings', href: '/admin/bookings?service=PACKAGE' },
         { label: 'Visa Applications', href: '/admin/bookings?service=VISA' },

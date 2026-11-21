@@ -140,6 +140,14 @@ function AdminBookingsContent() {
           </Link>
 
           <Link
+            href="/admin/bookings/flights"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider border rounded-none transition-colors whitespace-nowrap bg-[#153650] text-[#E9B95E] border-[#153650] hover:bg-[#0E2537] shadow-xs"
+          >
+            <Plane size={13} />
+            <span>Flight Holds & PNR Queue</span>
+          </Link>
+
+          <Link
             href="/admin/bookings?service=FLIGHT"
             onClick={() => setSelectedService('FLIGHT')}
             className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider border rounded-none transition-colors whitespace-nowrap ${
