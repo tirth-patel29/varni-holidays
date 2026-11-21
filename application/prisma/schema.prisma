@@ -1539,6 +1539,7 @@ model FlightHoldPNR {
   id                  String             @id @default(uuid())
   pnr                 String             // PNR / Booking Reference (uppercase, trimmed)
   passengerName       String?            // Lead passenger name
+  passengerPhone      String?            // Passenger / Guest contact phone number (e.g. +91 98980 12345)
   travelRoute         String?            // e.g. BOM - DXB - BOM
   travelDate          DateTime           // Travel Date
   platform            FlightHoldPlatform @default(AMADEUS)
@@ -1591,6 +1592,7 @@ model FlightHoldPNR {
   updatedAt           DateTime           @updatedAt
 
   @@index([pnr])
+  @@index([passengerPhone])
   @@index([status])
   @@index([holdTillDateTime])
   @@index([assignedStaffId])

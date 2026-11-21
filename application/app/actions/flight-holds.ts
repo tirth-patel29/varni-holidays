@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { FlightHoldPlatform, FlightHoldStatus, FlightHoldPaymentMode } from '@prisma/client';
-import { calculateRemainingTime } from '@/lib/flights/timing';
+import { calculateRemainingTime, formatIST24 } from '@/lib/flights/timing';
 
 export interface StaffUserContext {
   id: string | null;
@@ -219,6 +219,7 @@ export async function getFlightHoldsAction(filters: FlightHoldFilters = {}) {
       where.OR = [
         { pnr: { contains: q, mode: 'insensitive' } },
         { passengerName: { contains: q, mode: 'insensitive' } },
+        { passengerPhone: { contains: q, mode: 'insensitive' } },
         { travelRoute: { contains: q, mode: 'insensitive' } },
         { airlineTicketNumber: { contains: q, mode: 'insensitive' } },
         { internalNotes: { contains: q, mode: 'insensitive' } },
@@ -357,6 +358,7 @@ export async function getFlightHoldDetailAction(id: string) {
 export interface CreateFlightHoldInput {
   pnr: string;
   passengerName?: string;
+  passengerPhone: string; // Mandatory Passenger / Guest Contact Number
   travelRoute?: string;
   travelDate: string; // ISO date
   platform: FlightHoldPlatform;
@@ -377,6 +379,14 @@ export async function createFlightHoldAction(input: CreateFlightHoldInput) {
     const cleanPNR = input.pnr?.trim().toUpperCase();
     if (!cleanPNR || cleanPNR.length < 4 || cleanPNR.length > 12) {
       return { success: false, error: 'PNR must be between 4 and 12 alphanumeric characters' };
+    }
+
+    const cleanPhone = input.passengerPhone?.trim();
+    if (!cleanPhone || cleanPhone.length < 7) {
+      return {
+        success: false,
+        error: 'Passenger / Guest Contact Number is mandatory (minimum 7 digits)',
+      };
     }
 
     if (!input.travelDate) {
@@ -404,11 +414,31 @@ export async function createFlightHoldAction(input: CreateFlightHoldInput) {
     const travelDateParsed = new Date(input.travelDate);
     const holdDateParsed = input.holdDateTime ? new Date(input.holdDateTime) : now;
 
+    // Check for existing customer to reuse relationship & avoid duplicate records
+    let linkedCustomerId = input.customerId || null;
+    if (!linkedCustomerId) {
+      const cleanDigits = cleanPhone.replace(/\D/g, '');
+      if (cleanDigits.length >= 7) {
+        const existingCustomer = await prisma.customer.findFirst({
+          where: {
+            OR: [
+              { phoneNumber: { contains: cleanDigits.slice(-10) } },
+              { normalizedPhone: { contains: cleanDigits.slice(-10) } },
+            ],
+          },
+        });
+        if (existingCustomer) {
+          linkedCustomerId = existingCustomer.id;
+        }
+      }
+    }
+
     // 2. Create Record
     const flightHold = await prisma.flightHoldPNR.create({
       data: {
         pnr: cleanPNR,
         passengerName: input.passengerName?.trim() || null,
+        passengerPhone: cleanPhone,
         travelRoute: input.travelRoute?.trim() || null,
         travelDate: travelDateParsed,
         platform: input.platform,
@@ -418,7 +448,7 @@ export async function createFlightHoldAction(input: CreateFlightHoldInput) {
         internalNotes: input.internalNotes?.trim() || null,
         assignedStaffId: input.assignedStaffId || staff.id || null,
         bookingId: input.bookingId || null,
-        customerId: input.customerId || null,
+        customerId: linkedCustomerId,
         status: 'ON_HOLD',
       },
     });
@@ -428,15 +458,17 @@ export async function createFlightHoldAction(input: CreateFlightHoldInput) {
       data: {
         flightHoldId: flightHold.id,
         actionType: 'CREATED',
-        details: `Hold created for PNR ${cleanPNR} on ${input.platform} by ${staff.fullName}. Deadline: ${holdTillDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST.`,
+        details: `Hold created for PNR ${cleanPNR} on ${input.platform} by ${staff.fullName}. Guest Contact: ${cleanPhone}. Deadline: ${formatIST24(holdTillDate)} IST.`,
         performedByUserId: staff.id || null,
         performedByName: staff.fullName,
         performedByRole: staff.role,
         metadata: {
           pnr: cleanPNR,
+          passengerPhone: cleanPhone,
           platform: input.platform,
           holdTill: holdTillDate.toISOString(),
           assignedStaffId: input.assignedStaffId || staff.id || null,
+          customerId: linkedCustomerId,
         },
       },
     });
@@ -543,7 +575,7 @@ export async function extendFlightHoldAction(input: ExtendFlightHoldInput) {
       data: {
         flightHoldId: existing.id,
         actionType: 'EXTENDED',
-        details: `Hold extended from ${previousDeadline.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST to ${newDeadline.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST by ${staff.fullName}. Reason: ${input.extensionReason || 'Not specified'}`,
+        details: `Hold extended from ${formatIST24(previousDeadline)} IST to ${formatIST24(newDeadline)} IST by ${staff.fullName}. Reason: ${input.extensionReason || 'Not specified'}`,
         performedByUserId: staff.id || null,
         performedByName: staff.fullName,
         performedByRole: staff.role,
@@ -647,8 +679,14 @@ export async function issueFlightHoldAction(input: IssueFlightHoldInput) {
       return { success: false, error: 'Issued From platform is mandatory' };
     }
 
-    if (input.issuedFrom === 'Other' && (!input.issuedFromOther || input.issuedFromOther.trim().length === 0)) {
-      return { success: false, error: 'Please specify the supplier/platform name for Issued From' };
+    if (input.issuedFrom === 'Other') {
+      const trimmedOther = input.issuedFromOther?.trim();
+      if (!trimmedOther || trimmedOther.length === 0) {
+        return {
+          success: false,
+          error: 'Please specify the other platform or supplier name when Issued From is Other',
+        };
+      }
     }
 
     const amount = Number(input.issuanceAmountInr);
@@ -666,7 +704,7 @@ export async function issueFlightHoldAction(input: IssueFlightHoldInput) {
         paymentMode: input.paymentMode,
         paymentModeOther: input.paymentMode === 'OTHER' ? input.paymentModeOther?.trim() : null,
         issuedFrom: input.issuedFrom.trim(),
-        issuedFromOther: input.issuedFrom === 'Other' ? input.issuedFromOther?.trim() : null,
+        issuedFromOther: input.issuedFrom === 'Other' ? input.issuedFromOther?.trim() || null : null,
         issuanceAmountInr: amount,
         airlineTicketNumber: input.airlineTicketNumber?.trim() || null,
         issuedByUserId: staff.id || null,
@@ -686,11 +724,16 @@ export async function issueFlightHoldAction(input: IssueFlightHoldInput) {
     });
 
     // 3. Log in action history
+    const issuedFromDisplay =
+      input.issuedFrom === 'Other' && input.issuedFromOther?.trim()
+        ? `Other (${input.issuedFromOther.trim()})`
+        : input.issuedFrom;
+
     await prisma.flightHoldActionHistory.create({
       data: {
         flightHoldId: existing.id,
         actionType: 'ISSUED',
-        details: `PNR ${existing.pnr} confirmed ISSUED by ${staff.fullName}. Amount: ₹${amount.toLocaleString('en-IN')}, Mode: ${input.paymentMode}, Issued From: ${input.issuedFrom}${input.airlineTicketNumber ? `, Ticket: ${input.airlineTicketNumber}` : ''}.`,
+        details: `PNR ${existing.pnr} confirmed ISSUED by ${staff.fullName} at ${formatIST24(now)} IST. Amount: ₹${amount.toLocaleString('en-IN')}, Mode: ${input.paymentMode}, Issued From: ${issuedFromDisplay}${input.airlineTicketNumber ? `, Ticket: ${input.airlineTicketNumber}` : ''}.`,
         performedByUserId: staff.id || null,
         performedByName: staff.fullName,
         performedByRole: staff.role,
@@ -698,6 +741,7 @@ export async function issueFlightHoldAction(input: IssueFlightHoldInput) {
           amount,
           paymentMode: input.paymentMode,
           issuedFrom: input.issuedFrom,
+          issuedFromOther: input.issuedFrom === 'Other' ? input.issuedFromOther?.trim() || null : null,
           airlineTicketNumber: input.airlineTicketNumber,
           originalHoldOn: existing.platform,
         },
@@ -776,7 +820,7 @@ export async function cancelFlightHoldAction(input: CancelFlightHoldInput) {
       data: {
         flightHoldId: existing.id,
         actionType: 'CANCELLED',
-        details: `Hold for PNR ${existing.pnr} marked CANCELLED by ${staff.fullName}. Reason: ${reason}`,
+        details: `Hold for PNR ${existing.pnr} marked CANCELLED by ${staff.fullName} at ${formatIST24(now)} IST. Reason: ${reason}`,
         performedByUserId: staff.id || null,
         performedByName: staff.fullName,
         performedByRole: staff.role,
@@ -793,6 +837,69 @@ export async function cancelFlightHoldAction(input: CancelFlightHoldInput) {
   } catch (error: any) {
     console.error('[cancelFlightHoldAction error]:', error);
     return { success: false, error: error.message || 'Failed to cancel flight hold' };
+  }
+}
+
+// ==========================================
+// 8. UPDATE HOLD CONTACT ACTION
+// ==========================================
+export interface UpdateFlightHoldContactInput {
+  id: string;
+  passengerPhone: string;
+  passengerName?: string;
+  internalNotes?: string;
+}
+
+export async function updateFlightHoldContactAction(input: UpdateFlightHoldContactInput) {
+  try {
+    const staff = await getStaffUser();
+
+    const existing = await prisma.flightHoldPNR.findUnique({
+      where: { id: input.id },
+    });
+
+    if (!existing) {
+      return { success: false, error: 'Flight Hold record not found' };
+    }
+
+    const cleanPhone = input.passengerPhone?.trim();
+    if (!cleanPhone || cleanPhone.length < 7) {
+      return { success: false, error: 'Passenger Contact Number is mandatory (minimum 7 digits)' };
+    }
+
+    const prevPhone = existing.passengerPhone || 'Not set';
+
+    const updated = await prisma.flightHoldPNR.update({
+      where: { id: existing.id },
+      data: {
+        passengerPhone: cleanPhone,
+        passengerName: input.passengerName !== undefined ? input.passengerName?.trim() || null : existing.passengerName,
+        internalNotes: input.internalNotes !== undefined ? input.internalNotes?.trim() || null : existing.internalNotes,
+      },
+    });
+
+    await prisma.flightHoldActionHistory.create({
+      data: {
+        flightHoldId: existing.id,
+        actionType: 'EDITED',
+        details: `Guest contact details updated by ${staff.fullName} at ${formatIST24(new Date())} IST. Contact: ${prevPhone} → ${cleanPhone}${input.passengerName ? `, Name: ${input.passengerName}` : ''}.`,
+        performedByUserId: staff.id || null,
+        performedByName: staff.fullName,
+        performedByRole: staff.role,
+        metadata: {
+          previousPhone: prevPhone,
+          newPhone: cleanPhone,
+        },
+      },
+    });
+
+    try {
+      revalidatePath('/admin/bookings/flights');
+    } catch {}
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error('[updateFlightHoldContactAction error]:', error);
+    return { success: false, error: error.message || 'Failed to update contact details' };
   }
 }
 
@@ -829,7 +936,7 @@ export async function runFlightHoldSchedulerAction() {
         data: {
           flightHoldId: hold.id,
           actionType: 'RELEASED',
-          details: `Hold automatically marked as RELEASED_NO_ACTION at ${now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST because the deadline (${hold.holdTillDateTime.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST) passed without action. Note: This indicates internal system queue status and does not automatically confirm release on airline/GDS platform.`,
+          details: `Hold automatically marked as RELEASED_NO_ACTION at ${formatIST24(now)} IST because the deadline (${formatIST24(hold.holdTillDateTime)} IST) passed without action. Note: This indicates internal system queue status and does not automatically confirm release on airline/GDS platform.`,
           performedByName: 'Auto-Release Engine',
           performedByRole: 'SYSTEM_SCHEDULER',
         },
@@ -872,7 +979,7 @@ export async function runFlightHoldSchedulerAction() {
         data: {
           flightHoldId: reminder.flightHoldId,
           actionType: 'REMINDER_SENT',
-          details: `10-hour urgent issuance alert triggered for PNR ${reminder.flightHold.pnr}. Deadline is within 10 hours (${reminder.flightHold.holdTillDateTime.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST).`,
+          details: `10-hour urgent issuance alert triggered for PNR ${reminder.flightHold.pnr}. Deadline is within 10 hours (${formatIST24(reminder.flightHold.holdTillDateTime)} IST).`,
           performedByName: 'Issuance Reminder System',
           performedByRole: 'SYSTEM_SCHEDULER',
         },

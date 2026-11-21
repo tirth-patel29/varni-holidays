@@ -26,8 +26,11 @@ import {
   X,
   ChevronRight,
   FileText,
+  Phone,
+  Edit2,
 } from 'lucide-react';
 import PageHeader from '@/components/admin/PageHeader';
+import DateTimePicker24 from './DateTimePicker24';
 import {
   getFlightHoldsAction,
   getFlightHoldStatsAction,
@@ -35,9 +38,17 @@ import {
   extendFlightHoldAction,
   issueFlightHoldAction,
   cancelFlightHoldAction,
+  updateFlightHoldContactAction,
   runFlightHoldSchedulerAction,
   CreateFlightHoldInput,
 } from '@/app/actions/flight-holds';
+import {
+  formatIST24,
+  formatISTDate,
+  getIST24Parts,
+  parseIST24ToDate,
+} from '@/lib/flights/timing';
+import { COUNTRY_CODES, validatePhoneNumber } from '@/lib/validation/phone';
 import { FlightHoldPlatform, FlightHoldStatus, FlightHoldPaymentMode } from '@prisma/client';
 
 export type FlightViewTab =
@@ -77,26 +88,55 @@ export default function FlightHoldsDashboard({
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activeHoldForAction, setActiveHoldForAction] = useState<any | null>(null);
-  const [actionType, setActionType] = useState<'EXTEND' | 'ISSUE' | 'CANCEL' | 'HISTORY' | null>(null);
+  const [actionType, setActionType] = useState<
+    'EXTEND' | 'ISSUE' | 'CANCEL' | 'HISTORY' | 'EDIT_CONTACT' | null
+  >(null);
 
-  // Form states
-  const [createForm, setCreateForm] = useState<CreateFlightHoldInput>({
+  // Form states - Create Hold
+  const [createForm, setCreateForm] = useState({
     pnr: '',
     passengerName: '',
     travelRoute: '',
     travelDate: new Date().toISOString().split('T')[0],
-    platform: 'AMADEUS',
+    platform: 'AMADEUS' as FlightHoldPlatform,
     platformOtherName: '',
-    holdDateTime: '',
-    holdTillDateTime: '',
     internalNotes: '',
   });
 
-  const [extendForm, setExtendForm] = useState({
-    newHoldTillDateTime: '',
-    extensionReason: '',
+  // Contact number for Create Hold (Country code + phone)
+  const [createPhone, setCreatePhone] = useState({
+    dialCode: '+91',
+    nationalNumber: '',
   });
 
+  // Edit contact state
+  const [editContactForm, setEditContactForm] = useState({
+    passengerPhone: '',
+    passengerName: '',
+  });
+
+  // 24-Hour Date/Time states for Create Hold
+  const [createHoldTill, setCreateHoldTill] = useState(() => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const parts = getIST24Parts(tomorrow);
+    return { date: parts.dateStr, hour: parts.hourStr, min: parts.minStr };
+  });
+
+  const [createHoldPlaced, setCreateHoldPlaced] = useState(() => {
+    const now = new Date();
+    const parts = getIST24Parts(now);
+    return { date: parts.dateStr, hour: parts.hourStr, min: parts.minStr };
+  });
+
+  // 24-Hour Date/Time states for Extend Hold
+  const [extendHoldTill, setExtendHoldTill] = useState({
+    date: '',
+    hour: '00',
+    min: '00',
+  });
+  const [extendReason, setExtendReason] = useState('');
+
+  // Form state - Issue Ticket
   const [issueForm, setIssueForm] = useState({
     paymentMode: 'BANK_TRANSFER' as FlightHoldPaymentMode,
     paymentModeOther: '',
@@ -106,6 +146,7 @@ export default function FlightHoldsDashboard({
     airlineTicketNumber: '',
   });
 
+  // Form state - Cancel Hold
   const [cancelForm, setCancelForm] = useState({
     cancellationReason: '',
   });
@@ -193,8 +234,62 @@ export default function FlightHoldsDashboard({
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+
     try {
-      const res = await createFlightHoldAction(createForm);
+      // Validate Contact Phone Number
+      const phoneValidation = validatePhoneNumber(createPhone.dialCode, createPhone.nationalNumber);
+      if (!phoneValidation.isValid) {
+        setFormError(phoneValidation.error || 'Please enter a valid guest contact number.');
+        return;
+      }
+      const fullContactNumber = `${createPhone.dialCode} ${createPhone.nationalNumber.replace(/\D/g, '')}`;
+
+      // Parse 24-hour IST dates
+      const holdTillDate = parseIST24ToDate(
+        createHoldTill.date,
+        createHoldTill.hour,
+        createHoldTill.min
+      );
+      const holdPlacedDate = parseIST24ToDate(
+        createHoldPlaced.date,
+        createHoldPlaced.hour,
+        createHoldPlaced.min
+      );
+
+      const now = new Date();
+      if (holdTillDate.getTime() <= now.getTime()) {
+        setFormError('Hold Till Date & Time must be in the future');
+        return;
+      }
+
+      if (holdTillDate.getTime() <= holdPlacedDate.getTime()) {
+        setFormError('Hold Till Date & Time must be strictly later than Hold Placed Date & Time');
+        return;
+      }
+
+      if (
+        createForm.platform === 'OTHER' &&
+        (!createForm.platformOtherName || createForm.platformOtherName.trim().length === 0)
+      ) {
+        setFormError('Please specify the Platform/Supplier Name when selecting "Other"');
+        return;
+      }
+
+      const payload: CreateFlightHoldInput = {
+        pnr: createForm.pnr,
+        passengerName: createForm.passengerName,
+        passengerPhone: fullContactNumber,
+        travelRoute: createForm.travelRoute,
+        travelDate: createForm.travelDate,
+        platform: createForm.platform,
+        platformOtherName:
+          createForm.platform === 'OTHER' ? createForm.platformOtherName.trim() : undefined,
+        holdDateTime: holdPlacedDate.toISOString(),
+        holdTillDateTime: holdTillDate.toISOString(),
+        internalNotes: createForm.internalNotes,
+      };
+
+      const res = await createFlightHoldAction(payload);
       if (!res.success) {
         setFormError(res.error || 'Failed to create flight hold');
         return;
@@ -208,14 +303,72 @@ export default function FlightHoldsDashboard({
         travelDate: new Date().toISOString().split('T')[0],
         platform: 'AMADEUS',
         platformOtherName: '',
-        holdDateTime: '',
-        holdTillDateTime: '',
         internalNotes: '',
+      });
+      setCreatePhone({
+        dialCode: '+91',
+        nationalNumber: '',
       });
       loadData();
     } catch (err: any) {
       setFormError(err.message || 'An unexpected error occurred');
     }
+  };
+
+  // Open Edit Contact Modal
+  const handleOpenEditContact = (item: any) => {
+    setActiveHoldForAction(item);
+    setFormError(null);
+    setEditContactForm({
+      passengerPhone: item.passengerPhone || '',
+      passengerName: item.passengerName || '',
+    });
+    setActionType('EDIT_CONTACT');
+  };
+
+  // Submit Edit Contact
+  const handleUpdateContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeHoldForAction) return;
+    setFormError(null);
+
+    const cleanPhone = editContactForm.passengerPhone.trim();
+    if (!cleanPhone || cleanPhone.length < 7) {
+      setFormError('Passenger Contact Number is mandatory (minimum 7 digits)');
+      return;
+    }
+
+    try {
+      const res = await updateFlightHoldContactAction({
+        id: activeHoldForAction.id,
+        passengerPhone: cleanPhone,
+        passengerName: editContactForm.passengerName,
+      });
+
+      if (!res.success) {
+        setFormError(res.error || 'Failed to update contact number');
+        return;
+      }
+
+      setActionType(null);
+      setActiveHoldForAction(null);
+      loadData();
+    } catch (err: any) {
+      setFormError(err.message || 'Failed to update contact number');
+    }
+  };
+
+  // Open Extend Modal
+  const handleOpenExtend = (item: any) => {
+    setActiveHoldForAction(item);
+    setFormError(null);
+    const currentDeadline = new Date(item.holdTillDateTime);
+    // Suggest +12 hours from current deadline
+    const suggested = new Date(currentDeadline.getTime() + 12 * 60 * 60 * 1000);
+    const parts = getIST24Parts(suggested);
+    setExtendHoldTill({ date: parts.dateStr, hour: parts.hourStr, min: parts.minStr });
+    setExtendReason('');
+    setActionType('EXTEND');
   };
 
   // Submit Extend
@@ -225,10 +378,26 @@ export default function FlightHoldsDashboard({
     setFormError(null);
 
     try {
+      const newDeadline = parseIST24ToDate(
+        extendHoldTill.date,
+        extendHoldTill.hour,
+        extendHoldTill.min
+      );
+      const currentDeadline = new Date(activeHoldForAction.holdTillDateTime);
+
+      if (newDeadline.getTime() <= currentDeadline.getTime()) {
+        setFormError(
+          'The new hold deadline must be strictly later than current hold deadline (' +
+            formatIST24(currentDeadline) +
+            ')'
+        );
+        return;
+      }
+
       const res = await extendFlightHoldAction({
         id: activeHoldForAction.id,
-        newHoldTillDateTime: extendForm.newHoldTillDateTime,
-        extensionReason: extendForm.extensionReason,
+        newHoldTillDateTime: newDeadline.toISOString(),
+        extensionReason: extendReason,
       });
 
       if (!res.success) {
@@ -244,6 +413,21 @@ export default function FlightHoldsDashboard({
     }
   };
 
+  // Open Issue Modal
+  const handleOpenIssue = (item: any) => {
+    setActiveHoldForAction(item);
+    setFormError(null);
+    setIssueForm({
+      paymentMode: 'BANK_TRANSFER',
+      paymentModeOther: '',
+      issuedFrom: item.platform === 'OTHER' ? 'Other' : item.platform,
+      issuedFromOther: item.platformOtherName || '',
+      issuanceAmountInr: '',
+      airlineTicketNumber: '',
+    });
+    setActionType('ISSUE');
+  };
+
   // Submit Issue
   const handleIssueSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -256,15 +440,31 @@ export default function FlightHoldsDashboard({
       return;
     }
 
+    if (issueForm.paymentMode === 'OTHER' && !issueForm.paymentModeOther?.trim()) {
+      setFormError('Please specify the payment mode description');
+      return;
+    }
+
+    // Requirement 2: Mandatory validation when Issued From = Other
+    if (issueForm.issuedFrom === 'Other') {
+      const trimmedOther = issueForm.issuedFromOther?.trim();
+      if (!trimmedOther || trimmedOther.length === 0) {
+        setFormError('Please specify the other platform or supplier name for Issued From');
+        return;
+      }
+    }
+
     try {
       const res = await issueFlightHoldAction({
         id: activeHoldForAction.id,
         paymentMode: issueForm.paymentMode,
-        paymentModeOther: issueForm.paymentModeOther,
+        paymentModeOther:
+          issueForm.paymentMode === 'OTHER' ? issueForm.paymentModeOther?.trim() : undefined,
         issuedFrom: issueForm.issuedFrom,
-        issuedFromOther: issueForm.issuedFromOther,
+        issuedFromOther:
+          issueForm.issuedFrom === 'Other' ? issueForm.issuedFromOther?.trim() : undefined,
         issuanceAmountInr: amount,
-        airlineTicketNumber: issueForm.airlineTicketNumber,
+        airlineTicketNumber: issueForm.airlineTicketNumber?.trim() || undefined,
       });
 
       if (!res.success) {
@@ -280,16 +480,30 @@ export default function FlightHoldsDashboard({
     }
   };
 
+  // Open Cancel Modal
+  const handleOpenCancel = (item: any) => {
+    setActiveHoldForAction(item);
+    setFormError(null);
+    setCancelForm({ cancellationReason: '' });
+    setActionType('CANCEL');
+  };
+
   // Submit Cancel
   const handleCancelSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeHoldForAction) return;
     setFormError(null);
 
+    const reason = cancelForm.cancellationReason?.trim();
+    if (!reason || reason.length < 3) {
+      setFormError('Cancellation remarks are mandatory (minimum 3 characters)');
+      return;
+    }
+
     try {
       const res = await cancelFlightHoldAction({
         id: activeHoldForAction.id,
-        cancellationReason: cancelForm.cancellationReason,
+        cancellationReason: reason,
       });
 
       if (!res.success) {
@@ -305,38 +519,12 @@ export default function FlightHoldsDashboard({
     }
   };
 
-  // Helper for formatting date-time in IST
-  const formatIST = (dateStr: string | Date | undefined) => {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    return d.toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
-  const formatISTDateOnly = (dateStr: string | Date | undefined) => {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
-
   return (
     <div className="flex-1 flex flex-col bg-[#F8FAFC] min-h-screen">
       {/* 1. Page Header with Breadcrumbs & Action Buttons */}
       <PageHeader
         title="Flight Hold Queue & PNR Management"
-        subtitle="Live PNR hold tracking, automated 10-hour reminders, and ticketing queue operations (IST Timezone)"
+        subtitle="Live PNR hold tracking, automated 10-hour reminders, and ticketing queue operations (24-Hour Clock IST)"
         breadcrumbs={[
           { label: 'Admin', href: '/admin' },
           { label: 'Bookings & Operations', href: '/admin/bookings' },
@@ -348,7 +536,7 @@ export default function FlightHoldsDashboard({
               onClick={handleRunScheduler}
               disabled={loading}
               title="Run expiration & reminder engine"
-              className="inline-flex items-center gap-2 px-3 py-2 bg-white text-[#153650] border border-[#D0D5DD] rounded-lg text-xs font-semibold hover:bg-[#F1F5F9] transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-2 bg-white text-[#153650] border border-[#D0D5DD] rounded-lg text-xs font-semibold hover:bg-[#F1F5F9] transition-colors shadow-sm cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               Sync Queue
@@ -356,9 +544,22 @@ export default function FlightHoldsDashboard({
             <button
               onClick={() => {
                 setFormError(null);
+                const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+                const partsTomorrow = getIST24Parts(tomorrow);
+                setCreateHoldTill({
+                  date: partsTomorrow.dateStr,
+                  hour: partsTomorrow.hourStr,
+                  min: partsTomorrow.minStr,
+                });
+                const partsNow = getIST24Parts(new Date());
+                setCreateHoldPlaced({
+                  date: partsNow.dateStr,
+                  hour: partsNow.hourStr,
+                  min: partsNow.minStr,
+                });
                 setIsCreateOpen(true);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-sm transition-colors border border-[#153650]"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-sm transition-colors border border-[#153650] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               New Hold Booking
@@ -372,7 +573,7 @@ export default function FlightHoldsDashboard({
         <div className="mx-6 mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium rounded-lg flex items-center justify-between">
           <span>{formSuccess}</span>
           <button onClick={() => setFormSuccess(null)}>
-            <X className="w-4 h-4 text-emerald-600" />
+            <X className="w-4 h-4 text-emerald-600 cursor-pointer" />
           </button>
         </div>
       )}
@@ -644,7 +845,7 @@ export default function FlightHoldsDashboard({
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search PNR, passenger, route, ticket #..."
+            placeholder="Search PNR, passenger, phone, route, ticket #..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 bg-white border border-[#D0D5DD] rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#153650]"
@@ -699,8 +900,8 @@ export default function FlightHoldsDashboard({
                     <th className="py-3 px-4">PNR / Ref</th>
                     <th className="py-3 px-4">Passenger & Route</th>
                     <th className="py-3 px-4">Travel Date</th>
-                    <th className="py-3 px-4">Hold On</th>
-                    <th className="py-3 px-4">Hold Till (IST)</th>
+                    <th className="py-3 px-4">Hold On / Issued From</th>
+                    <th className="py-3 px-4">Hold Till (24-hr IST)</th>
                     <th className="py-3 px-4">Time Remaining</th>
                     <th className="py-3 px-4">Assigned Staff</th>
                     <th className="py-3 px-4">Status</th>
@@ -739,38 +940,70 @@ export default function FlightHoldsDashboard({
                           )}
                         </td>
 
-                        {/* 2. Passenger & Route */}
+                        {/* 2. Passenger & Route & Contact */}
                         <td className="py-3 px-4">
-                          <div className="font-semibold text-slate-900">
-                            {item.passengerName || '—'}
+                          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                            <span>{item.passengerName || '—'}</span>
+                            {item.status === 'ON_HOLD' && (
+                              <button
+                                onClick={() => handleOpenEditContact(item)}
+                                title="Edit Guest Name / Contact"
+                                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                              >
+                                <Edit2 className="w-2.5 h-2.5" />
+                              </button>
+                            )}
                           </div>
+                          {item.passengerPhone && (
+                            <div className="flex items-center gap-1 text-[11px] text-[#153650] font-semibold mt-0.5">
+                              <Phone className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                              <a
+                                href={`tel:${item.passengerPhone.replace(/\s+/g, '')}`}
+                                className="hover:underline font-mono"
+                                title="Click to call guest"
+                              >
+                                {item.passengerPhone}
+                              </a>
+                            </div>
+                          )}
                           <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
                             <Plane className="w-3 h-3 text-slate-400" />
                             <span>{item.travelRoute || 'Route unassigned'}</span>
                           </div>
                         </td>
 
-                        {/* 3. Travel Date */}
-                        <td className="py-3 px-4 text-slate-700 whitespace-nowrap">
-                          {formatISTDateOnly(item.travelDate)}
+                        {/* 3. Travel Date (24h IST) */}
+                        <td className="py-3 px-4 text-slate-700 whitespace-nowrap font-medium">
+                          {formatISTDate(item.travelDate)}
                         </td>
 
-                        {/* 4. Hold On */}
+                        {/* 4. Hold On Platform & Issued From Supplier */}
                         <td className="py-3 px-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200">
-                            {item.platform === 'OTHER'
-                              ? item.platformOtherName || 'Other'
-                              : item.platform}
-                          </span>
-                        </td>
-
-                        {/* 5. Hold Till */}
-                        <td className="py-3 px-4 whitespace-nowrap">
-                          <div className="font-semibold text-slate-900">
-                            {formatIST(item.holdTillDateTime)}
+                          <div className="flex flex-col gap-0.5">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200 w-fit">
+                              Hold On:{' '}
+                              {item.platform === 'OTHER'
+                                ? item.platformOtherName || 'Other'
+                                : item.platform}
+                            </span>
+                            {item.status === 'ISSUED' && (
+                              <span className="text-[10px] text-emerald-700 font-semibold">
+                                Issued via:{' '}
+                                {item.issuedFrom === 'Other' && item.issuedFromOther
+                                  ? `Other (${item.issuedFromOther})`
+                                  : item.issuedFrom || 'Direct'}
+                              </span>
+                            )}
                           </div>
-                          <div className="text-[10px] text-slate-400">
-                            Pl: {formatIST(item.holdDateTime)}
+                        </td>
+
+                        {/* 5. Hold Till (24-Hour Format DD/MM/YYYY, HH:mm) */}
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <div className="font-bold text-slate-900 font-mono text-xs">
+                            {formatIST24(item.holdTillDateTime)}
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-mono">
+                            Placed: {formatIST24(item.holdDateTime)}
                           </div>
                         </td>
 
@@ -844,52 +1077,29 @@ export default function FlightHoldsDashboard({
                                 setActionType('HISTORY');
                               }}
                               title="Audit History"
-                              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors"
+                              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
                             >
                               <History className="w-3.5 h-3.5" />
                             </button>
 
-                            {/* Only show operational actions when ON_HOLD */}
+                            {/* Operational actions when ON_HOLD */}
                             {item.status === 'ON_HOLD' && (
                               <>
                                 <button
-                                  onClick={() => {
-                                    setActiveHoldForAction(item);
-                                    setExtendForm({
-                                      newHoldTillDateTime: '',
-                                      extensionReason: '',
-                                    });
-                                    setActionType('EXTEND');
-                                  }}
-                                  className="px-2 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-semibold rounded-md transition-colors"
+                                  onClick={() => handleOpenExtend(item)}
+                                  className="px-2 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-semibold rounded-md transition-colors cursor-pointer"
                                 >
                                   Extend
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setActiveHoldForAction(item);
-                                    setIssueForm({
-                                      paymentMode: 'BANK_TRANSFER',
-                                      paymentModeOther: '',
-                                      issuedFrom:
-                                        item.platform === 'OTHER' ? 'Other' : item.platform,
-                                      issuedFromOther: item.platformOtherName || '',
-                                      issuanceAmountInr: '',
-                                      airlineTicketNumber: '',
-                                    });
-                                    setActionType('ISSUE');
-                                  }}
-                                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-md transition-colors shadow-xs"
+                                  onClick={() => handleOpenIssue(item)}
+                                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-md transition-colors shadow-xs cursor-pointer"
                                 >
                                   Issue
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setActiveHoldForAction(item);
-                                    setCancelForm({ cancellationReason: '' });
-                                    setActionType('CANCEL');
-                                  }}
-                                  className="px-2 py-1 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 text-[11px] font-semibold rounded-md transition-colors"
+                                  onClick={() => handleOpenCancel(item)}
+                                  className="px-2 py-1 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 text-[11px] font-semibold rounded-md transition-colors cursor-pointer"
                                 >
                                   Cancel
                                 </button>
@@ -908,7 +1118,7 @@ export default function FlightHoldsDashboard({
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL 1: NEW HOLD BOOKING                                 */}
+      {/* MODAL 1: NEW HOLD BOOKING (WITH CONTACT & 24-HR CLOCK)    */}
       {/* ======================================================== */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
@@ -920,7 +1130,7 @@ export default function FlightHoldsDashboard({
               </div>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -994,6 +1204,37 @@ export default function FlightHoldsDashboard({
                 </div>
               </div>
 
+              {/* Passenger Contact Number (Mandatory with Country Code Selection) */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Passenger / Guest Contact Number *
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={createPhone.dialCode}
+                    onChange={(e) => setCreatePhone({ ...createPhone, dialCode: e.target.value })}
+                    className="w-36 px-2 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-[#153650] focus:outline-none cursor-pointer shrink-0"
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={`${c.code}-${c.dialCode}`} value={c.dialCode}>
+                        {c.flag} {c.dialCode} ({c.name})
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="e.g. 98980 12345"
+                    value={createPhone.nationalNumber}
+                    onChange={(e) => setCreatePhone({ ...createPhone, nationalNumber: e.target.value })}
+                    className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Required for automated issuance reminders and direct operations follow-up.
+                </p>
+              </div>
+
               {/* Platform */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1008,7 +1249,7 @@ export default function FlightHoldsDashboard({
                         platform: e.target.value as FlightHoldPlatform,
                       })
                     }
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#153650] focus:outline-none cursor-pointer"
                   >
                     <option value="AMADEUS">Amadeus</option>
                     <option value="CT">CT (Cleartrip)</option>
@@ -1036,24 +1277,28 @@ export default function FlightHoldsDashboard({
                 )}
               </div>
 
-              {/* Hold Till Date & Time (IST) */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Hold Till Date & Time (IST) *
-                </label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={createForm.holdTillDateTime}
-                  onChange={(e) =>
-                    setCreateForm({ ...createForm, holdTillDateTime: e.target.value })
-                  }
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#153650] focus:outline-none"
-                />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  The system will automatically trigger urgent alerts 10 hours prior to this deadline.
-                </p>
-              </div>
+              {/* Hold Till Date & Time (24-Hour Clock IST) */}
+              <DateTimePicker24
+                label="Hold Till Date & Time (24-HR IST) *"
+                dateValue={createHoldTill.date}
+                hourValue={createHoldTill.hour}
+                minValue={createHoldTill.min}
+                onChange={(d, h, m) => setCreateHoldTill({ date: d, hour: h, min: m })}
+                required
+                idPrefix="new-hold-till"
+                helperText="24-hour clock: 00:00 to 23:59. System triggers automated alert 10 hours prior to this deadline."
+              />
+
+              {/* Hold Placed Date & Time (24-Hour Clock IST) */}
+              <DateTimePicker24
+                label="Hold Placed Date & Time (24-HR IST)"
+                dateValue={createHoldPlaced.date}
+                hourValue={createHoldPlaced.hour}
+                minValue={createHoldPlaced.min}
+                onChange={(d, h, m) => setCreateHoldPlaced({ date: d, hour: h, min: m })}
+                idPrefix="new-hold-placed"
+                helperText="Defaults to current IST time when the hold was placed on GDS/supplier."
+              />
 
               {/* Internal Notes */}
               <div>
@@ -1075,13 +1320,13 @@ export default function FlightHoldsDashboard({
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-800"
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-800 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-xs"
+                  className="px-4 py-1.5 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
                 >
                   Create Hold
                 </button>
@@ -1092,7 +1337,7 @@ export default function FlightHoldsDashboard({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 2: EXTEND HOLD                                      */}
+      {/* MODAL 2: EXTEND HOLD (24-HOUR CLOCK)                      */}
       {/* ======================================================== */}
       {actionType === 'EXTEND' && activeHoldForAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
@@ -1103,13 +1348,13 @@ export default function FlightHoldsDashboard({
               </h3>
               <button
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleExtendSubmit} className="mt-4 space-y-3">
+            <form onSubmit={handleExtendSubmit} className="mt-4 space-y-3.5">
               {formError && (
                 <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
                   {formError}
@@ -1118,25 +1363,22 @@ export default function FlightHoldsDashboard({
 
               <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600">
                 Current Deadline:{' '}
-                <strong className="text-slate-900">
-                  {formatIST(activeHoldForAction.holdTillDateTime)}
+                <strong className="text-slate-900 font-mono">
+                  {formatIST24(activeHoldForAction.holdTillDateTime)} IST
                 </strong>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  New Hold Till Date & Time (IST) *
-                </label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={extendForm.newHoldTillDateTime}
-                  onChange={(e) =>
-                    setExtendForm({ ...extendForm, newHoldTillDateTime: e.target.value })
-                  }
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#153650]"
-                />
-              </div>
+              {/* 24-Hour DateTime Picker for Extend */}
+              <DateTimePicker24
+                label="New Hold Till Date & Time (24-HR IST) *"
+                dateValue={extendHoldTill.date}
+                hourValue={extendHoldTill.hour}
+                minValue={extendHoldTill.min}
+                onChange={(d, h, m) => setExtendHoldTill({ date: d, hour: h, min: m })}
+                required
+                idPrefix="extend-hold"
+                helperText="Must be strictly later than current deadline."
+              />
 
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -1145,10 +1387,8 @@ export default function FlightHoldsDashboard({
                 <textarea
                   rows={2}
                   placeholder="Airline granted waiver, passenger paying in evening..."
-                  value={extendForm.extensionReason}
-                  onChange={(e) =>
-                    setExtendForm({ ...extendForm, extensionReason: e.target.value })
-                  }
+                  value={extendReason}
+                  onChange={(e) => setExtendReason(e.target.value)}
                   className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650]"
                 />
               </div>
@@ -1157,13 +1397,13 @@ export default function FlightHoldsDashboard({
                 <button
                   type="button"
                   onClick={() => setActionType(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600"
+                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs"
+                  className="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
                 >
                   Confirm Extension
                 </button>
@@ -1174,7 +1414,7 @@ export default function FlightHoldsDashboard({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 3: ISSUE TICKET                                     */}
+      {/* MODAL 3: ISSUE TICKET (WITH CONDITIONAL OTHER FIELD)       */}
       {/* ======================================================== */}
       {actionType === 'ISSUE' && activeHoldForAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
@@ -1188,7 +1428,7 @@ export default function FlightHoldsDashboard({
               </div>
               <button
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1215,7 +1455,7 @@ export default function FlightHoldsDashboard({
                         paymentMode: e.target.value as FlightHoldPaymentMode,
                       })
                     }
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600 cursor-pointer"
                   >
                     <option value="BANK_TRANSFER">Bank Transfer / NEFT / RTGS</option>
                     <option value="UPI">UPI</option>
@@ -1254,8 +1494,15 @@ export default function FlightHoldsDashboard({
                   </label>
                   <select
                     value={issueForm.issuedFrom}
-                    onChange={(e) => setIssueForm({ ...issueForm, issuedFrom: e.target.value })}
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setIssueForm({
+                        ...issueForm,
+                        issuedFrom: val,
+                        issuedFromOther: val === 'Other' ? issueForm.issuedFromOther : '',
+                      });
+                    }}
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600 cursor-pointer"
                   >
                     <option value="Amadeus">Amadeus</option>
                     <option value="CT">CT (Cleartrip)</option>
@@ -1284,6 +1531,28 @@ export default function FlightHoldsDashboard({
                 </div>
               </div>
 
+              {/* REQUIREMENT 2: Conditional Input when Issued From = Other */}
+              {issueForm.issuedFrom === 'Other' && (
+                <div className="p-3 bg-amber-50/50 border border-amber-200 rounded-lg transition-all animate-fadeIn">
+                  <label className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1">
+                    Specify Other Platform / Supplier Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter platform or supplier name (e.g. TBO, Akbar, Flyhub...)"
+                    value={issueForm.issuedFromOther}
+                    onChange={(e) =>
+                      setIssueForm({ ...issueForm, issuedFromOther: e.target.value })
+                    }
+                    className="w-full px-3 py-1.5 bg-white border border-amber-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    This platform will be recorded permanently as the ticketing source for this PNR.
+                  </p>
+                </div>
+              )}
+
               {/* Airline Ticket Number */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -1304,13 +1573,13 @@ export default function FlightHoldsDashboard({
                 <button
                   type="button"
                   onClick={() => setActionType(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600"
+                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs"
+                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
                 >
                   Confirm Issuance
                 </button>
@@ -1335,7 +1604,7 @@ export default function FlightHoldsDashboard({
               </div>
               <button
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1368,13 +1637,13 @@ export default function FlightHoldsDashboard({
                 <button
                   type="button"
                   onClick={() => setActionType(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600"
+                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
                 >
                   Dismiss
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-xs"
+                  className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
                 >
                   Confirm Cancellation
                 </button>
@@ -1385,7 +1654,7 @@ export default function FlightHoldsDashboard({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 5: AUDIT HISTORY                                    */}
+      {/* MODAL 5: AUDIT HISTORY (24-HOUR FORMAT)                   */}
       {/* ======================================================== */}
       {actionType === 'HISTORY' && activeHoldForAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
@@ -1399,7 +1668,7 @@ export default function FlightHoldsDashboard({
               </div>
               <button
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1418,7 +1687,9 @@ export default function FlightHoldsDashboard({
                   >
                     <div className="flex items-center justify-between text-[11px] mb-1">
                       <span className="font-bold text-[#153650]">{log.actionType}</span>
-                      <span className="text-slate-400">{formatIST(log.createdAt)}</span>
+                      <span className="text-slate-500 font-mono text-[11px]">
+                        {formatIST24(log.createdAt)} IST
+                      </span>
                     </div>
                     <p className="text-slate-700">{log.details}</p>
                     {log.performedByName && (
@@ -1434,11 +1705,90 @@ export default function FlightHoldsDashboard({
             <div className="p-3 border-t border-slate-200 flex justify-end">
               <button
                 onClick={() => setActionType(null)}
-                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg"
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer"
               >
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 6: EDIT PASSENGER CONTACT DETAILS                  */}
+      {/* ======================================================== */}
+      {actionType === 'EDIT_CONTACT' && activeHoldForAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Phone className="w-5 h-5 text-[#153650]" />
+                <h3 className="font-bold text-slate-900 text-sm">
+                  Update Guest Contact: PNR {activeHoldForAction.pnr}
+                </h3>
+              </div>
+              <button
+                onClick={() => setActionType(null)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateContactSubmit} className="mt-4 space-y-3.5">
+              {formError && (
+                <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
+                  {formError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Passenger Name
+                </label>
+                <input
+                  type="text"
+                  value={editContactForm.passengerName}
+                  onChange={(e) =>
+                    setEditContactForm({ ...editContactForm, passengerName: e.target.value })
+                  }
+                  placeholder="Passenger / Guest Name"
+                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Contact Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={editContactForm.passengerPhone}
+                  onChange={(e) =>
+                    setEditContactForm({ ...editContactForm, passengerPhone: e.target.value })
+                  }
+                  placeholder="e.g. +91 98980 12345"
+                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#153650]"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setActionType(null)}
+                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
