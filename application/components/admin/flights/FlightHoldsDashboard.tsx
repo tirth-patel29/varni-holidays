@@ -1086,35 +1086,44 @@ export default function FlightHoldsDashboard({
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL 1: NEW HOLD BOOKING (COMPACT 2-COLUMN LAYOUT)      */}
+      {/* MODAL 1: NEW HOLD BOOKING (WIDE ENTERPRISE 2-COLUMN)     */}
       {/* ======================================================== */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full max-h-[92vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <Plane className="w-5 h-5 text-[#153650]" />
-                <h3 className="font-bold text-slate-900 text-sm">New Flight Hold Booking</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[920px] max-h-[min(90vh,820px)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-200 bg-white shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-md bg-[#153650]/10 flex items-center justify-center text-[#153650] shrink-0">
+                  <Plane className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base leading-tight">New Flight Hold Booking</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Queue a new PNR with deadline tracking and automated alerts</p>
+                </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="flex-1 overflow-y-auto p-4 space-y-3">
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleCreateSubmit} className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 md:p-7 space-y-4 md:space-y-5">
               {formError && (
-                <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-md">
                   {formError}
                 </div>
               )}
 
-              {/* Row 1: PNR & Travel Date */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              {/* Grid 2-Column Desktop, 1-Column Mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-5">
+                {/* Field 1: PNR / Ref */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     PNR / Ref *
                   </label>
                   <input
@@ -1125,11 +1134,13 @@ export default function FlightHoldsDashboard({
                     onChange={(e) =>
                       setCreateForm({ ...createForm, pnr: e.target.value.toUpperCase() })
                     }
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono font-bold uppercase focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-mono font-bold uppercase text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+
+                {/* Field 2: Travel Date */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     Travel Date *
                   </label>
                   <input
@@ -1137,15 +1148,13 @@ export default function FlightHoldsDashboard({
                     required
                     value={createForm.travelDate}
                     onChange={(e) => setCreateForm({ ...createForm, travelDate: e.target.value })}
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all"
                   />
                 </div>
-              </div>
 
-              {/* Row 2: Passenger Name & Guest Contact Number */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                {/* Field 3: Passenger Name */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     Passenger Name
                   </label>
                   <input
@@ -1155,21 +1164,24 @@ export default function FlightHoldsDashboard({
                     onChange={(e) =>
                       setCreateForm({ ...createForm, passengerName: e.target.value })
                     }
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all placeholder:text-slate-400"
                   />
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+
+                {/* Field 4: Guest Contact Number */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     Guest Contact Number *
                   </label>
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-2">
                     <select
                       value={createPhone.dialCode}
                       onChange={(e) => setCreatePhone({ ...createPhone, dialCode: e.target.value })}
-                      className="w-24 px-1.5 py-1.5 h-[34px] border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 bg-white focus:ring-2 focus:ring-[#153650] focus:outline-none cursor-pointer shrink-0"
+                      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+                      className="w-28 md:w-32 h-10 px-2.5 border border-slate-300 rounded-md text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none cursor-pointer shrink-0"
                     >
                       {COUNTRY_CODES.map((c) => (
-                        <option key={`${c.code}-${c.dialCode}`} value={c.dialCode}>
+                        <option key={`${c.code}-${c.dialCode}`} value={c.dialCode} style={{ backgroundColor: '#ffffff', color: '#0f172a' }}>
                           {c.flag} {c.dialCode}
                         </option>
                       ))}
@@ -1180,16 +1192,14 @@ export default function FlightHoldsDashboard({
                       placeholder="98980 12345"
                       value={createPhone.nationalNumber}
                       onChange={(e) => setCreatePhone({ ...createPhone, nationalNumber: e.target.value })}
-                      className="flex-1 h-[34px] px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                      className="flex-1 min-w-0 h-10 px-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Row 3: Travel Route & Hold Platform */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                {/* Field 5: Travel Route */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     Travel Route
                   </label>
                   <input
@@ -1197,11 +1207,13 @@ export default function FlightHoldsDashboard({
                     placeholder="e.g. BOM - DXB - BOM"
                     value={createForm.travelRoute}
                     onChange={(e) => setCreateForm({ ...createForm, travelRoute: e.target.value })}
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all placeholder:text-slate-400"
                   />
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+
+                {/* Field 6: Hold On (Platform) */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                     Hold On (Platform) *
                   </label>
                   <select
@@ -1212,7 +1224,8 @@ export default function FlightHoldsDashboard({
                         platform: e.target.value as FlightHoldPlatform,
                       })
                     }
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#153650] focus:outline-none cursor-pointer"
+                    style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none cursor-pointer"
                   >
                     <option value="AMADEUS">Amadeus</option>
                     <option value="CT">CT (Cleartrip)</option>
@@ -1221,76 +1234,81 @@ export default function FlightHoldsDashboard({
                     <option value="OTHER">Other</option>
                   </select>
                 </div>
-              </div>
 
-              {/* Conditional Other Platform Supplier input */}
-              {createForm.platform === 'OTHER' && (
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Specify Supplier / Platform Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. TBO, Akbar, etc."
-                    value={createForm.platformOtherName}
-                    onChange={(e) =>
-                      setCreateForm({ ...createForm, platformOtherName: e.target.value })
-                    }
-                    className="w-full h-[34px] px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] focus:outline-none"
+                {/* Conditional Other Platform Supplier input (Spans 2 cols on desktop) */}
+                {createForm.platform === 'OTHER' && (
+                  <div className="col-span-1 md:col-span-2 min-w-0">
+                    <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
+                      Specify Supplier / Platform Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. TBO, Akbar, etc."
+                      value={createForm.platformOtherName}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, platformOtherName: e.target.value })
+                      }
+                      className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all"
+                    />
+                  </div>
+                )}
+
+                {/* Field 7: Hold Placed Date & Time (IST) */}
+                <div className="min-w-0">
+                  <DateTimePicker24
+                    label="Hold Placed Date & Time (IST)"
+                    value={createHoldPlacedIso}
+                    onChange={setCreateHoldPlacedIso}
+                    idPrefix="new-hold-placed"
+                    placeholder="DD/MM/YYYY, HH:mm"
                   />
                 </div>
-              )}
 
-              {/* Row 4: 24-Hour Date/Time Single Rectangular Inputs */}
-              <div className="grid grid-cols-2 gap-3">
-                <DateTimePicker24
-                  label="Hold Placed (IST)"
-                  value={createHoldPlacedIso}
-                  onChange={setCreateHoldPlacedIso}
-                  idPrefix="new-hold-placed"
-                  placeholder="DD/MM/YYYY, HH:mm"
-                />
-                <DateTimePicker24
-                  label="Hold Till Deadline (IST) *"
-                  value={createHoldTillIso}
-                  onChange={setCreateHoldTillIso}
-                  required
-                  idPrefix="new-hold-till"
-                  placeholder="DD/MM/YYYY, HH:mm"
-                  helperText="10-hr alert deadline"
-                />
+                {/* Field 8: Hold Till Deadline (IST) */}
+                <div className="min-w-0">
+                  <DateTimePicker24
+                    label="Hold Till Deadline (IST) *"
+                    value={createHoldTillIso}
+                    onChange={setCreateHoldTillIso}
+                    required
+                    idPrefix="new-hold-till"
+                    placeholder="DD/MM/YYYY, HH:mm"
+                    helperText="Automated alert triggers 10 hours prior to deadline"
+                  />
+                </div>
+
+                {/* Field 9: Internal Notes / Remarks (Spans 2 cols on desktop) */}
+                <div className="col-span-1 md:col-span-2 min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
+                    Internal Notes / Remarks
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Airline remarks, baggage allowance, client payment deadline..."
+                    value={createForm.internalNotes}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, internalNotes: e.target.value })
+                    }
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all resize-none placeholder:text-slate-400"
+                  />
+                </div>
               </div>
 
-              {/* Row 5: Internal Notes */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Internal Notes / Remarks
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Airline remarks, baggage allowance, client payment deadline..."
-                  value={createForm.internalNotes}
-                  onChange={(e) =>
-                    setCreateForm({ ...createForm, internalNotes: e.target.value })
-                  }
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] focus:outline-none resize-none"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+              {/* Action Footer */}
+              <div className="px-6 py-4 md:px-7 border-t border-slate-200 shrink-0 flex items-center justify-end gap-3 bg-slate-50/75 -mx-5 sm:-mx-6 md:-mx-7 -mb-5 sm:-mb-6 md:-mb-7 mt-6">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-800 cursor-pointer"
+                  className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-300 bg-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#153650] hover:bg-[#0E2537] text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
+                  className="h-10 px-6 text-sm font-bold rounded-md bg-[#153650] hover:bg-[#0E2537] text-white shadow-sm transition-colors cursor-pointer"
                 >
-                  Create Hold
+                  Create Flight Hold
                 </button>
               </div>
             </form>
@@ -1299,33 +1317,34 @@ export default function FlightHoldsDashboard({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 2: EXTEND HOLD (COMPACT 24-HOUR SINGLE INPUT)       */}
+      {/* MODAL 2: EXTEND HOLD (CLEAN ENTERPRISE LAYOUT)            */}
       {/* ======================================================== */}
       {actionType === 'EXTEND' && activeHoldForAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <h3 className="font-bold text-slate-900 text-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[540px] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white shrink-0">
+              <h3 className="font-bold text-slate-900 text-base">
                 Extend Hold Deadline: PNR {activeHoldForAction.pnr}
               </h3>
               <button
+                type="button"
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleExtendSubmit} className="mt-4 space-y-3">
+            <form onSubmit={handleExtendSubmit} className="p-6 space-y-4">
               {formError && (
-                <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-md">
                   {formError}
                 </div>
               )}
 
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-600">
                 Current Deadline:{' '}
-                <strong className="text-slate-900 font-mono">
+                <strong className="text-slate-900 font-mono font-bold">
                   {formatIST24(activeHoldForAction.holdTillDateTime)} IST
                 </strong>
               </div>
@@ -1342,7 +1361,7 @@ export default function FlightHoldsDashboard({
               />
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
                   Extension Reason / Remarks
                 </label>
                 <textarea
@@ -1350,21 +1369,21 @@ export default function FlightHoldsDashboard({
                   placeholder="Airline granted waiver, passenger paying in evening..."
                   value={extendReason}
                   onChange={(e) => setExtendReason(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650] resize-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all resize-none"
                 />
               </div>
 
-              <div className="pt-2 flex justify-end gap-2 border-t border-slate-200">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-200 -mx-6 -mb-6 px-6 py-4 bg-slate-50/75 mt-5">
                 <button
                   type="button"
                   onClick={() => setActionType(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
+                  className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 border border-slate-300 bg-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
+                  className="h-10 px-6 text-sm font-bold rounded-md bg-purple-700 hover:bg-purple-800 text-white shadow-sm transition-colors cursor-pointer"
                 >
                   Confirm Extension
                 </button>
