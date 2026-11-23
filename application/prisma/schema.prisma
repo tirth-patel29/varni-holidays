@@ -65,6 +65,7 @@ model User {
   flightHoldActions       FlightHoldActionHistory[]
   flightHoldExtensions    FlightHoldExtension[]
   flightHoldReminders     FlightHoldReminder[]
+  uploadedFlightTicketDocs FlightTicketDocument[]
 
   @@map("users")
 }
@@ -304,6 +305,7 @@ model Customer {
   customerSessions     CustomerSession[]
   avatarUrl            String?
   flightHolds          FlightHoldPNR[]
+  passengerNotifications PassengerNotification[]
 
   @@index([normalizedPhone])
   @@index([normalizedEmail])
@@ -1540,8 +1542,15 @@ model FlightHoldPNR {
   pnr                 String             // PNR / Booking Reference (uppercase, trimmed)
   passengerName       String?            // Lead passenger name
   passengerPhone      String?            // Passenger / Guest contact phone number (e.g. +91 98980 12345)
+  passengerEmail      String?            // Passenger / Guest email address
   travelRoute         String?            // e.g. BOM - DXB - BOM
   travelDate          DateTime           // Travel Date
+  airline             String?            // Operating airline (e.g. "Air India", "Emirates")
+  flightNumber        String?            // Flight designator (e.g. "AI 171", "EK 501")
+  originAirport       String?            // Origin airport code / city (e.g. "BOM", "AMD")
+  destinationAirport  String?            // Destination airport code / city (e.g. "DXB", "LHR")
+  departureDateTime   DateTime?          // Scheduled departure timestamp
+  departureTimezone   String?            @default("Asia/Kolkata")
   platform            FlightHoldPlatform @default(AMADEUS)
   platformOtherName   String?            // Required if platform == OTHER
   holdDateTime        DateTime           @default(now()) // When hold was placed
@@ -1549,6 +1558,10 @@ model FlightHoldPNR {
   internalNotes       String?            @db.Text
 
   status              FlightHoldStatus   @default(ON_HOLD)
+
+  // Notification status flags
+  customerNotificationSent    Boolean    @default(false)
+  departureReminderScheduled  Boolean    @default(false)
 
   // Assigned Staff Member
   assignedStaffId     String?
@@ -1582,9 +1595,11 @@ model FlightHoldPNR {
   customer            Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
   // Related Action Logs & Extensions
-  actionHistory       FlightHoldActionHistory[]
-  extensions          FlightHoldExtension[]
-  reminders           FlightHoldReminder[]
+  actionHistory          FlightHoldActionHistory[]
+  extensions             FlightHoldExtension[]
+  reminders              FlightHoldReminder[]
+  ticketDocuments        FlightTicketDocument[]
+  passengerNotifications PassengerNotification[]
 
   isDeleted           Boolean            @default(false)
   deletedAt           DateTime?
@@ -1593,8 +1608,10 @@ model FlightHoldPNR {
 
   @@index([pnr])
   @@index([passengerPhone])
+  @@index([passengerEmail])
   @@index([status])
   @@index([holdTillDateTime])
+  @@index([departureDateTime])
   @@index([assignedStaffId])
   @@index([travelDate])
   @@map("flight_hold_pnrs")
@@ -1659,4 +1676,56 @@ model FlightHoldReminder {
   @@index([flightHoldId])
   @@index([status, scheduledFor])
   @@map("flight_hold_reminders")
+}
+
+model FlightTicketDocument {
+  id               String        @id @default(uuid())
+  flightHoldId     String
+  flightHold       FlightHoldPNR @relation(fields: [flightHoldId], references: [id], onDelete: Cascade)
+  fileName         String
+  fileSize         Int
+  mimeType         String        @default("application/pdf")
+  fileData         String        @db.Text // Encrypted/base64 encoded PDF payload
+  downloadToken    String        @unique @default(uuid()) // Expiring or secure access token
+  uploadedByUserId String?
+  uploadedByUser   User?         @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  createdAt        DateTime      @default(now())
+
+  @@index([flightHoldId])
+  @@index([downloadToken])
+  @@map("flight_ticket_documents")
+}
+
+model PassengerNotification {
+  id                String        @id @default(uuid())
+  flightHoldId      String
+  flightHold        FlightHoldPNR @relation(fields: [flightHoldId], references: [id], onDelete: Cascade)
+  customerId        String?
+  customer          Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  type              String        // "TICKET_CONFIRMATION" | "DEPARTURE_REMINDER_24H"
+  channel           String        // "EMAIL" | "WHATSAPP"
+  recipientEmail    String?
+  recipientPhone    String?
+  recipientName     String
+
+  status            String        @default("PENDING") // "PENDING", "PROCESSING", "SENT", "DELIVERED", "FAILED", "CANCELLED"
+  scheduledFor      DateTime
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  failedAt          DateTime?
+  failureReason     String?       @db.Text
+  retryCount        Int           @default(0)
+
+  providerName      String?       // "RESEND", "META_WHATSAPP", "CLICK_TO_CHAT"
+  providerMessageId String?
+  metadata          Json?
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([flightHoldId])
+  @@index([status, scheduledFor])
+  @@index([type, channel])
+  @@map("passenger_notifications")
 }

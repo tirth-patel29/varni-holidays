@@ -642,7 +642,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
 
       // If domain verification error (403), automatically fallback to verified noreply@varnitours.com
       if (!response.ok) {
-        const errText = await response.text();
+        let errText = await response.text();
         console.warn(`[Resend Error with ${fromEmail}]:`, response.status, errText);
 
         if (response.status === 403 && (errText.includes('Domain not verified') || errText.includes('domain'))) {
@@ -656,11 +656,13 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
             },
             body: JSON.stringify(emailPayload),
           });
+          if (!response.ok) {
+            errText = await response.text();
+          }
         }
 
         if (!response.ok) {
-          const finalErr = await response.text();
-          console.error('[Resend Final Error]', response.status, finalErr);
+          console.error('[Resend Final Error]', response.status, errText);
           return {
             success: false,
             messageId: `err-${Date.now()}`,
@@ -668,7 +670,7 @@ export async function sendCustomerEmail(options: EmailSendOptions): Promise<Emai
             recipient: options.to,
             subject: options.subject,
             dispatchedAt: now,
-            error: `Resend error: ${response.statusText} (${finalErr})`,
+            error: `Resend error: ${response.statusText} (${errText})`,
           };
         }
       }

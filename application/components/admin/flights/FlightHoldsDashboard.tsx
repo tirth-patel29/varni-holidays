@@ -28,6 +28,11 @@ import {
   FileText,
   Phone,
   Edit2,
+  Mail,
+  Download,
+  UploadCloud,
+  FileCheck,
+  Send,
 } from 'lucide-react';
 import PageHeader from '@/components/admin/PageHeader';
 import DateTimePicker24 from './DateTimePicker24';
@@ -47,6 +52,7 @@ import {
   formatISTDate,
   getIST24Parts,
   parseIST24ToDate,
+  isValidEmail,
 } from '@/lib/flights/timing';
 import { COUNTRY_CODES, validatePhoneNumber } from '@/lib/validation/phone';
 import { FlightHoldPlatform, FlightHoldStatus, FlightHoldPaymentMode } from '@prisma/client';
@@ -96,6 +102,7 @@ export default function FlightHoldsDashboard({
   const [createForm, setCreateForm] = useState({
     pnr: '',
     passengerName: '',
+    passengerEmail: '',
     travelRoute: '',
     travelDate: new Date().toISOString().split('T')[0],
     platform: 'AMADEUS' as FlightHoldPlatform,
@@ -112,6 +119,7 @@ export default function FlightHoldsDashboard({
   // Edit contact state
   const [editContactForm, setEditContactForm] = useState({
     passengerPhone: '',
+    passengerEmail: '',
     passengerName: '',
   });
 
@@ -128,7 +136,7 @@ export default function FlightHoldsDashboard({
   const [extendHoldTillIso, setExtendHoldTillIso] = useState<string>('');
   const [extendReason, setExtendReason] = useState('');
 
-  // Form state - Issue Ticket
+  // Form state - Issue Ticket & Passenger Care
   const [issueForm, setIssueForm] = useState({
     paymentMode: 'BANK_TRANSFER' as FlightHoldPaymentMode,
     paymentModeOther: '',
@@ -136,7 +144,24 @@ export default function FlightHoldsDashboard({
     issuedFromOther: '',
     issuanceAmountInr: '',
     airlineTicketNumber: '',
+    passengerEmail: '',
+    airline: '',
+    flightNumber: '',
+    originAirport: '',
+    destinationAirport: '',
+    departureDateTimeIso: '',
+    sendEmailNotification: true,
+    sendWhatsAppNotification: true,
+    scheduleDepartureReminder: true,
   });
+
+  // PDF Attachment State for Ticket Issuance
+  const [ticketPdfFile, setTicketPdfFile] = useState<{
+    name: string;
+    size: number;
+    base64: string;
+  } | null>(null);
+  const [pdfUploadError, setPdfUploadError] = useState<string | null>(null);
 
   // Form state - Cancel Hold
   const [cancelForm, setCancelForm] = useState({
@@ -201,6 +226,33 @@ export default function FlightHoldsDashboard({
     loadData();
   };
 
+  // Handle E-Ticket PDF File Selection
+  const handlePdfFileSelect = (file: File) => {
+    setPdfUploadError(null);
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setPdfUploadError('Only PDF documents are allowed (.pdf)');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setPdfUploadError('PDF file size must be less than 10MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setTicketPdfFile({
+        name: file.name,
+        size: file.size,
+        base64,
+      });
+    };
+    reader.onerror = () => {
+      setPdfUploadError('Failed to read selected PDF file');
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Run Scheduler manually
   const handleRunScheduler = async () => {
     setLoading(true);
@@ -210,7 +262,9 @@ export default function FlightHoldsDashboard({
         setFormSuccess(
           `Scheduler executed: ${res.data?.autoReleasedCount || 0} holds auto-released, ${
             res.data?.remindersTriggeredCount || 0
-          } reminders triggered.`
+          } hold reminders, ${
+            res.data?.passengerRemindersTriggeredCount || 0
+          } passenger departure reminders triggered.`
         );
         setTimeout(() => setFormSuccess(null), 5000);
         await loadData();
@@ -235,6 +289,13 @@ export default function FlightHoldsDashboard({
         return;
       }
       const fullContactNumber = `${createPhone.dialCode} ${createPhone.nationalNumber.replace(/\D/g, '')}`;
+
+      // Optional Email Validation
+      const cleanEmail = createForm.passengerEmail.trim().toLowerCase();
+      if (cleanEmail && !isValidEmail(cleanEmail)) {
+        setFormError('Please enter a valid passenger email address (e.g. passenger@example.com)');
+        return;
+      }
 
       // Parse 24-hour IST dates
       const holdTillDate = new Date(createHoldTillIso);
@@ -263,6 +324,7 @@ export default function FlightHoldsDashboard({
         pnr: createForm.pnr,
         passengerName: createForm.passengerName,
         passengerPhone: fullContactNumber,
+        passengerEmail: cleanEmail || undefined,
         travelRoute: createForm.travelRoute,
         travelDate: createForm.travelDate,
         platform: createForm.platform,
@@ -283,6 +345,7 @@ export default function FlightHoldsDashboard({
       setCreateForm({
         pnr: '',
         passengerName: '',
+        passengerEmail: '',
         travelRoute: '',
         travelDate: new Date().toISOString().split('T')[0],
         platform: 'AMADEUS',
@@ -305,6 +368,7 @@ export default function FlightHoldsDashboard({
     setFormError(null);
     setEditContactForm({
       passengerPhone: item.passengerPhone || '',
+      passengerEmail: item.passengerEmail || '',
       passengerName: item.passengerName || '',
     });
     setActionType('EDIT_CONTACT');
@@ -322,15 +386,22 @@ export default function FlightHoldsDashboard({
       return;
     }
 
+    const cleanEmail = editContactForm.passengerEmail.trim().toLowerCase();
+    if (cleanEmail && !isValidEmail(cleanEmail)) {
+      setFormError('Please enter a valid passenger email address');
+      return;
+    }
+
     try {
       const res = await updateFlightHoldContactAction({
         id: activeHoldForAction.id,
         passengerPhone: cleanPhone,
+        passengerEmail: cleanEmail || undefined,
         passengerName: editContactForm.passengerName,
       });
 
       if (!res.success) {
-        setFormError(res.error || 'Failed to update contact number');
+        setFormError(res.error || 'Failed to update contact details');
         return;
       }
 
@@ -338,7 +409,7 @@ export default function FlightHoldsDashboard({
       setActiveHoldForAction(null);
       loadData();
     } catch (err: any) {
-      setFormError(err.message || 'Failed to update contact number');
+      setFormError(err.message || 'Failed to update contact details');
     }
   };
 
@@ -396,14 +467,40 @@ export default function FlightHoldsDashboard({
   const handleOpenIssue = (item: any) => {
     setActiveHoldForAction(item);
     setFormError(null);
+
+    // Parse route for origin / destination defaults
+    const routeParts = (item.travelRoute || '').split('-').map((s: string) => s.trim());
+    const originGuess = routeParts[0] || '';
+    const destGuess = routeParts.length > 1 ? routeParts[1] : '';
+
+    let departureIso = '';
+    if (item.departureDateTime) {
+      departureIso = new Date(item.departureDateTime).toISOString();
+    } else if (item.travelDate) {
+      const d = new Date(item.travelDate);
+      d.setHours(10, 0, 0, 0);
+      departureIso = d.toISOString();
+    }
+
     setIssueForm({
       paymentMode: 'BANK_TRANSFER',
       paymentModeOther: '',
       issuedFrom: item.platform === 'OTHER' ? 'Other' : item.platform,
       issuedFromOther: item.platformOtherName || '',
       issuanceAmountInr: '',
-      airlineTicketNumber: '',
+      airlineTicketNumber: item.airlineTicketNumber || '',
+      passengerEmail: item.passengerEmail || '',
+      airline: item.airline || '',
+      flightNumber: item.flightNumber || '',
+      originAirport: item.originAirport || originGuess,
+      destinationAirport: item.destinationAirport || destGuess,
+      departureDateTimeIso: departureIso,
+      sendEmailNotification: Boolean(item.passengerEmail),
+      sendWhatsAppNotification: Boolean(item.passengerPhone),
+      scheduleDepartureReminder: Boolean(departureIso),
     });
+    setTicketPdfFile(null);
+    setPdfUploadError(null);
     setActionType('ISSUE');
   };
 
@@ -424,13 +521,18 @@ export default function FlightHoldsDashboard({
       return;
     }
 
-    // Requirement 2: Mandatory validation when Issued From = Other
     if (issueForm.issuedFrom === 'Other') {
       const trimmedOther = issueForm.issuedFromOther?.trim();
       if (!trimmedOther || trimmedOther.length === 0) {
         setFormError('Please specify the other platform or supplier name for Issued From');
         return;
       }
+    }
+
+    const cleanEmail = issueForm.passengerEmail.trim().toLowerCase();
+    if (cleanEmail && !isValidEmail(cleanEmail)) {
+      setFormError('Please enter a valid passenger email address');
+      return;
     }
 
     try {
@@ -444,11 +546,30 @@ export default function FlightHoldsDashboard({
           issueForm.issuedFrom === 'Other' ? issueForm.issuedFromOther?.trim() : undefined,
         issuanceAmountInr: amount,
         airlineTicketNumber: issueForm.airlineTicketNumber?.trim() || undefined,
+        passengerEmail: cleanEmail || undefined,
+        airline: issueForm.airline.trim() || undefined,
+        flightNumber: issueForm.flightNumber.trim() || undefined,
+        originAirport: issueForm.originAirport.trim() || undefined,
+        destinationAirport: issueForm.destinationAirport.trim() || undefined,
+        departureDateTime: issueForm.departureDateTimeIso || undefined,
+        pdfBase64: ticketPdfFile?.base64,
+        pdfFileName: ticketPdfFile?.name,
+        sendEmailNotification: issueForm.sendEmailNotification,
+        sendWhatsAppNotification: issueForm.sendWhatsAppNotification,
+        scheduleDepartureReminder: issueForm.scheduleDepartureReminder,
       });
 
       if (!res.success) {
         setFormError(res.error || 'Failed to issue ticket');
         return;
+      }
+
+      if (res.notificationWarnings && res.notificationWarnings.length > 0) {
+        setFormSuccess(`PNR issued successfully! Notices: ${res.notificationWarnings.join('; ')}`);
+        setTimeout(() => setFormSuccess(null), 8000);
+      } else {
+        setFormSuccess(`PNR ${activeHoldForAction.pnr} issued successfully and customer notified!`);
+        setTimeout(() => setFormSuccess(null), 5000);
       }
 
       setActionType(null);
@@ -912,15 +1033,13 @@ export default function FlightHoldsDashboard({
                         <td className="py-3 px-4">
                           <div className="font-semibold text-slate-900 flex items-center gap-1.5">
                             <span>{item.passengerName || '—'}</span>
-                            {item.status === 'ON_HOLD' && (
-                              <button
-                                onClick={() => handleOpenEditContact(item)}
-                                title="Edit Guest Name / Contact"
-                                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                              >
-                                <Edit2 className="w-2.5 h-2.5" />
-                              </button>
-                            )}
+                            <button
+                              onClick={() => handleOpenEditContact(item)}
+                              title="Edit Guest Name / Phone / Email"
+                              className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                            >
+                              <Edit2 className="w-2.5 h-2.5" />
+                            </button>
                           </div>
                           {item.passengerPhone && (
                             <div className="flex items-center gap-1 text-[11px] text-[#153650] font-semibold mt-0.5">
@@ -934,10 +1053,47 @@ export default function FlightHoldsDashboard({
                               </a>
                             </div>
                           )}
+                          {item.passengerEmail && (
+                            <div className="flex items-center gap-1 text-[11px] text-slate-600 font-medium mt-0.5">
+                              <Mail className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                              <a
+                                href={`mailto:${item.passengerEmail}`}
+                                className="hover:underline truncate max-w-[170px]"
+                                title={item.passengerEmail}
+                              >
+                                {item.passengerEmail}
+                              </a>
+                            </div>
+                          )}
                           <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
                             <Plane className="w-3 h-3 text-slate-400" />
                             <span>{item.travelRoute || 'Route unassigned'}</span>
                           </div>
+
+                          {/* E-Ticket PDF Download Pill */}
+                          {item.ticketDocuments?.length > 0 && (
+                            <div className="mt-1">
+                              <a
+                                href={`/api/tickets/download/${item.ticketDocuments[0].downloadToken}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors"
+                                title={`Download ${item.ticketDocuments[0].fileName}`}
+                              >
+                                <FileText className="w-2.5 h-2.5 text-rose-600" />
+                                <span>E-Ticket PDF</span>
+                                <Download className="w-2.5 h-2.5 text-rose-500" />
+                              </a>
+                            </div>
+                          )}
+
+                          {/* Customer Notified Badge */}
+                          {item.customerNotificationSent && (
+                            <div className="mt-1 flex items-center gap-1 text-[10px] text-emerald-700 font-semibold">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>Customer Notified</span>
+                            </div>
+                          )}
                         </td>
 
                         {/* 3. Travel Date (24h IST) */}
@@ -1200,6 +1356,26 @@ export default function FlightHoldsDashboard({
                   </div>
                 </div>
 
+                {/* Field 5: Passenger Email Address (Optional) */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5 flex items-center justify-between">
+                    <span>Passenger Email Address</span>
+                    <span className="text-[10px] text-slate-400 font-normal lowercase">optional</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      placeholder="passenger@example.com"
+                      value={createForm.passengerEmail}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, passengerEmail: e.target.value })
+                      }
+                      className="w-full h-10 pl-9 pr-3.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all placeholder:text-slate-400"
+                    />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  </div>
+                </div>
+
                 {/* Field 5: Travel Route */}
                 <div className="min-w-0">
                   <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
@@ -1400,178 +1576,422 @@ export default function FlightHoldsDashboard({
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 3: ISSUE TICKET (WITH CONDITIONAL OTHER FIELD)       */}
+      {/* MODAL 3: CONFIRM TICKET ISSUANCE & PASSENGER CARE        */}
       {/* ======================================================== */}
       {actionType === 'ISSUE' && activeHoldForAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-bold text-slate-900 text-sm">
-                  Confirm Ticket Issuance: PNR {activeHoldForAction.pnr}
-                </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
+          <form
+            onSubmit={handleIssueSubmit}
+            className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[min(880px,calc(100vw-24px))] max-h-[min(92vh,860px)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base leading-tight">
+                    Confirm Ticket Issuance: PNR {activeHoldForAction.pnr}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Record payment, attach e-ticket document, and send instant passenger notifications
+                  </p>
+                </div>
               </div>
               <button
+                type="button"
                 onClick={() => setActionType(null)}
-                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleIssueSubmit} className="mt-4 space-y-3.5">
+            {/* Scrollable Form Body */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 space-y-5">
               {formError && (
-                <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg">
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-md">
                   {formError}
                 </div>
               )}
 
-              {/* Payment Mode */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Payment Mode *
-                  </label>
-                  <select
-                    value={issueForm.paymentMode}
-                    onChange={(e) =>
-                      setIssueForm({
-                        ...issueForm,
-                        paymentMode: e.target.value as FlightHoldPaymentMode,
-                      })
-                    }
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600 cursor-pointer"
-                  >
-                    <option value="BANK_TRANSFER">Bank Transfer / NEFT / RTGS</option>
-                    <option value="UPI">UPI</option>
-                    <option value="CASH">Cash</option>
-                    <option value="CREDIT_CARD">Credit Card</option>
-                    <option value="DEBIT_CARD">Debit Card</option>
-                    <option value="CREDIT_PAY_LATER">Credit / Pay Later</option>
-                    <option value="OTHER">Other</option>
-                  </select>
+              {/* Section 1: Financial & Platform Source */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3.5">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-[#153650]" />
+                  <span>1. Financial & Issuance Source</span>
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Payment Mode */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">
+                      Payment Mode *
+                    </label>
+                    <select
+                      value={issueForm.paymentMode}
+                      onChange={(e) =>
+                        setIssueForm({
+                          ...issueForm,
+                          paymentMode: e.target.value as FlightHoldPaymentMode,
+                        })
+                      }
+                      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+                      className="w-full h-10 px-3 border border-slate-300 rounded-md text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="BANK_TRANSFER">Bank Transfer / NEFT / RTGS</option>
+                      <option value="UPI">UPI</option>
+                      <option value="CASH">Cash</option>
+                      <option value="CREDIT_CARD">Credit Card</option>
+                      <option value="DEBIT_CARD">Debit Card</option>
+                      <option value="CREDIT_PAY_LATER">Credit / Pay Later</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Issuance Amount */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">
+                      Issuance Amount (INR) *
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-sm font-bold text-slate-400">₹</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="1"
+                        required
+                        placeholder="e.g. 24500"
+                        value={issueForm.issuanceAmountInr}
+                        onChange={(e) =>
+                          setIssueForm({ ...issueForm, issuanceAmountInr: e.target.value })
+                        }
+                        className="w-full h-10 pl-7 pr-3.5 border border-slate-300 rounded-md text-sm font-bold text-emerald-800 bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {issueForm.paymentMode === 'OTHER' && (
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      Specify Payment Mode *
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">
+                      Specify Payment Mode Details *
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Cheque / Foreign Wire"
+                      placeholder="e.g. Cheque / Foreign Wire / Corporate Voucher"
                       value={issueForm.paymentModeOther}
                       onChange={(e) =>
                         setIssueForm({ ...issueForm, paymentModeOther: e.target.value })
                       }
-                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-600"
+                      className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Issued From */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">
+                      Issued From Platform *
+                    </label>
+                    <select
+                      value={issueForm.issuedFrom}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setIssueForm({
+                          ...issueForm,
+                          issuedFrom: val,
+                          issuedFromOther: val === 'Other' ? issueForm.issuedFromOther : '',
+                        });
+                      }}
+                      style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+                      className="w-full h-10 px-3 border border-slate-300 rounded-md text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="Amadeus">Amadeus</option>
+                      <option value="CT">CT (Cleartrip)</option>
+                      <option value="RC">RC (Riya Connect)</option>
+                      <option value="Airline Direct">Airline Direct</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Airline Ticket Number */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5 flex items-center justify-between">
+                      <span>Airline Ticket Number</span>
+                      <span className="text-[10px] text-slate-400 font-normal lowercase">optional</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 176-2495819401"
+                      value={issueForm.airlineTicketNumber}
+                      onChange={(e) =>
+                        setIssueForm({ ...issueForm, airlineTicketNumber: e.target.value })
+                      }
+                      className="w-full h-10 px-3.5 border border-slate-300 rounded-md text-sm font-mono font-medium bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {issueForm.issuedFrom === 'Other' && (
+                  <div className="p-3 bg-amber-50/60 border border-amber-200 rounded-md">
+                    <label className="block text-xs font-semibold text-slate-800 uppercase mb-1">
+                      Specify Other Platform / Supplier Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. TBO, Akbar, Flyhub..."
+                      value={issueForm.issuedFromOther}
+                      onChange={(e) =>
+                        setIssueForm({ ...issueForm, issuedFromOther: e.target.value })
+                      }
+                      className="w-full h-9 px-3 border border-amber-300 rounded-md text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                     />
                   </div>
                 )}
               </div>
 
-              {/* Issued From & Amount */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Issued From *
-                  </label>
-                  <select
-                    value={issueForm.issuedFrom}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setIssueForm({
-                        ...issueForm,
-                        issuedFrom: val,
-                        issuedFromOther: val === 'Other' ? issueForm.issuedFromOther : '',
-                      });
-                    }}
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-emerald-600 cursor-pointer"
-                  >
-                    <option value="Amadeus">Amadeus</option>
-                    <option value="CT">CT (Cleartrip)</option>
-                    <option value="RC">RC (Riya Connect)</option>
-                    <option value="Airline Direct">Airline Direct</option>
-                    <option value="Other">Other</option>
-                  </select>
+              {/* Section 2: Passenger Travel Care & Customer Notifications */}
+              <div className="border border-sky-200 bg-sky-50/30 rounded-lg p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-sky-950 uppercase tracking-wider flex items-center gap-2">
+                    <Send className="w-4 h-4 text-sky-700" />
+                    <span>2. Passenger Travel Care & Customer Notifications</span>
+                  </h4>
+                  <span className="text-[11px] font-semibold text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">
+                    Branded Multichannel
+                  </span>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Issuance Amount (INR) *
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Passenger Email (Editable) */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5 flex items-center justify-between">
+                      <span>Passenger Email Address</span>
+                      <span className="text-[10px] text-slate-400 font-normal lowercase">editable</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        placeholder="passenger@example.com"
+                        value={issueForm.passengerEmail}
+                        onChange={(e) =>
+                          setIssueForm({ ...issueForm, passengerEmail: e.target.value })
+                        }
+                        className="w-full h-10 pl-9 pr-3.5 border border-slate-300 rounded-md text-sm font-medium bg-white focus:ring-2 focus:ring-sky-600 focus:outline-none"
+                      />
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Passenger Phone Display */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1.5">
+                      Passenger WhatsApp Number
+                    </label>
+                    <div className="h-10 px-3.5 border border-slate-200 bg-slate-100 rounded-md text-sm font-mono font-medium text-slate-700 flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-slate-400" />
+                      <span>{activeHoldForAction.passengerPhone || 'Not set'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Flight Segment Details (Optional / Enhancements) */}
+                <div className="p-3 bg-white border border-slate-200 rounded-md space-y-3">
+                  <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <Plane className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Flight Segment Details (for Checklist & Web Check-in)</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Airline</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. IndiGo / AI"
+                        value={issueForm.airline}
+                        onChange={(e) => setIssueForm({ ...issueForm, airline: e.target.value })}
+                        className="w-full h-8 px-2.5 border border-slate-300 rounded text-xs font-medium bg-white focus:ring-1 focus:ring-sky-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Flight Number</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 6E 2134"
+                        value={issueForm.flightNumber}
+                        onChange={(e) => setIssueForm({ ...issueForm, flightNumber: e.target.value })}
+                        className="w-full h-8 px-2.5 border border-slate-300 rounded text-xs font-medium font-mono uppercase bg-white focus:ring-1 focus:ring-sky-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Origin Airport</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. BOM"
+                        value={issueForm.originAirport}
+                        onChange={(e) => setIssueForm({ ...issueForm, originAirport: e.target.value.toUpperCase() })}
+                        className="w-full h-8 px-2.5 border border-slate-300 rounded text-xs font-medium font-mono uppercase bg-white focus:ring-1 focus:ring-sky-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Destination</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. DXB"
+                        value={issueForm.destinationAirport}
+                        onChange={(e) => setIssueForm({ ...issueForm, destinationAirport: e.target.value.toUpperCase() })}
+                        className="w-full h-8 px-2.5 border border-slate-300 rounded text-xs font-medium font-mono uppercase bg-white focus:ring-1 focus:ring-sky-600"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Departure Date & Time (for 24h reminder) */}
+                  <div className="pt-1">
+                    <DateTimePicker24
+                      label="Scheduled Departure Date & Time (IST)"
+                      value={issueForm.departureDateTimeIso}
+                      onChange={(iso) => setIssueForm({ ...issueForm, departureDateTimeIso: iso })}
+                      idPrefix="issue-departure-dt"
+                      placeholder="DD/MM/YYYY, HH:mm"
+                      helperText="Used to schedule the automated 24-hour passenger departure reminder & web check-in guide"
+                    />
+                  </div>
+                </div>
+
+                {/* E-Ticket PDF Upload */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-slate-700 uppercase flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-slate-500" />
+                      Attach E-Ticket PDF Document (Optional)
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal lowercase">max 10MB • PDF only</span>
                   </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    required
-                    placeholder="e.g. 24500"
-                    value={issueForm.issuanceAmountInr}
-                    onChange={(e) =>
-                      setIssueForm({ ...issueForm, issuanceAmountInr: e.target.value })
-                    }
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-emerald-800 focus:ring-2 focus:ring-emerald-600"
-                  />
+
+                  {ticketPdfFile ? (
+                    <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-lg flex items-center justify-between">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <div className="truncate">
+                          <div className="text-xs font-bold text-slate-900 truncate">{ticketPdfFile.name}</div>
+                          <div className="text-[10px] text-slate-500">{(ticketPdfFile.size / 1024).toFixed(1)} KB • Valid PDF Document</div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setTicketPdfFile(null)}
+                        className="p-1 text-slate-400 hover:text-rose-600 hover:bg-white rounded transition-colors cursor-pointer shrink-0"
+                        title="Remove attached PDF"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="relative border-2 border-dashed border-slate-300 hover:border-sky-500 rounded-lg p-4 text-center bg-white transition-colors">
+                      <input
+                        type="file"
+                        accept="application/pdf,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handlePdfFileSelect(file);
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <UploadCloud className="w-6 h-6 text-slate-400 mx-auto mb-1" />
+                      <p className="text-xs font-semibold text-slate-700">Click to browse or drag & drop E-Ticket PDF</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Securely delivered via Resend attachment and tokenized WhatsApp download link</p>
+                    </div>
+                  )}
+
+                  {pdfUploadError && (
+                    <div className="text-xs text-rose-600 font-medium">{pdfUploadError}</div>
+                  )}
+                </div>
+
+                {/* Notification Toggles */}
+                <div className="space-y-2 pt-2 border-t border-sky-200">
+                  {/* Email Toggle */}
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={issueForm.sendEmailNotification}
+                      onChange={(e) => setIssueForm({ ...issueForm, sendEmailNotification: e.target.checked })}
+                      className="mt-0.5 w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500"
+                    />
+                    <div className="text-xs">
+                      <span className="font-bold text-slate-900">Send ticket confirmation by Email</span>
+                      <p className="text-[11px] text-slate-500">
+                        {issueForm.passengerEmail
+                          ? `Will be delivered to ${issueForm.passengerEmail} with branded HTML itinerary & PDF attachment`
+                          : 'No email specified. Enter passenger email above to enable email dispatch.'}
+                      </p>
+                    </div>
+                  </label>
+
+                  {/* WhatsApp Toggle */}
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={issueForm.sendWhatsAppNotification}
+                      onChange={(e) => setIssueForm({ ...issueForm, sendWhatsAppNotification: e.target.checked })}
+                      className="mt-0.5 w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500"
+                    />
+                    <div className="text-xs">
+                      <span className="font-bold text-slate-900">Send ticket confirmation by WhatsApp</span>
+                      <p className="text-[11px] text-slate-500">
+                        {activeHoldForAction.passengerPhone
+                          ? `Will be sent to ${activeHoldForAction.passengerPhone} with booking details & secure ticket download link`
+                          : 'No passenger phone number available.'}
+                      </p>
+                    </div>
+                  </label>
+
+                  {/* 24-Hour Reminder Toggle */}
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={issueForm.scheduleDepartureReminder}
+                      onChange={(e) => setIssueForm({ ...issueForm, scheduleDepartureReminder: e.target.checked })}
+                      className="mt-0.5 w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500"
+                    />
+                    <div className="text-xs">
+                      <span className="font-bold text-slate-900">Schedule 24-Hour Departure Reminder</span>
+                      <p className="text-[11px] text-slate-500">
+                        Automated check-in links, travel checklist, and baggage guidance delivered 24 hours prior to departure
+                      </p>
+                    </div>
+                  </label>
                 </div>
               </div>
+            </div>
 
-              {/* REQUIREMENT 2: Conditional Input when Issued From = Other */}
-              {issueForm.issuedFrom === 'Other' && (
-                <div className="p-3 bg-amber-50/50 border border-amber-200 rounded-lg transition-all animate-fadeIn">
-                  <label className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1">
-                    Specify Other Platform / Supplier Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Enter platform or supplier name (e.g. TBO, Akbar, Flyhub...)"
-                    value={issueForm.issuedFromOther}
-                    onChange={(e) =>
-                      setIssueForm({ ...issueForm, issuedFromOther: e.target.value })
-                    }
-                    className="w-full px-3 py-1.5 bg-white border border-amber-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
-                  />
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    This platform will be recorded permanently as the ticketing source for this PNR.
-                  </p>
-                </div>
-              )}
-
-              {/* Airline Ticket Number */}
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Airline Ticket Number (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 176-2495819401"
-                  value={issueForm.airlineTicketNumber}
-                  onChange={(e) =>
-                    setIssueForm({ ...issueForm, airlineTicketNumber: e.target.value })
-                  }
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-emerald-600"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2 border-t border-slate-200">
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-slate-200 shrink-0 flex items-center justify-between bg-slate-50/75">
+              <span className="text-[11px] text-slate-500 hidden sm:inline">
+                Core ticket issuance is guaranteed; notifications run safely in background.
+              </span>
+              <div className="flex items-center gap-3 ml-auto">
                 <button
                   type="button"
                   onClick={() => setActionType(null)}
-                  className="px-3 py-1.5 text-xs text-slate-600 cursor-pointer"
+                  className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 border border-slate-300 bg-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer"
+                  className="h-10 px-6 text-sm font-bold rounded-md bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors cursor-pointer flex items-center gap-2"
                 >
-                  Confirm Issuance
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Confirm Issuance & Notify</span>
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       )}
 
@@ -1757,6 +2177,25 @@ export default function FlightHoldsDashboard({
                   placeholder="e.g. +91 98980 12345"
                   className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-[#153650]"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+                  <span>Passenger Email Address</span>
+                  <span className="text-[10px] text-slate-400 font-normal lowercase">optional</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={editContactForm.passengerEmail}
+                    onChange={(e) =>
+                      setEditContactForm({ ...editContactForm, passengerEmail: e.target.value })
+                    }
+                    placeholder="passenger@example.com"
+                    className="w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#153650]"
+                  />
+                  <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
+                </div>
               </div>
 
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-200">

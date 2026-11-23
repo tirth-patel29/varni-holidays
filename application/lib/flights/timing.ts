@@ -3,6 +3,11 @@
  * Timezone: Asia/Kolkata (IST)
  */
 
+export function isValidEmail(email?: string | null): boolean {
+  if (!email) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 export interface FlightHoldRemainingTime {
   milliseconds: number;
   isExpired: boolean;
