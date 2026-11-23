@@ -1090,8 +1090,11 @@ export default function FlightHoldsDashboard({
       {/* ======================================================== */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[920px] max-h-[min(90vh,820px)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
-            {/* Header */}
+          <form
+            onSubmit={handleCreateSubmit}
+            className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[min(920px,calc(100vw-24px))] sm:max-w-[min(920px,calc(100vw-48px))] max-h-[min(90vh,820px)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150"
+          >
+            {/* Header (Sticky / Fixed at Top) */}
             <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-200 bg-white shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-md bg-[#153650]/10 flex items-center justify-center text-[#153650] shrink-0">
@@ -1111,8 +1114,8 @@ export default function FlightHoldsDashboard({
               </button>
             </div>
 
-            {/* Scrollable Form Body */}
-            <form onSubmit={handleCreateSubmit} className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 md:p-7 space-y-4 md:space-y-5">
+            {/* Scrollable Form Body (Only content area scrolls vertically if needed) */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 md:p-7 space-y-4 md:space-y-5">
               {formError && (
                 <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-md">
                   {formError}
@@ -1294,25 +1297,25 @@ export default function FlightHoldsDashboard({
                   />
                 </div>
               </div>
+            </div>
 
-              {/* Action Footer */}
-              <div className="px-6 py-4 md:px-7 border-t border-slate-200 shrink-0 flex items-center justify-end gap-3 bg-slate-50/75 -mx-5 sm:-mx-6 md:-mx-7 -mb-5 sm:-mb-6 md:-mb-7 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-300 bg-white transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="h-10 px-6 text-sm font-bold rounded-md bg-[#153650] hover:bg-[#0E2537] text-white shadow-sm transition-colors cursor-pointer"
-                >
-                  Create Flight Hold
-                </button>
-              </div>
-            </form>
-          </div>
+            {/* Action Footer (Sticky / Fixed at Bottom, never scrolls away) */}
+            <div className="px-6 py-4 border-t border-slate-200 shrink-0 flex items-center justify-end gap-3 bg-slate-50/75">
+              <button
+                type="button"
+                onClick={() => setIsCreateOpen(false)}
+                className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-300 bg-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="h-10 px-6 text-sm font-bold rounded-md bg-[#153650] hover:bg-[#0E2537] text-white shadow-sm transition-colors cursor-pointer"
+              >
+                Create Flight Hold
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -1321,7 +1324,10 @@ export default function FlightHoldsDashboard({
       {/* ======================================================== */}
       {actionType === 'EXTEND' && activeHoldForAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[540px] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+          <form
+            onSubmit={handleExtendSubmit}
+            className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-[540px] max-h-[min(90vh,600px)] flex flex-col overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150"
+          >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white shrink-0">
               <h3 className="font-bold text-slate-900 text-base">
                 Extend Hold Deadline: PNR {activeHoldForAction.pnr}
@@ -1335,7 +1341,7 @@ export default function FlightHoldsDashboard({
               </button>
             </div>
 
-            <form onSubmit={handleExtendSubmit} className="p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {formError && (
                 <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-md">
                   {formError}
@@ -1372,24 +1378,24 @@ export default function FlightHoldsDashboard({
                   className="w-full px-3.5 py-2.5 border border-slate-300 rounded-md text-sm font-medium text-slate-900 bg-white focus:ring-2 focus:ring-[#153650] focus:border-[#153650] focus:outline-none transition-all resize-none"
                 />
               </div>
+            </div>
 
-              <div className="pt-3 flex justify-end gap-3 border-t border-slate-200 -mx-6 -mb-6 px-6 py-4 bg-slate-50/75 mt-5">
-                <button
-                  type="button"
-                  onClick={() => setActionType(null)}
-                  className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 border border-slate-300 bg-white transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="h-10 px-6 text-sm font-bold rounded-md bg-purple-700 hover:bg-purple-800 text-white shadow-sm transition-colors cursor-pointer"
-                >
-                  Confirm Extension
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="px-6 py-4 border-t border-slate-200 shrink-0 flex justify-end gap-3 bg-slate-50/75">
+              <button
+                type="button"
+                onClick={() => setActionType(null)}
+                className="h-10 px-5 text-sm font-semibold rounded-md text-slate-700 hover:bg-slate-100 border border-slate-300 bg-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="h-10 px-6 text-sm font-bold rounded-md bg-purple-700 hover:bg-purple-800 text-white shadow-sm transition-colors cursor-pointer"
+              >
+                Confirm Extension
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
