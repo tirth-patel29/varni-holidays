@@ -24,6 +24,19 @@ export interface StaffUserContext {
 }
 
 /**
+ * Ensures Prisma records returned across the Server Action boundary are plain objects
+ * with safe primitives (converts Decimal to number to prevent Next.js RSC serialization crash).
+ */
+function serializeFlightHoldRecord<T extends Record<string, any>>(record: T): T {
+  if (!record) return record;
+  const copy: any = { ...record };
+  if (copy.issuanceAmountInr != null) {
+    copy.issuanceAmountInr = Number(copy.issuanceAmountInr);
+  }
+  return copy;
+}
+
+/**
  * Resolve authenticated staff user from cookies/DB
  */
 export async function getStaffUser(): Promise<StaffUserContext> {
@@ -541,7 +554,7 @@ export async function createFlightHoldAction(input: CreateFlightHoldInput) {
     try {
       revalidatePath('/admin/bookings/flights');
     } catch {}
-    return { success: true, data: flightHold };
+    return { success: true, data: serializeFlightHoldRecord(flightHold) };
   } catch (error: any) {
     console.error('[createFlightHoldAction error]:', error);
     return { success: false, error: error.message || 'Failed to create flight hold' };
@@ -664,7 +677,7 @@ export async function extendFlightHoldAction(input: ExtendFlightHoldInput) {
     try {
       revalidatePath('/admin/bookings/flights');
     } catch {}
-    return { success: true, data: updated };
+    return { success: true, data: serializeFlightHoldRecord(updated) };
   } catch (error: any) {
     console.error('[extendFlightHoldAction error]:', error);
     return { success: false, error: error.message || 'Failed to extend flight hold' };
@@ -954,7 +967,7 @@ export async function issueFlightHoldAction(input: IssueFlightHoldInput) {
 
     return {
       success: true,
-      data: updated,
+      data: serializeFlightHoldRecord(updated),
       notificationWarnings: notificationWarnings.length > 0 ? notificationWarnings : undefined,
     };
   } catch (error: any) {
@@ -1050,7 +1063,7 @@ export async function cancelFlightHoldAction(input: CancelFlightHoldInput) {
     try {
       revalidatePath('/admin/bookings/flights');
     } catch {}
-    return { success: true, data: updated };
+    return { success: true, data: serializeFlightHoldRecord(updated) };
   } catch (error: any) {
     console.error('[cancelFlightHoldAction error]:', error);
     return { success: false, error: error.message || 'Failed to cancel flight hold' };
@@ -1127,7 +1140,7 @@ export async function updateFlightHoldContactAction(input: UpdateFlightHoldConta
     try {
       revalidatePath('/admin/bookings/flights');
     } catch {}
-    return { success: true, data: updated };
+    return { success: true, data: serializeFlightHoldRecord(updated) };
   } catch (error: any) {
     console.error('[updateFlightHoldContactAction error]:', error);
     return { success: false, error: error.message || 'Failed to update contact details' };

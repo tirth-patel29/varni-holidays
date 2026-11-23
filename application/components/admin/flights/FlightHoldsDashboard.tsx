@@ -258,7 +258,7 @@ export default function FlightHoldsDashboard({
     setLoading(true);
     try {
       const res = await runFlightHoldSchedulerAction();
-      if (res.success) {
+      if (res?.success) {
         setFormSuccess(
           `Scheduler executed: ${res.data?.autoReleasedCount || 0} holds auto-released, ${
             res.data?.remindersTriggeredCount || 0
@@ -268,6 +268,8 @@ export default function FlightHoldsDashboard({
         );
         setTimeout(() => setFormSuccess(null), 5000);
         await loadData();
+      } else if (res && !res.success) {
+        setFormError(res.error || 'Scheduler run encountered an issue');
       }
     } catch (err: any) {
       console.error(err);
@@ -336,8 +338,8 @@ export default function FlightHoldsDashboard({
       };
 
       const res = await createFlightHoldAction(payload);
-      if (!res.success) {
-        setFormError(res.error || 'Failed to create flight hold');
+      if (!res || !res.success) {
+        setFormError(res?.error || 'Failed to create flight hold');
         return;
       }
 
@@ -400,8 +402,8 @@ export default function FlightHoldsDashboard({
         passengerName: editContactForm.passengerName,
       });
 
-      if (!res.success) {
-        setFormError(res.error || 'Failed to update contact details');
+      if (!res || !res.success) {
+        setFormError(res?.error || 'Failed to update contact details');
         return;
       }
 
@@ -450,8 +452,8 @@ export default function FlightHoldsDashboard({
         extensionReason: extendReason,
       });
 
-      if (!res.success) {
-        setFormError(res.error || 'Failed to extend hold');
+      if (!res || !res.success) {
+        setFormError(res?.error || 'Failed to extend hold');
         return;
       }
 
@@ -559,6 +561,13 @@ export default function FlightHoldsDashboard({
         scheduleDepartureReminder: issueForm.scheduleDepartureReminder,
       });
 
+      if (!res) {
+        setFormError(
+          'No response received from the server. If an E-ticket PDF was attached, please ensure the file is under 10MB or try without attachment.'
+        );
+        return;
+      }
+
       if (!res.success) {
         setFormError(res.error || 'Failed to issue ticket');
         return;
@@ -606,8 +615,8 @@ export default function FlightHoldsDashboard({
         cancellationReason: reason,
       });
 
-      if (!res.success) {
-        setFormError(res.error || 'Failed to cancel hold');
+      if (!res || !res.success) {
+        setFormError(res?.error || 'Failed to cancel hold');
         return;
       }
 
