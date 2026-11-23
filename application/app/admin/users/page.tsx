@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PageHeader from '@/components/admin/PageHeader';
+import RoleSelectorDropdown from '@/components/admin/RoleSelectorDropdown';
 import {
   getEmployeesListAction,
   inviteEmployeeAction,
@@ -682,20 +683,19 @@ export default function StaffManagementPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-[#718096] font-bold font-mono mb-1">
-                    Role & Operational Boundary
-                  </label>
-                  <select
+                  <RoleSelectorDropdown
+                    label="Role & Operational Boundary"
                     value={inviteRoleCode}
-                    onChange={(e) => setInviteRoleCode(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#172B45] focus:outline-none focus:border-[#153650]"
-                  >
-                    {roles.filter((r) => r.code !== 'OWNER').map((r) => (
-                      <option key={r.code} value={r.code}>
-                        {r.name} ({r.code})
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(newCode) => setInviteRoleCode(newCode)}
+                    allowedRoles={[
+                      'SUPER_ADMIN',
+                      'ADMIN',
+                      'SALES_MANAGER',
+                      'SALES_EXECUTIVE',
+                      'OPERATIONS_MANAGER',
+                      'OPERATIONS_EXECUTIVE',
+                    ]}
+                  />
                 </div>
 
                 <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] text-[11px] text-[#64748B]">
@@ -744,20 +744,19 @@ export default function StaffManagementPage() {
 
             <form onSubmit={handleUpdateRole} className="space-y-4">
               <div>
-                <label className="block text-[11px] uppercase tracking-wider text-[#718096] font-bold font-mono mb-1">
-                  Select Role
-                </label>
-                <select
+                <RoleSelectorDropdown
+                  label="Select Role"
                   value={editRoleCode}
-                  onChange={(e) => setEditRoleCode(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#CBD5E1] text-xs text-[#172B45] focus:outline-none focus:border-[#153650]"
-                >
-                  {roles.map((r) => (
-                    <option key={r.code} value={r.code}>
-                      {r.name} ({r.code})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(newCode) => setEditRoleCode(newCode)}
+                  allowedRoles={[
+                    'SUPER_ADMIN',
+                    'ADMIN',
+                    'SALES_MANAGER',
+                    'SALES_EXECUTIVE',
+                    'OPERATIONS_MANAGER',
+                    'OPERATIONS_EXECUTIVE',
+                  ]}
+                />
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

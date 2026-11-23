@@ -111,6 +111,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
   ADMIN: [
     'dashboard.view',
     'employees.view',
+    'employees.invite',
+    'employees.edit',
     'roles.view',
     'leads.view',
     'leads.create',

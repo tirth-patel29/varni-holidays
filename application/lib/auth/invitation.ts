@@ -349,9 +349,15 @@ export async function createEmployeeInvitation(
     return { success: false, error: 'A valid employee role must be selected.' };
   }
 
-  // Prevent unauthorized privilege escalation: only OWNER can invite an ADMIN or OWNER
-  if ((roleCode === 'OWNER' || roleCode === 'SUPER_ADMIN') && actorUser.role !== 'OWNER') {
-    return { success: false, error: 'Only the Business Owner can invite an Executive Administrator or Owner.' };
+  // Prevent unauthorized privilege escalation
+  if (roleCode === 'OWNER') {
+    return { success: false, error: 'Owner accounts cannot be created via invitation.' };
+  }
+  if (roleCode === 'SUPER_ADMIN' && actorUser.role !== 'OWNER' && actorUser.role !== 'SUPER_ADMIN') {
+    return { success: false, error: 'Only an Owner or Super Administrator can invite a Super Administrator.' };
+  }
+  if (roleCode === 'ADMIN' && actorUser.role !== 'OWNER' && actorUser.role !== 'SUPER_ADMIN' && actorUser.role !== 'ADMIN') {
+    return { success: false, error: 'You do not have permission to invite an Operations Administrator.' };
   }
 
   try {
@@ -363,11 +369,11 @@ export async function createEmployeeInvitation(
       return { success: false, error: 'An active staff account with this email address already exists.' };
     }
 
-    // 3. Invalidate any existing pending invitations for this email to prevent race conditions
+    // 3. Invalidate any existing pending or failed invitations for this email to prevent race conditions
     await prisma.employeeInvitation.updateMany({
       where: {
         email: email.trim().toLowerCase(),
-        status: 'PENDING',
+        status: { in: ['PENDING', 'FAILED'] },
       },
       data: { status: 'REVOKED' },
     });

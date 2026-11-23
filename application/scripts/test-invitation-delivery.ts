@@ -52,7 +52,7 @@ async function runInvitationTest() {
   // Find admin actor
   const actor = await prisma.user.findFirst({
     where: {
-      email: 'admin@varniholidays.com',
+      email: 'neel@varniholidays.com',
     },
     include: {
       userRoles: {

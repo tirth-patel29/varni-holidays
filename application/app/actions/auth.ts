@@ -58,11 +58,15 @@ import {
 const MFA_PENDING_COOKIE = 'varni.mfa_pending';
 
 function getClientContext() {
-  const headerList = headers();
-  const forwardedFor = headerList.get('x-forwarded-for');
-  const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1';
-  const userAgent = headerList.get('user-agent') || 'unknown';
-  return { ipAddress, userAgent };
+  try {
+    const headerList = headers();
+    const forwardedFor = headerList.get('x-forwarded-for');
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1';
+    const userAgent = headerList.get('user-agent') || 'unknown';
+    return { ipAddress, userAgent };
+  } catch {
+    return { ipAddress: '127.0.0.1', userAgent: 'unknown' };
+  }
 }
 
 // ====================================================
@@ -509,58 +513,142 @@ export async function completePasswordResetAction(token: string, newPassword: st
 // ====================================================
 // 8. EMPLOYEE INVITATION & ONBOARDING
 // ====================================================
-export async function inviteEmployeeAction(input: InviteEmployeeInput) {
-  const user = await requirePermission('employees.invite');
-  const context = getClientContext();
-  return await createEmployeeInvitation(user, {
-    ...input,
-    ipAddress: context.ipAddress,
-    userAgent: context.userAgent,
-  });
+export async function inviteEmployeeAction(input: InviteEmployeeInput): Promise<{
+  success: boolean;
+  error?: string;
+  invitationId?: string;
+  inviteUrl?: string;
+  resendEmailId?: string;
+  deliveryStatus?: string;
+}> {
+  try {
+    const user = await requirePermission('employees.invite');
+    const context = getClientContext();
+    return await createEmployeeInvitation(user, {
+      ...input,
+      ipAddress: context.ipAddress,
+      userAgent: context.userAgent,
+    });
+  } catch (err: any) {
+    console.error('[inviteEmployeeAction Server Error]:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to dispatch employee invitation. Please contact system administrator.',
+    };
+  }
 }
 
-export async function resendEmployeeInvitationAction(invitationId: string) {
-  const user = await requirePermission('employees.invite');
-  return await resendEmployeeInvitation(user, invitationId);
+export async function resendEmployeeInvitationAction(invitationId: string): Promise<{
+  success: boolean;
+  error?: string;
+  resendEmailId?: string;
+  inviteUrl?: string;
+}> {
+  try {
+    const user = await requirePermission('employees.invite');
+    return await resendEmployeeInvitation(user, invitationId);
+  } catch (err: any) {
+    console.error('[resendEmployeeInvitationAction Server Error]:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to resend employee invitation.',
+    };
+  }
 }
 
 export async function revokeEmployeeInvitationAction(invitationId: string) {
-  const user = await requirePermission('employees.invite');
-  return await revokeEmployeeInvitation(user, invitationId);
+  try {
+    const user = await requirePermission('employees.invite');
+    return await revokeEmployeeInvitation(user, invitationId);
+  } catch (err: any) {
+    console.error('[revokeEmployeeInvitationAction Server Error]:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to revoke employee invitation.',
+    };
+  }
 }
 
-export async function checkInvitationDeliveryStatusAction(invitationId: string) {
-  await requirePermission('employees.view');
-  return await syncInvitationDeliveryStatus(invitationId);
+export async function checkInvitationDeliveryStatusAction(invitationId: string): Promise<{
+  success: boolean;
+  deliveryStatus?: string;
+  error?: string;
+}> {
+  try {
+    await requirePermission('employees.view');
+    return await syncInvitationDeliveryStatus(invitationId);
+  } catch (err: any) {
+    console.error('[checkInvitationDeliveryStatusAction Server Error]:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to check invitation delivery status.',
+    };
+  }
 }
 
-export async function verifyInvitationAction(token: string) {
-  return await verifyInvitationToken(token);
+export async function verifyInvitationAction(token: string): Promise<{
+  valid: boolean;
+  error?: string;
+  invitation?: {
+    id: string;
+    email: string;
+    fullName: string;
+    roleCode: string;
+    expiresAt: Date;
+  };
+}> {
+  try {
+    return await verifyInvitationToken(token);
+  } catch (err: any) {
+    console.error('[verifyInvitationAction Server Error]:', err);
+    return {
+      valid: false,
+      error: err.message || 'Invalid or expired invitation token.',
+    };
+  }
 }
 
 export async function generateOnboardingTotpDataAction(email: string) {
-  const secret = generateTotpSecret();
-  const uri = generateTotpUri(email.trim().toLowerCase(), secret);
-  const qrCodeDataUrl = await generateQrCodeDataUrl(uri);
-  return { secret, uri, qrCodeDataUrl };
+  try {
+    const secret = generateTotpSecret();
+    const uri = generateTotpUri(email.trim().toLowerCase(), secret);
+    const qrCodeDataUrl = await generateQrCodeDataUrl(uri);
+    return { secret, uri, qrCodeDataUrl };
+  } catch (err: any) {
+    console.error('[generateOnboardingTotpDataAction Server Error]:', err);
+    throw err;
+  }
 }
 
-export async function acceptInvitationAction(input: AcceptInvitationInput) {
-  const context = getClientContext();
-  return await acceptEmployeeInvitation({
-    ...input,
-    ipAddress: context.ipAddress,
-    userAgent: context.userAgent,
-  });
+export async function acceptInvitationAction(input: AcceptInvitationInput): Promise<{
+  success: boolean;
+  error?: string;
+  userId?: string;
+  recoveryCodes?: string[];
+}> {
+  try {
+    const context = getClientContext();
+    return await acceptEmployeeInvitation({
+      ...input,
+      ipAddress: context.ipAddress,
+      userAgent: context.userAgent,
+    });
+  } catch (err: any) {
+    console.error('[acceptInvitationAction Server Error]:', err);
+    return {
+      success: false,
+      error: err.message || 'Failed to complete employee onboarding.',
+    };
+  }
 }
 
 // ====================================================
 // 9. TEAM & ROLE MANAGEMENT ACTIONS
 // ====================================================
 export async function getEmployeesListAction() {
-  await requirePermission('employees.view');
-
   try {
+    await requirePermission('employees.view');
+
     const employees = await prisma.user.findMany({
       where: { isDeleted: false },
       select: {
@@ -630,11 +718,10 @@ export async function updateEmployeeRoleAction(params: {
   newRoleCode: RoleCode;
   customPermissionOverrides?: Array<{ permissionCode: string; isGranted: boolean }>;
 }) {
-  const actor = await requirePermission('roles.manage');
-  const { targetUserId, newRoleCode, customPermissionOverrides } = params;
-  const context = getClientContext();
-
   try {
+    const actor = await requirePermission('roles.manage');
+    const { targetUserId, newRoleCode, customPermissionOverrides } = params;
+    const context = getClientContext();
     const targetUser = await prisma.user.findUnique({
       where: { id: targetUserId },
       include: { userRoles: { include: { role: true } } },
@@ -715,10 +802,10 @@ export async function updateEmployeeRoleAction(params: {
 }
 
 export async function toggleEmployeeStatusAction(targetUserId: string, newStatus: 'ACTIVE' | 'DISABLED') {
-  const actor = await requirePermission('employees.suspend');
-  const context = getClientContext();
-
   try {
+    const actor = await requirePermission('employees.suspend');
+    const context = getClientContext();
+
     const targetUser = await prisma.user.findUnique({
       where: { id: targetUserId },
       include: { userRoles: { include: { role: true } } },
@@ -769,9 +856,9 @@ export async function toggleEmployeeStatusAction(targetUserId: string, newStatus
 // 10. SECURITY AUDIT LOGS QUERY ACTION
 // ====================================================
 export async function getSecurityAuditLogsAction(limit = 100) {
-  await requirePermission('audit_logs.view');
-
   try {
+    await requirePermission('audit_logs.view');
+
     const logs = await prisma.securityAuditLog.findMany({
       take: Math.min(limit, 200),
       orderBy: { createdAt: 'desc' },
@@ -811,13 +898,24 @@ export async function getSecurityAuditLogsAction(limit = 100) {
 // 11. ROLES & PERMISSIONS MATRIX DATA
 // ====================================================
 export async function getRolesAndPermissionsDataAction() {
-  await requirePermission('roles.view');
-  return {
-    success: true,
-    roles: ALL_ROLES,
-    permissions: ALL_PERMISSIONS,
-    defaultRolePermissions: DEFAULT_ROLE_PERMISSIONS,
-  };
+  try {
+    await requirePermission('roles.view');
+    return {
+      success: true,
+      roles: ALL_ROLES,
+      permissions: ALL_PERMISSIONS,
+      defaultRolePermissions: DEFAULT_ROLE_PERMISSIONS,
+    };
+  } catch (err: any) {
+    console.error('[getRolesAndPermissionsDataAction Error]:', err);
+    return {
+      success: false,
+      roles: [],
+      permissions: [],
+      defaultRolePermissions: {},
+      error: err.message,
+    };
+  }
 }
 
 // ====================================================
