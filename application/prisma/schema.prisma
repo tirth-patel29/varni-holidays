@@ -66,6 +66,8 @@ model User {
   flightHoldExtensions    FlightHoldExtension[]
   flightHoldReminders     FlightHoldReminder[]
   uploadedFlightTicketDocs FlightTicketDocument[]
+  managedCustomers        Customer[]               @relation("CustomerRelationshipManager")
+  assignedInboxConversations InboxConversation[]   @relation("InboxAssignee")
 
   @@map("users")
 }
@@ -307,6 +309,21 @@ model Customer {
   flightHolds          FlightHoldPNR[]
   passengerNotifications PassengerNotification[]
 
+  // Customer Travel Preferences & Assigned Manager
+  preferredChannel     String?     @default("WHATSAPP")
+  preferredAirlines    String?
+  preferredDestinations String?
+  preferredCabinClass  String?
+  preferredSeat        String?
+  mealPreference       String?
+  budgetRange          String?
+  specialAssistance    String?
+  assignedStaffId      String?
+  assignedStaff        User?       @relation("CustomerRelationshipManager", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  internalRemarks      String?     @db.Text
+  inboxConversations   InboxConversation[]
+  followUps            FollowUp[]
+
   @@index([normalizedPhone])
   @@index([normalizedEmail])
   @@map("customers")
@@ -361,11 +378,17 @@ enum ServiceType {
 }
 
 enum PipelineStage {
-  REQUESTS // Fresh website submission
-  GENERAL // Contacted / enquiry qualified
-  PRIORITY // High purchase intent / bespoke requirements
-  CONVERTED // Explicitly converted to Booking
-  CLOSED // Lost / Unresponsive / Cancelled
+  NEW
+  CONTACTED
+  QUOTED
+  NEGOTIATION
+  WON
+  LOST
+  REQUESTS // Legacy website submission
+  GENERAL // Legacy contacted / qualified
+  PRIORITY // Legacy high intent
+  CONVERTED // Legacy converted
+  CLOSED // Legacy closed / lost
 }
 
 enum PriorityLevel {
@@ -406,6 +429,23 @@ model Lead {
 
   closeReason String?
   closedAt    DateTime?
+
+  // Extended CRM Lead Details
+  title              String?
+  description        String?       @db.Text
+  origin             String?
+  destination        String?
+  travelStartDate    DateTime?
+  travelEndDate      DateTime?
+  passengerCount     Int?          @default(1)
+  estimatedBudgetInr Decimal?      @db.Decimal(12, 2)
+  expectedValueInr   Decimal?      @db.Decimal(12, 2)
+  nextFollowUpDate   DateTime?
+  internalNotes      String?       @db.Text
+  lossReason         String?
+  lossReasonDetail   String?       @db.Text
+
+  inboxConversations InboxConversation[]
 
   // Soft Deletion
   isDeleted            Boolean                @default(false)
@@ -1117,25 +1157,33 @@ enum FollowUpStatus {
   PENDING
   COMPLETED
   MISSED
+  CANCELLED
 }
 
 model FollowUp {
-  id     String @id @default(uuid())
-  leadId String
-  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+  id            String         @id @default(uuid())
+  leadId        String
+  lead          Lead           @relation(fields: [leadId], references: [id], onDelete: Restrict)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Restrict)
 
-  dueDate     DateTime
-  title       String
-  notes       String?
-  status      FollowUpStatus @default(PENDING)
-  completedAt DateTime?
+  customerId    String?
+  customer      Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
-  createdAt DateTime @default(now())
+  dueDate       DateTime
+  title         String
+  notes         String?
+  priority      PriorityLevel  @default(MEDIUM)
+  status        FollowUpStatus @default(PENDING)
+  completedAt   DateTime?
+  rescheduledTo DateTime?
+  cancelReason  String?
+
+  createdAt     DateTime       @default(now())
 
   @@index([userId, status, dueDate])
+  @@index([customerId])
   @@map("follow_ups")
 }
 
@@ -1728,4 +1776,88 @@ model PassengerNotification {
   @@index([status, scheduledFor])
   @@index([type, channel])
   @@map("passenger_notifications")
+}
+
+// ====================================================
+// UNIFIED ENQUIRY INBOX & MULTI-CHANNEL CONVERSATIONS
+// ====================================================
+
+enum InboxChannel {
+  WEBSITE
+  WHATSAPP
+  INSTAGRAM
+  FACEBOOK
+  PHONE_CALL
+  WALK_IN
+  EMAIL
+  OTHER
+}
+
+enum InboxStatus {
+  NEW
+  OPEN
+  PENDING
+  RESOLVED
+}
+
+model InboxConversation {
+  id                 String        @id @default(uuid())
+  channel            InboxChannel  @default(WEBSITE)
+  externalThreadId   String?       // Meta thread ID, phone number, or session ID
+  senderIdentity     String        // Phone, email, IG handle, or user name
+  senderName         String
+  subject            String?
+  status             InboxStatus   @default(NEW)
+  priority           PriorityLevel @default(MEDIUM)
+
+  customerId         String?
+  customer           Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  leadId             String?
+  lead               Lead?         @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  assignedUserId     String?
+  assignedTo         User?         @relation("InboxAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  unreadCount        Int           @default(0)
+  lastMessageAt      DateTime      @default(now())
+  lastMessageSnippet String?       @db.Text
+  metadata           Json?         // Custom metadata (e.g., origin, destination, pax, budget, tags)
+  internalNotes      Json?         // [{ id, authorName, text, createdAt }]
+
+  messages           InboxMessage[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([channel])
+  @@index([status])
+  @@index([customerId])
+  @@index([assignedUserId])
+  @@index([lastMessageAt])
+  @@map("inbox_conversations")
+}
+
+model InboxMessage {
+  id                String                   @id @default(uuid())
+  conversationId    String
+  conversation      InboxConversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  direction         WhatsAppMessageDirection @default(INBOUND)
+  senderType        WhatsAppSenderType       @default(CUSTOMER)
+  senderId          String
+  senderName        String
+
+  messageType       String                   @default("text") // text, image, document, template
+  content           String                   @db.Text
+  mediaUrl          String?                  @db.Text
+
+  providerMessageId String?                  @unique
+  status            WhatsAppMessageStatus    @default(RECEIVED)
+  metadata          Json?
+
+  createdAt         DateTime                 @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("inbox_messages")
 }

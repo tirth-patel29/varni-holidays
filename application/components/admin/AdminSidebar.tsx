@@ -113,6 +113,7 @@ function AdminSidebarInner({
       icon: Users,
       defaultHref: '/admin/customers',
       children: [
+        { label: 'Unified Inbox', href: '/admin/inbox' },
         { label: 'All Customers', href: '/admin/customers' },
         { label: 'All Enquiries', href: '/admin/enquiries' },
         { label: 'Lead Pipeline', href: '/admin/leads' },

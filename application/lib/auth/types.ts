@@ -16,6 +16,12 @@ export type UserRoleCode =
 export type ServiceTypeCode = 'FLIGHT' | 'PACKAGE' | 'VISA' | 'GENERAL' | 'CUSTOM_HOLIDAY' | 'TRAVEL_INSURANCE';
 
 export type PipelineStageCode =
+  | 'NEW'
+  | 'CONTACTED'
+  | 'QUOTED'
+  | 'NEGOTIATION'
+  | 'WON'
+  | 'LOST'
   | 'REQUESTS'
   | 'GENERAL'
   | 'PRIORITY'

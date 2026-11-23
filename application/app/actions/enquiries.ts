@@ -13,6 +13,7 @@ import {
 import { calculateKeralaPrice } from "@/lib/pricing/kerala";
 import { sendEnquiryConfirmationEmail } from "@/lib/integrations/email-service";
 import { processSyncQueueAction } from "@/app/actions/google-sheets";
+import { createOrUpdateInboxConversationForLead } from "@/lib/crm/unified-crm-service";
 
 function generateReference(prefix: "FLT" | "PKG" | "VIS" | "HOL" | "INS"): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -111,7 +112,7 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
           },
           activities: {
             create: {
-              userId: 'usr-neel-patel-superadmin',
+              userId: '3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e',
               activityType: "INTERNAL_NOTE",
               summary: "Flight Enquiry received via website",
               details: `Route: ${data.originAirport} → ${data.destinationAirport} (${data.tripType}). Passengers: ${data.adultsCount} Adults, ${data.childrenCount} Children, ${data.infantsCount} Infants.`,
@@ -119,6 +120,13 @@ export async function submitFlightEnquiry(formData: unknown): Promise<EnquirySub
           },
         },
       });
+      if (dbCreatedLead && dbCustomer) {
+        createOrUpdateInboxConversationForLead({
+          ...dbCreatedLead,
+          customer: dbCustomer,
+          description: `${(data as any).originAirport ? `Flight: ${(data as any).originAirport} → ${(data as any).destinationAirport}` : (data as any).destinationCountry ? `Destination: ${(data as any).destinationCountry}` : 'Travel Enquiry'}`,
+        }).catch(() => {});
+      }
     } catch (dbError) {
       console.warn("Prisma storage skipped (offline dev fallback):", dbError);
     }
@@ -340,7 +348,7 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
           },
           activities: {
             create: {
-              userId: 'usr-neel-patel-superadmin',
+              userId: '3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e',
               activityType: "INTERNAL_NOTE",
               summary: "Package Enquiry submitted",
               details: `Package: ${pkg.title} (${data.hotelTier}). Estimate: ₹${pricingResult.totalEstimate ? pricingResult.totalEstimate.toLocaleString("en-IN") : "Custom Quote Required"}.`,
@@ -348,6 +356,13 @@ export async function submitPackageEnquiry(formData: unknown): Promise<EnquirySu
           },
         },
       });
+      if (dbCreatedLead && dbCustomer) {
+        createOrUpdateInboxConversationForLead({
+          ...dbCreatedLead,
+          customer: dbCustomer,
+          description: `${(data as any).originAirport ? `Flight: ${(data as any).originAirport} → ${(data as any).destinationAirport}` : (data as any).destinationCountry ? `Destination: ${(data as any).destinationCountry}` : 'Travel Enquiry'}`,
+        }).catch(() => {});
+      }
     } catch (dbError) {
       console.warn("Prisma storage skipped (offline dev fallback):", dbError);
     }
@@ -533,7 +548,7 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
           },
           activities: {
             create: {
-              userId: 'usr-neel-patel-superadmin',
+              userId: '3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e',
               activityType: "INTERNAL_NOTE",
               summary: "Visa Assistance Request received",
               details: `Destination: ${effectiveCountry} (${data.visaCategory} Visa${data.visaType ? ` - ${data.visaType}` : ''}) for ${data.applicantCount} applicants.`,
@@ -541,6 +556,13 @@ export async function submitVisaEnquiry(formData: unknown): Promise<EnquirySubmi
           },
         },
       });
+      if (dbCreatedLead && dbCustomer) {
+        createOrUpdateInboxConversationForLead({
+          ...dbCreatedLead,
+          customer: dbCustomer,
+          description: `${(data as any).originAirport ? `Flight: ${(data as any).originAirport} → ${(data as any).destinationAirport}` : (data as any).destinationCountry ? `Destination: ${(data as any).destinationCountry}` : 'Travel Enquiry'}`,
+        }).catch(() => {});
+      }
     } catch (dbError) {
       console.warn("Prisma storage skipped (offline dev fallback):", dbError);
     }
@@ -731,6 +753,13 @@ export async function submitCustomHolidayEnquiryAction(formData: unknown): Promi
           },
         },
       });
+      if (dbCreatedLead && dbCustomer) {
+        createOrUpdateInboxConversationForLead({
+          ...dbCreatedLead,
+          customer: dbCustomer,
+          description: `${(data as any).originAirport ? `Flight: ${(data as any).originAirport} → ${(data as any).destinationAirport}` : (data as any).destinationCountry ? `Destination: ${(data as any).destinationCountry}` : 'Travel Enquiry'}`,
+        }).catch(() => {});
+      }
     } catch (dbError) {
       console.warn("Prisma storage skipped (offline dev fallback):", dbError);
     }
@@ -891,7 +920,7 @@ export async function submitTravelInsuranceEnquiryAction(formData: unknown): Pro
           priorityLevel: "MEDIUM",
           source: "WEBSITE_TRAVEL_INSURANCE",
           customerId: dbCustomer.id,
-          assignedUserId: "usr-neel-patel-superadmin",
+          assignedUserId: "3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e",
           insuranceDetail: {
             create: {
               travelDate: new Date(data.travelDate),
@@ -904,7 +933,7 @@ export async function submitTravelInsuranceEnquiryAction(formData: unknown): Pro
           },
           activities: {
             create: {
-              userId: "usr-neel-patel-superadmin",
+              userId: "3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e",
               activityType: "INTERNAL_NOTE",
               summary: "Travel Insurance Consultation Request Received",
               // SENSITIVITY SAFEGUARD: Do not log raw medical condition details in generic activity logs
@@ -915,6 +944,13 @@ export async function submitTravelInsuranceEnquiryAction(formData: unknown): Pro
           },
         },
       });
+      if (dbCreatedLead && dbCustomer) {
+        createOrUpdateInboxConversationForLead({
+          ...dbCreatedLead,
+          customer: dbCustomer,
+          description: `${(data as any).originAirport ? `Flight: ${(data as any).originAirport} → ${(data as any).destinationAirport}` : (data as any).destinationCountry ? `Destination: ${(data as any).destinationCountry}` : 'Travel Enquiry'}`,
+        }).catch(() => {});
+      }
     } catch (dbError) {
       console.warn("Prisma storage skipped (offline dev fallback):", dbError);
     }
@@ -946,7 +982,7 @@ export async function submitTravelInsuranceEnquiryAction(formData: unknown): Pro
         priorityLevel: 'HIGH',
         source: 'WEBSITE_TRAVEL_INSURANCE',
         customerId: cust.id,
-        assignedUserId: 'usr-neel-patel-superadmin',
+        assignedUserId: '3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e',
         insuranceDetail: {
           departureDate: data.travelDate,
           destinationCountry: data.destinationCountry,
@@ -962,7 +998,7 @@ export async function submitTravelInsuranceEnquiryAction(formData: unknown): Pro
 
       crmRepo.addActivity({
         leadId: newLead.id,
-        userId: 'usr-neel-patel-superadmin',
+        userId: '3fb5cc1b-4278-4d0b-8715-4356fd8e2f2e',
         userName: 'Neel Patel',
         type: 'NOTE',
         title: 'Travel Insurance Enquiry Received',
