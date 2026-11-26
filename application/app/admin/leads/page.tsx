@@ -50,17 +50,18 @@ const PIPELINE_STAGES: {
   badgeBg: string;
   badgeText: string;
 }[] = [
-  { code: 'NEW', label: '1. New Enquiries', dotColor: '#24689B', badgeBg: 'bg-sky-50', badgeText: 'text-sky-800' },
-  { code: 'CONTACTED', label: '2. Contacted', dotColor: '#718096', badgeBg: 'bg-slate-100', badgeText: 'text-slate-800' },
-  { code: 'QUOTED', label: '3. Quoted', dotColor: '#C58A27', badgeBg: 'bg-amber-50', badgeText: 'text-amber-800' },
-  { code: 'NEGOTIATION', label: '4. Negotiation', dotColor: '#805AD5', badgeBg: 'bg-purple-50', badgeText: 'text-purple-800' },
-  { code: 'WON', label: '5. Won / Converted', dotColor: '#168653', badgeBg: 'bg-emerald-50', badgeText: 'text-emerald-800' },
-  { code: 'LOST', label: '6. Lost / Closed', dotColor: '#D54747', badgeBg: 'bg-rose-50', badgeText: 'text-rose-800' },
-];
+    { code: 'NEW', label: '1. New Enquiries', dotColor: '#24689B', badgeBg: 'bg-sky-50', badgeText: 'text-sky-800' },
+    { code: 'CONTACTED', label: '2. Contacted', dotColor: '#718096', badgeBg: 'bg-slate-100', badgeText: 'text-slate-800' },
+    { code: 'QUOTED', label: '3. Quoted', dotColor: '#C58A27', badgeBg: 'bg-amber-50', badgeText: 'text-amber-800' },
+    { code: 'NEGOTIATION', label: '4. Negotiation', dotColor: '#805AD5', badgeBg: 'bg-purple-50', badgeText: 'text-purple-800' },
+    { code: 'WON', label: '5. Won / Converted', dotColor: '#168653', badgeBg: 'bg-emerald-50', badgeText: 'text-emerald-800' },
+    { code: 'LOST', label: '6. Lost / Closed', dotColor: '#D54747', badgeBg: 'bg-rose-50', badgeText: 'text-rose-800' },
+  ];
 
 const SOURCES = [
   'ALL',
   'WEBSITE',
+  'WEBSITE_CHATBOT',
   'WHATSAPP',
   'INSTAGRAM',
   'FACEBOOK',
@@ -441,13 +442,12 @@ function AdminLeadsContent() {
                                 {lead.referenceId}
                               </Link>
                               <span
-                                className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${
-                                  lead.priorityLevel === 'URGENT'
-                                    ? 'bg-rose-100 text-rose-800'
-                                    : lead.priorityLevel === 'HIGH'
+                                className={`text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider ${lead.priorityLevel === 'URGENT'
+                                  ? 'bg-rose-100 text-rose-800'
+                                  : lead.priorityLevel === 'HIGH'
                                     ? 'bg-amber-100 text-amber-800'
                                     : 'bg-slate-100 text-slate-700'
-                                }`}
+                                  }`}
                               >
                                 {lead.priorityLevel}
                               </span>
@@ -598,13 +598,12 @@ function AdminLeadsContent() {
                       </td>
                       <td className="p-3">
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-xs uppercase tracking-wider ${
-                            lead.priorityLevel === 'URGENT'
-                              ? 'bg-rose-100 text-rose-800'
-                              : lead.priorityLevel === 'HIGH'
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-xs uppercase tracking-wider ${lead.priorityLevel === 'URGENT'
+                            ? 'bg-rose-100 text-rose-800'
+                            : lead.priorityLevel === 'HIGH'
                               ? 'bg-amber-100 text-amber-800'
                               : 'bg-slate-100 text-slate-700'
-                          }`}
+                            }`}
                         >
                           {lead.priorityLevel}
                         </span>
