@@ -232,3 +232,73 @@ export interface ChatbotResponsePayload {
     caption?: string;
   };
 }
+
+// ----------------------------------------------------
+// Interactive Conversational Flow Engine Types
+// ----------------------------------------------------
+
+export type BotFlowType =
+  | 'IDLE'
+  | 'PACKAGE_BOOKING'
+  | 'FLIGHT_BOOKING'
+  | 'VISA_ENQUIRY'
+  | 'TRACK_STATUS'
+  | 'FAQ_HELP';
+
+export interface WhatsAppSessionData {
+  phone: string; // E.164 digits e.g. "916357050505"
+  customerName?: string;
+  customerEmail?: string;
+  flow: BotFlowType;
+  step: string;
+  data: Record<string, any>;
+  lastActivityAt: number;
+}
+
+export interface BotIncomingMessage {
+  fromPhone: string;
+  senderName?: string;
+  messageId: string;
+  text?: string;
+  interactiveType?: 'button_reply' | 'list_reply';
+  buttonId?: string;
+  buttonTitle?: string;
+  listId?: string;
+  listTitle?: string;
+  timestamp: number;
+}
+
+export interface BotQuickButton {
+  id: string;
+  title: string;
+}
+
+export interface BotListSectionItem {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+export interface BotListSection {
+  title: string;
+  rows: BotListSectionItem[];
+}
+
+export interface BotOutgoingMessage {
+  toPhone: string;
+  text: string;
+  buttons?: BotQuickButton[];
+  list?: {
+    buttonText: string;
+    title: string;
+    sections: BotListSection[];
+  };
+}
+
+export interface BotProcessingResult {
+  reply: BotOutgoingMessage;
+  actionTaken?: string;
+  leadReferenceId?: string;
+  bookingReferenceId?: string;
+  sessionState: WhatsAppSessionData;
+}

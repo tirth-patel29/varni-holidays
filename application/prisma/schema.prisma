@@ -1250,6 +1250,25 @@ model NewsletterSubscription {
 }
 
 // ====================================================
+// 12. WHATSAPP BOT CONVERSATIONAL SESSION STATE
+// ====================================================
+
+model WhatsAppSession {
+  phone          String   @id // E.164 digits e.g. "919023978348"
+  customerName   String?
+  customerEmail  String?
+  flow           String   @default("IDLE")
+  step           String   @default("START")
+  dataJson       Json     @default("{}")
+  lastActivityAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([lastActivityAt])
+  @@map("whatsapp_sessions")
+}
+
+// ====================================================
 // 12. VISA EMAIL AUTOMATION & APPLICATIONS
 // ====================================================
 

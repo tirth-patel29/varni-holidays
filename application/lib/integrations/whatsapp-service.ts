@@ -7,6 +7,7 @@
 
 import { UpdateCategory } from '../crm/types';
 import { COMPANY_CONTACT } from '../config/contact';
+import { BotQuickButton, BotListSection } from '../whatsapp/types';
 
 export interface WhatsAppSendOptions {
   phoneNumber: string; // E.164 formatted or raw digits
@@ -16,6 +17,12 @@ export interface WhatsAppSendOptions {
   messageText: string;
   templateName?: string;
   templateParams?: string[];
+  buttons?: BotQuickButton[];
+  list?: {
+    buttonText: string;
+    title?: string;
+    sections: BotListSection[];
+  };
 }
 
 export interface WhatsAppDispatchResult {
@@ -61,7 +68,7 @@ export function buildClickToChatUrl(phone: string, countryCode: string = '+91', 
  * Dispatches via Meta WhatsApp Cloud API if configured; otherwise generates a Click-to-Chat trigger
  */
 export async function sendCustomerWhatsApp(options: WhatsAppSendOptions): Promise<WhatsAppDispatchResult> {
-  const token = process.env.WHATSAPP_API_TOKEN;
+  const token = process.env.WHATSAPP_API_TOKEN || process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const now = new Date().toISOString();
   const normalizedRecipient = normalizeWhatsAppNumber(options.phoneNumber, options.countryCode);
@@ -69,13 +76,63 @@ export async function sendCustomerWhatsApp(options: WhatsAppSendOptions): Promis
   // If Meta WhatsApp Cloud API is configured
   if (token && phoneNumberId) {
     try {
-      const response = await fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      let payload: Record<string, any>;
+
+      if (options.list && options.list.sections && options.list.sections.length > 0) {
+        payload = {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: normalizedRecipient,
+          type: 'interactive',
+          interactive: {
+            type: 'list',
+            ...(options.list.title ? { header: { type: 'text', text: options.list.title.slice(0, 60) } } : {}),
+            body: {
+              text: options.messageText.slice(0, 1024),
+            },
+            footer: {
+              text: 'Varni Holidays • Anand',
+            },
+            action: {
+              button: (options.list.buttonText || 'Choose Option').slice(0, 20),
+              sections: options.list.sections.map((sec) => ({
+                title: sec.title.slice(0, 24),
+                rows: sec.rows.slice(0, 10).map((r) => ({
+                  id: r.id.slice(0, 200),
+                  title: r.title.slice(0, 24),
+                  ...(r.description ? { description: r.description.slice(0, 72) } : {}),
+                })),
+              })),
+            },
+          },
+        };
+      } else if (options.buttons && options.buttons.length > 0) {
+        payload = {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: normalizedRecipient,
+          type: 'interactive',
+          interactive: {
+            type: 'button',
+            body: {
+              text: options.messageText.slice(0, 1024),
+            },
+            footer: {
+              text: 'Varni Holidays • Anand',
+            },
+            action: {
+              buttons: options.buttons.slice(0, 3).map((b) => ({
+                type: 'reply',
+                reply: {
+                  id: b.id.slice(0, 256),
+                  title: b.title.slice(0, 20),
+                },
+              })),
+            },
+          },
+        };
+      } else {
+        payload = {
           messaging_product: 'whatsapp',
           recipient_type: 'individual',
           to: normalizedRecipient,
@@ -84,8 +141,40 @@ export async function sendCustomerWhatsApp(options: WhatsAppSendOptions): Promis
             preview_url: false,
             body: options.messageText,
           },
-        }),
+        };
+      }
+
+      let response = await fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
+
+      // If interactive dispatch fails, immediately fallback to clean text message
+      if (!response.ok && payload.type === 'interactive') {
+        const interactiveErr = await response.text();
+        console.warn('[WhatsApp Cloud API] Interactive send rejected, falling back to text:', interactiveErr);
+        response = await fetch(`https://graph.facebook.com/v19.0/${phoneNumberId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: normalizedRecipient,
+            type: 'text',
+            text: {
+              preview_url: false,
+              body: options.messageText,
+            },
+          }),
+        });
+      }
 
       if (!response.ok) {
         const errText = await response.text();
