@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { PipelineStage, PriorityLevel, InboxChannel, InboxStatus, FollowUpStatus, ServiceType, Prisma } from '@prisma/client';
 import { validatePhoneNumber } from '@/lib/validation/phone';
 import { sendCustomerWhatsApp } from '@/lib/integrations/whatsapp-service';
+import { googleSheetsSync } from '@/lib/integrations/google-sheets';
 import crypto from 'crypto';
 
 export interface UserContext {
@@ -623,6 +624,26 @@ export async function createLeadRecord(input: CreateLeadInput, staffUser: UserCo
 
   // Create unified inbox conversation
   await createOrUpdateInboxConversationForLead(lead);
+
+  // Automatically append enquiry to configured Google Sheet (non-fatal)
+  try {
+    googleSheetsSync.appendEnquiryLead({
+      referenceId: lead.referenceId,
+      submittedAt: lead.createdAt,
+      customerName: input.customerName,
+      phoneNumber: `${input.phoneCountryCode || '+91'} ${input.customerPhone}`,
+      email: input.customerEmail,
+      serviceCategory: lead.serviceType,
+      destinationOrPackage: (input.destination || lead.title) ?? undefined,
+      travelDate: input.travelStartDate ? new Date(input.travelStartDate).toLocaleDateString('en-IN') : undefined,
+      stage: lead.stage,
+      priority: lead.priorityLevel,
+      assignedEmployee: lead.assignedTo?.fullName || 'Unassigned',
+      notes: input.internalNotes || input.description,
+    }).catch((sheetErr: any) => {
+      console.warn('[Google Sheets Sync Notice]:', sheetErr.message);
+    });
+  } catch {}
 
   return sanitizeRecord(lead);
 }

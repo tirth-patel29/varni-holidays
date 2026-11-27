@@ -3,7 +3,7 @@ import { crmRepo } from '../crm/store';
 import { SyncJobRecord, GoogleSheetsConfig } from '../crm/types';
 import { DEFAULT_USERS } from '../auth/session';
 
-export const NEW_GOOGLE_SHEET_ID = 'PENDING_USER_INPUT';
+export const NEW_GOOGLE_SHEET_ID = '1tgaAWXlJ6QEw-RTrF02N7h_vhr1bTNwb68-WxOA1N0U';
 
 // Tab Headers defined strictly in accordance with Phase 2.1 SRS
 export const ALL_LEADS_HEADERS = [
@@ -358,10 +358,10 @@ export class GoogleSheetsSyncEngine {
       const config = crmRepo.getGoogleSheetsConfig();
       const auth = this.getAuthClient();
 
-      if (!config.spreadsheetId || config.spreadsheetId === NEW_GOOGLE_SHEET_ID) {
+      if (!config.spreadsheetId) {
         return {
           success: false,
-          error: 'Google Sheets synchronization is pending user configuration (NEW_GOOGLE_SHEET_ID = PENDING_USER_INPUT).',
+          error: 'Google Sheets synchronization spreadsheetId is not configured.',
         };
       }
 
@@ -633,6 +633,109 @@ export class GoogleSheetsSyncEngine {
       }
     } catch (err: any) {
       throw new Error(`Failed to upsert row in ${tabName}: ${err.message}`);
+    }
+  }
+
+  /**
+   * Resolves the target tab for storing leads.
+   * If 'ALL_LEADS' exists, uses it.
+   * If not, checks if any tab exists (e.g. 'Sheet1') and initializes headers if empty.
+   */
+  public async resolveTargetLeadTab(sheets: any, spreadsheetId: string): Promise<string> {
+    try {
+      const meta = await sheets.spreadsheets.get({ spreadsheetId });
+      const titles: string[] = (meta.data.sheets || []).map((s: any) => s.properties?.title);
+
+      if (titles.includes('ALL_LEADS')) {
+        return 'ALL_LEADS';
+      }
+
+      if (titles.length > 0) {
+        const firstTab = titles[0];
+        try {
+          const res = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `${firstTab}!A1:N1`,
+          });
+          if (!res.data.values || res.data.values.length === 0) {
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `${firstTab}!A1`,
+              valueInputOption: 'USER_ENTERED',
+              requestBody: { values: [ALL_LEADS_HEADERS] },
+            });
+          }
+        } catch {}
+        return firstTab;
+      }
+    } catch (e: any) {
+      console.warn('Could not inspect sheet tabs, defaulting to ALL_LEADS:', e.message);
+    }
+    return 'ALL_LEADS';
+  }
+
+  /**
+   * Directly appends/upserts an enquiry lead to the configured Google Sheet
+   */
+  public async appendEnquiryLead(data: {
+    referenceId: string;
+    submittedAt?: Date | string | null;
+    customerName: string;
+    phoneNumber: string;
+    email?: string | null;
+    serviceCategory: string;
+    destinationOrPackage?: string | null;
+    travelDate?: string | null;
+    stage?: string | null;
+    priority?: string | null;
+    assignedEmployee?: string | null;
+    notes?: string | null;
+  }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const config = crmRepo.getGoogleSheetsConfig();
+      const spreadsheetId = config.spreadsheetId || NEW_GOOGLE_SHEET_ID;
+      const auth = this.getAuthClient();
+
+      if (!auth || !spreadsheetId) {
+        return { success: false, error: 'Google Sheets credentials or spreadsheetId not configured' };
+      }
+
+      const sheets = google.sheets({ version: 'v4', auth });
+      const targetTab = await this.resolveTargetLeadTab(sheets, spreadsheetId);
+
+      const submittedAtFormatted = data.submittedAt
+        ? new Date(data.submittedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+        : new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+      const rowValues = [
+        data.referenceId,
+        submittedAtFormatted,
+        data.customerName,
+        data.phoneNumber,
+        data.email || '',
+        data.serviceCategory,
+        data.destinationOrPackage || 'General Enquiry',
+        data.travelDate || 'TBD',
+        data.stage || 'NEW',
+        data.priority || 'MEDIUM',
+        data.assignedEmployee || 'Unassigned',
+        submittedAtFormatted,
+        'None Scheduled',
+        data.notes || '',
+      ];
+
+      await this.upsertGoogleSheetsRow(
+        sheets,
+        spreadsheetId,
+        targetTab,
+        data.referenceId,
+        rowValues
+      );
+
+      return { success: true };
+    } catch (err: any) {
+      console.warn('[Google Sheets] appendEnquiryLead notice:', err.message);
+      return { success: false, error: err.message };
     }
   }
 

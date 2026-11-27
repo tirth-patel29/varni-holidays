@@ -54,7 +54,7 @@ const STORE_PATH = path.join(STORE_DIR, 'crm_store.json');
 
 // Initial seed data adhering strictly to the SRS and Phase 0/1 verified rules
 function generateInitialState(): CrmDatabaseState {
-  const defaultSpreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1fVwhzsYrZ5c8xmLSobxTXP8M1JNeqL5-ZSbnq3gZY3A';
+  const defaultSpreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '1tgaAWXlJ6QEw-RTrF02N7h_vhr1bTNwb68-WxOA1N0U';
   const sheetsConfig: GoogleSheetsConfig = {
     spreadsheetId: defaultSpreadsheetId,
     spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/' + defaultSpreadsheetId + '/edit',
