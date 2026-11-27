@@ -22,15 +22,6 @@ export default function HomePage() {
           
           {/* Left Column: Editorial Storytelling */}
           <div className="lg:col-span-5 flex flex-col justify-center">
-            {/* Greeting Pill */}
-            <div className="rise inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container shadow-clay-card w-fit mb-4">
-              <span className="text-lg">✨</span>
-              <span className="text-xs font-bold text-primary tracking-wide">
-                Namaste, Explorer
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-gold-deep animate-pulse ml-1" />
-            </div>
-
             <h1 className="rise font-headline text-3xl sm:text-5xl lg:text-[54px] font-bold text-primary leading-tight tracking-tight mb-4">
               Your Next Journey <br className="hidden sm:inline" />
               <span className="italic font-normal text-secondary font-serif">Begins Here</span>

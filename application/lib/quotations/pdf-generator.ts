@@ -621,7 +621,7 @@ export function generateQuotationPdf(data: QuotationPdfData): Buffer {
     doc.setFontSize(6.5);
     doc.setTextColor(...slate);
     doc.text(
-      'VARNI HOLIDAYS PVT. LTD. • 317 Narayan Empire, Anand, Gujarat • Helpline: +91 63570 50505 • www.varniholidays.com',
+      `VARNI HOLIDAYS PVT. LTD. • 317 Narayan Empire, Anand, Gujarat • Helpline: ${COMPANY_CONTACT.phone.display} • www.varniholidays.com`,
       margin,
       pageHeight - 6
     );

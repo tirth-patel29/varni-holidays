@@ -290,7 +290,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="clay-pill-button w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 hover:bg-ocean-dark disabled:opacity-50"
+                    className="clay-pill-button bg-primary hover:bg-ocean-dark w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
                   >
                     {loading ? (
                       <>

@@ -3,6 +3,8 @@ import { crmRepo } from '../crm/store';
 import { SyncJobRecord, GoogleSheetsConfig } from '../crm/types';
 import { DEFAULT_USERS } from '../auth/session';
 
+export const NEW_GOOGLE_SHEET_ID = 'PENDING_USER_INPUT';
+
 // Tab Headers defined strictly in accordance with Phase 2.1 SRS
 export const ALL_LEADS_HEADERS = [
   'Lead ID',
@@ -355,6 +357,13 @@ export class GoogleSheetsSyncEngine {
     try {
       const config = crmRepo.getGoogleSheetsConfig();
       const auth = this.getAuthClient();
+
+      if (!config.spreadsheetId || config.spreadsheetId === NEW_GOOGLE_SHEET_ID) {
+        return {
+          success: false,
+          error: 'Google Sheets synchronization is pending user configuration (NEW_GOOGLE_SHEET_ID = PENDING_USER_INPUT).',
+        };
+      }
 
       if (job.targetTab === 'ALL_LEADS') {
         const lead = crmRepo.getLeadById(job.entityId);

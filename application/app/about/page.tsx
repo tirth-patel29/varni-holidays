@@ -142,7 +142,7 @@ export default function AboutPage() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/contact"
-                className="clay-pill-button text-center px-6 py-3 rounded-full text-white text-xs font-bold shadow-md hover:bg-ocean-dark"
+                className="clay-pill-button bg-primary hover:bg-ocean-dark text-center px-6 py-3 rounded-full text-white text-xs font-bold shadow-md transition-colors"
               >
                 Schedule an In-Person Consultation
               </Link>

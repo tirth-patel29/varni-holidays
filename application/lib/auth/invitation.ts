@@ -8,6 +8,7 @@ import {
   getEmployeeInvitationUrl,
   PRODUCTION_APP_URL,
 } from '@/lib/config/app-url';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 export { getAppBaseUrl, getEmployeeInvitationUrl, PRODUCTION_APP_URL };
 
@@ -168,7 +169,7 @@ function buildInvitationEmailHtml(params: {
               </p>
               <p style="font-size: 11px; color: #94A3B8; margin: 0; line-height: 1.4;">
                 317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Anand, Gujarat 388120<br>
-                Official Helpline & WhatsApp: +91 63570 50505 • Email: contact@varnitours.com
+                Official Helpline & WhatsApp: ${COMPANY_CONTACT.phone.display} • Email: contact@varnitours.com
               </p>
             </td>
           </tr>
@@ -198,7 +199,7 @@ Note:
 - Do not forward this email to anyone else.
 
 For assistance, contact Anand HQ Desk:
-Helpline & WhatsApp: +91 63570 50505
+Helpline & WhatsApp: ${COMPANY_CONTACT.phone.display}
 Email: contact@varnitours.com
 Address: 317, Narayan Empire, Anand - Vidyanagar Road, Anand, Gujarat
 ==================================================

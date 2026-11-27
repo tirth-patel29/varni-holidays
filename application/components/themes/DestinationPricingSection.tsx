@@ -7,6 +7,7 @@ import DynamicPricingCalculator from '@/components/DynamicPricingCalculator';
 import CountryPhoneInput from '@/components/CountryPhoneInput';
 import EnquirySuccessModal from '@/components/EnquirySuccessModal';
 import { submitCustomHolidayEnquiryAction } from '@/app/actions/enquiries';
+import { COMPANY_CONTACT } from '@/lib/config/contact';
 
 interface DestinationPricingSectionProps {
   packageItem: TourPackageCatalogueItem;
@@ -476,7 +477,7 @@ export default function DestinationPricingSection({
                   <span className="material-symbols-outlined text-[16px]" style={{ color: theme.colors.primary }}>
                     support_agent
                   </span>
-                  <span>Anand Travel Desk WhatsApp: +91 63570 50505</span>
+                  <span>Anand Travel Desk WhatsApp: {COMPANY_CONTACT.phone.display}</span>
                 </div>
               </div>
             </div>

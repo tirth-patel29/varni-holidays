@@ -585,7 +585,7 @@ export function buildQuotationProposalEmailHtml(params: {
             <div style="font-weight: 700; color: #153650; margin-bottom: 4px;">VARNI HOLIDAYS PVT. LTD. • ANAND</div>
             <div>${COMPANY_CONTACT.address.full}</div>
             <div style="margin-top: 4px;">
-              Phone: ${COMPANY_CONTACT.phone.display} | WhatsApp: +91 63570 50505 | Email: ${COMPANY_CONTACT.email.primary}
+              Phone: ${COMPANY_CONTACT.phone.display} | WhatsApp: ${COMPANY_CONTACT.whatsapp.display} | Email: ${COMPANY_CONTACT.email.primary}
             </div>
           </td>
         </tr>

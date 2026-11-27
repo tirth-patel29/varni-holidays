@@ -90,7 +90,7 @@ export function buildTicketConfirmationEmailHtml(details: TicketFlightDetails): 
   const waPrefill = encodeURIComponent(
     `Hello Varni Holidays Anand! I have an issued ticket for PNR ${pnr} (${passengerName}). Could you please assist me with my travel details?`
   );
-  const waUrl = `https://wa.me/916357050505?text=${waPrefill}`;
+  const waUrl = `https://wa.me/${COMPANY_CONTACT.whatsapp.canonical}?text=${waPrefill}`;
 
   return `
 <!DOCTYPE html>
@@ -244,7 +244,7 @@ export function buildTicketConfirmationEmailHtml(details: TicketFlightDetails): 
                   💬 Chat With Varni Holidays
                 </a>
                 <span style="display: block; font-size: 11px; color: #64748B; margin-top: 8px;">
-                  Official Anand HQ Helpline & WhatsApp: +91 63570 50505
+                  Official Anand HQ Helpline & WhatsApp: ${COMPANY_CONTACT.phone.display}
                 </span>
               </td>
             </tr>
@@ -272,7 +272,7 @@ export function buildTicketConfirmationEmailHtml(details: TicketFlightDetails): 
           </p>
           <p style="font-size: 11px; color: #94A3B8; margin: 0; line-height: 1.4;">
             317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Anand, Gujarat 388120<br>
-            Helpline: +91 63570 50505 • Email: contact@varnitours.com
+            Helpline: ${COMPANY_CONTACT.phone.display} • Email: contact@varnitours.com
           </p>
         </td>
       </tr>
@@ -306,7 +306,7 @@ export function buildDepartureReminderEmailHtml(details: TicketFlightDetails): s
   const waPrefill = encodeURIComponent(
     `Hello Varni Holidays! My flight ${flightNumber} (PNR: ${pnr}) is scheduled for tomorrow. Could you please confirm flight status or assist me?`
   );
-  const waUrl = `https://wa.me/916357050505?text=${waPrefill}`;
+  const waUrl = `https://wa.me/${COMPANY_CONTACT.whatsapp.canonical}?text=${waPrefill}`;
 
   return `
 <!DOCTYPE html>
@@ -449,7 +449,7 @@ export function buildDepartureReminderEmailHtml(details: TicketFlightDetails): s
                   💬 Need Assistance? WhatsApp Us
                 </a>
                 <span style="display: block; font-size: 11px; color: #64748B; margin-top: 8px;">
-                  Official Varni Holidays Desk: +91 63570 50505
+                  Official Varni Holidays Desk: ${COMPANY_CONTACT.phone.display}
                 </span>
               </td>
             </tr>
@@ -476,7 +476,7 @@ export function buildDepartureReminderEmailHtml(details: TicketFlightDetails): s
           </p>
           <p style="font-size: 11px; color: #94A3B8; margin: 0; line-height: 1.4;">
             317, 3rd Floor, Narayan Empire, Anand - Vidyanagar Road, Anand, Gujarat 388120<br>
-            Helpline: +91 63570 50505 • Email: contact@varnitours.com
+            Helpline: ${COMPANY_CONTACT.phone.display} • Email: contact@varnitours.com
           </p>
         </td>
       </tr>
@@ -520,7 +520,7 @@ export function buildTicketConfirmationWhatsAppText(details: TicketFlightDetails
     text += `\n📥 *Download E-Ticket PDF:* ${pdfDownloadUrl}\n`;
   }
   text += `\n⚠️ *Important Notice:* Please carry your valid original government ID / Passport and report at the airport 2-3 hours prior to departure.\n\n`;
-  text += `For any assistance, reply directly to this chat or call our Anand HQ Helpline at *+91 63570 50505*.\n\n`;
+  text += `For any assistance, reply directly to this chat or call our Anand HQ Helpline at *${COMPANY_CONTACT.phone.display}*.\n\n`;
   text += `_Have a safe and wonderful journey!_\n*Varni Holidays* — _Your Gateway to Joyful Holidays._`;
 
   return text;
@@ -563,7 +563,7 @@ export function buildDepartureReminderWhatsAppText(details: TicketFlightDetails)
     text += `📥 *E-Ticket PDF:* ${pdfDownloadUrl}\n\n`;
   }
 
-  text += `Need assistance? Contact our 24x7 Anand Desk at *+91 63570 50505*.\n\n`;
+  text += `Need assistance? Contact our 24x7 Anand Desk at *${COMPANY_CONTACT.phone.display}*.\n\n`;
   text += `_Wishing you a smooth and pleasant journey!_\n*Varni Holidays*`;
 
   return text;

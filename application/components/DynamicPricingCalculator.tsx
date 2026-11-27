@@ -629,7 +629,7 @@ export default function DynamicPricingCalculator({
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-secondary text-[16px]">support_agent</span>
-              <span>Anand Travel Desk WhatsApp: +91 63570 50505</span>
+              <span>Anand Travel Desk WhatsApp: {COMPANY_CONTACT.phone.display}</span>
             </div>
           </div>
         </div>

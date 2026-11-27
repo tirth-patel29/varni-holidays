@@ -12,20 +12,20 @@ export const COMPANY_CONTACT = {
   tagline: 'Your Gateway to Joyful Holidays',
 
   phone: {
-    display: '+91 63570 50505',
-    tel: 'tel:+916357050505',
-    cleanDigits: '6357050505',
-    canonical: '+916357050505',
+    display: '+91 74350 00807',
+    tel: 'tel:+917435000807',
+    cleanDigits: '7435000807',
+    canonical: '+917435000807',
   },
 
   whatsapp: {
-    display: '+91 63570 50505',
-    canonical: '916357050505',
-    url: 'https://wa.me/916357050505',
+    display: '+91 74350 00807',
+    canonical: '917435000807',
+    url: 'https://wa.me/917435000807',
     buildUrl: (message?: string) =>
       message
-        ? `https://wa.me/916357050505?text=${encodeURIComponent(message)}`
-        : 'https://wa.me/916357050505',
+        ? `https://wa.me/917435000807?text=${encodeURIComponent(message)}`
+        : 'https://wa.me/917435000807',
   },
 
   email: {
